@@ -10,7 +10,13 @@ Last update : 07/02/2014
 DEPENDENCIES
 ------------
 
-* cmake 2.8.10.2 : http://www.cmake.org (Only if you have to build OpenCV)
+#### To build OpenCV
+
+* cmake 2.8.10.2 : http://www.cmake.org
+* git 1.8.2.1 http://git-scm.com (Test version, should work with others. It is used only to clone)
+
+#### To build ulavalSFM
+
 * g++ 4.8.0 (should work with 4.9.0) : https://gcc.gnu.org
 * OpenMPI 1.6.4 : http://www.open-mpi.org
 * OpenCV 2.4.9 : https://github.com/Itseez/opencv
