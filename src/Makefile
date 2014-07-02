@@ -1,4 +1,9 @@
-#Makefile used to compile ulavalSFM. Only SIFT part will be compile so far
+
+# File : src/Makefile/
+# Author : Émile Robitaille @ LERobot
+# Last update : 07/02/2014
+# Version : 1.0
+# Description : Makefile used to compile ulavalSFM. Only SIFT part will be compile so far
 
 .PHONY: clean, install
 
