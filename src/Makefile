@@ -1,5 +1,5 @@
 
-# File : src/Makefile/
+# File : src/Makefile
 # Author : Émile Robitaille @ LERobot
 # Last update : 07/02/2014
 # Version : 1.0
