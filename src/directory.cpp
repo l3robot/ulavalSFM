@@ -1,6 +1,6 @@
 /*
 *	File : directory.cpp
-*	Author : Louis-Émile Robitaille @ LERobot
+*	Author : Émile Robitaille @ LERobot
 *	Creation date : 2014, June 27th
 *	Version : 1.0
 *	
