@@ -10,14 +10,15 @@ Last update : 07/02/2014
 DEPENDENCIES
 ------------
 
-* cmake
-* g++
-* OpenMPI
-* OpenCV 2.4.9
-
+* cmake 2.8.10.2 : http://www.cmake.org
+* g++ 4.8.0 (should work with 4.9.0) : https://gcc.gnu.org
+* OpenMPI 1.6.4 : http://www.open-mpi.org
+* OpenCV 2.4.9 : https://github.com/Itseez/opencv
 
 INSTALL INSTRUCTIONS
 --------------------
+
+#### If you don't have OpenCV, here is a way to install it with my script :
 
 DO :
 
@@ -32,4 +33,19 @@ This script will :
 - Build OpenCV 2.4.9 and install it in the ulavalSFM directory
 - Build ulavalSFM and install it in ulavalSFM/bin/ directory
 
-It can take a while. You can add more worker cores by changing the argument after _make -j_
+It could take a while. You can add more worker cores by changing the argument after _make -j_
+
+#### If you already have OpenCV install on your computer:
+
+DO :
+
+```Bash
+cd <ulavalSFM_path>/src/
+make
+make install
+```
+
+Those instructions will build ulavalSFM and install it in ulavalSFM/bin/ directory
+
+
+
