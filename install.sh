@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#	File : install.sh
-#	Author : Émile Robitaille @ LERobot
-#	Creation date : 07/02/2014
-#	Version : 1.0
+# File : install.sh
+# Author : Émile Robitaille @ LERobot
+# Creation date : 07/02/2014
+# Version : 1.0
 # Description : INSTALL SCRIPT FOR LINUX
 
 echo "#Added by ulavalSFM" >> $HOME/.bashrc
