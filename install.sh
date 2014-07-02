@@ -2,7 +2,7 @@
 
 # File : install.sh
 # Author : Émile Robitaille @ LERobot
-# Creation date : 07/02/2014
+# Last update : 07/02/2014
 # Version : 1.0
 # Description : Intall script if you don't have OpenCV. Linux version
 
