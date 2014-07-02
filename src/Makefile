@@ -1,0 +1,29 @@
+#Makefile used to compile ulavalSFM. Only SIFT part will be compile so far
+
+.PHONY: clean, install
+
+.SUFFIXES:
+
+#all
+all: main.o util.o directory.o dosift.o cDoSift.cpp 
+	g++ main.o util.o dosift.o directory.o -gdwarf-2 --std=c++11 -o ulavalSFM -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
+	mpic++ cDoSift.cpp util.o directory.o dosift.o -gdwarf-2 --std=c++11 -o cDoSift -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
+
+main.o: main.cpp util.h dosift.h
+	g++ -gdwarf-2 --std=c++11 -c main.cpp -o main.o -I../include/
+
+util.o: util.cpp util.h directory.h
+	g++ -gdwarf-2 --std=c++11 -c util.cpp -o util.o
+
+directory.o: directory.cpp directory.h util.h
+	g++ -gdwarf-2 --std=c++11 -c directory.cpp -o directory.o
+
+dosift.o: dosift.cpp dosift.h directory.h
+	g++ -gdwarf-2 --std=c++11 -c dosift.cpp -o dosift.o -I../include/
+
+clean:
+	rm -rf *.o
+
+install:
+	cp ulavalSFM ../bin/
+	cp cDoSift ../bin/
