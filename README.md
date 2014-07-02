@@ -15,6 +15,8 @@ ulavalSFM is a free software manager to prepare and do structure from motion in 
 Usage
 -----
 
+#### Displayed on terminal
+
 * -h  ---      : Print this menu
 * -v  ---      : Print the software version
 * -l [dir]     : Print information about the directory
@@ -24,8 +26,7 @@ Usage
 * -m [dir]     : To match sift features of the directory images
 * -a [dir]     : Do "-s dir" and then "-m dir"
 
-More details :
-
+#### More details :
 
 -l [dir] : Will give the directory name, number of images, .sift files and .mat files.
 
