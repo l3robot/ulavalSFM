@@ -1,6 +1,10 @@
 #!/bin/bash
 
-#INSTALL SCRIPT FOR LINUX
+#	File : install.sh
+#	Author : Émile Robitaille @ LERobot
+#	Creation date : 07/02/2014
+#	Version : 1.0
+# Description : INSTALL SCRIPT FOR LINUX
 
 echo "#Added by ulavalSFM" >> $HOME/.bashrc
 echo "export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"" >> $HOME/.bashrc
