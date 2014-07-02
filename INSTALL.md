@@ -35,7 +35,7 @@ This script will :
 
 It could take a while. You can add more worker cores by changing the argument after _make -j_
 
-#### If you already have OpenCV install on your computer:
+#### If you already have OpenCV on your computer:
 
 DO :
 
