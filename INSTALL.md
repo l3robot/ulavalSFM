@@ -36,7 +36,7 @@ chmod +x install.sh
 This script will :
 
 - Add new path to your local LD\_LIBRARY\_PATH
-- Clone OpenCV with git in <ulavalSFM_path>/lib/ directory
+- Clone OpenCV with git in ulavalSFM_path/lib/ directory
 - Build OpenCV 2.4.9 and install it in the ulavalSFM directory
 - Build ulavalSFM and install it in ulavalSFM/bin/ directory
 
