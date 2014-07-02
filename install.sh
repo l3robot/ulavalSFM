@@ -6,7 +6,11 @@ echo "#Added by ulavalSFM" >> $HOME/.bashrc
 echo "export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"" >> $HOME/.bashrc
 echo "[ Adding library path in .bashrc file ... done ]"
 
-cd lib/opencv-2.4.9/
+cd lib/
+git clone https://github.com/Itseez/opencv
+echo "[ Cloning OpenCV ... done ]"
+
+cd opencv/
 mkdir build/
 cd build/
 cmake -D CMAKE_INSTALL_PREFIX="../../../" -D CMAKE_LIBRARY_PATH="../../" -D CMAKE_INCLUDE_PATH="../../../include/" ..
