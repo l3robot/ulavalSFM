@@ -8,6 +8,7 @@
 
 echo "#Added by ulavalSFM" >> $HOME/.bashrc
 echo "export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"" >> $HOME/.bashrc
+export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"
 echo "[ Adding library path in .bashrc file ... done ]"
 
 cd lib/
