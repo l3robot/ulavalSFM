@@ -37,11 +37,11 @@ This script will :
 
 - Add the new library path to your local LD\_LIBRARY\_PATH
 - Add an export command of the new path in your .bashrc
-- Clone OpenCV with git in ulavalSFM_path/lib/ directory
+- Clone OpenCV with git in \<ulavalSFM_path\>/lib/ directory
 - Build OpenCV 2.4.9 and install it in the ulavalSFM directory
 - Build ulavalSFM and install it in ulavalSFM/bin/ directory
 
-It could take a while. You can add more worker cores by changing the argument after _make -j_
+It could take a while. You can add more worker cores by changing the argument after _make -j_ in the script.
 
 #### If you already have OpenCV on your computer:
 
@@ -53,7 +53,7 @@ make
 make install
 ```
 
-Those instructions will build ulavalSFM and install it in ulavalSFM/bin/ directory
+Those instructions will build ulavalSFM and install it in ulavalSFM/bin/ directory.
 
 
 
