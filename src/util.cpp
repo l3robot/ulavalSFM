@@ -266,3 +266,83 @@ void deleteDist(int* dist)
 	free(dist);
 }
 
+
+
+/* 
+*	Function : readSiftFile
+*	Description : delete a distribution
+*
+*	dist : the distribution to delete
+*/
+Mat readSiftFile(char* file, Mat &pts, int* fc)
+{
+	int num;
+
+	FILE* f = fopen(file, "r");
+
+	if(!f)
+	{
+		printf("HAAAAAAAaaaaaaaaaa !!!!! dammit...\n");
+		exit(1);
+	}
+
+	int garbage1[1];
+
+	float garbage2[1], pt, *pter;
+
+	fscanf(f, "%d %d", &num, garbage1);
+
+	*fc = num;
+
+	Mat descriptor(num, 128, CV_32F);
+	Mat t_pts(num, 2, CV_32F);
+
+	for(int i = 0; i < num; i++)
+	{
+		pter = t_pts.ptr<float>(i);
+
+		fscanf(f, "%f %f %f %f", &pter[0], &pter[1], garbage2, garbage2);
+
+		pter = descriptor.ptr<float>(i);
+
+		for(int j = 0; j < 128; j++)
+		{
+			fscanf(f, "%f", &pt);
+			pter[j] = pt;
+		} 
+
+	}
+	fclose(f);
+
+	pts = t_pts;
+	return descriptor;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

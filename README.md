@@ -38,6 +38,14 @@ Usage
 
 -m [dir] : Will do match using OpenCV 2.4.9. It uses knn search to find the two best matches and uses a ratio test of 0.8 to eliminate most of bad maches. Not implemented yet.
 
+Notes
+-----
+
+#### Sift format
+
+The four numbers before the descriptor in Lowe's sift file format are : | X coordinate | Y coordinate | scale | angle |
+Note that OpenCV does not give scale so I used size instead to make the format compatible with program like Changchang Wu's visualSFM which natively use the Lowe's format. This will not influence my program because we do not use scale in structure from motion, but keep it in mind if you want to use my sifts for other purpose. 
+
 Questions ? 
 -----------
 

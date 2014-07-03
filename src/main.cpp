@@ -75,6 +75,40 @@ int main(int argc, char* argv[])
 		case 16:
 		cout << endl;
 		cout << "Process(es) will do matches with " << o.cores << " core(s) on the " << BTOS(o.cluster) << ", working on \"" << o.dir.getPath() << "\" images." << endl << endl;
+		if (o.cores > 1)
+		{
+			if (o.cluster)
+			{
+				cout << "MPI - ON SUPERCOMPTER" << endl << endl;
+			}
+			else
+			{
+				cout << "MPI - ON COMPUTER" << endl << endl;
+				/*
+				o.dir.printInfo();
+				siftMCore(o.dir.getPath(), o.cores);
+				o.dir.update();
+				o.dir.printInfo();
+				*/
+			}
+		}
+		else
+		{
+			if (o.cluster)
+			{
+				cout << "NO MPI - ON SUPERCOMPTER" << endl << endl;
+			}
+			else
+			{
+				cout << "NO MPI - ON COMPUTER" << endl << endl;
+				/*
+				o.dir.printInfo();
+				sift1Core(o.dir);
+				o.dir.update();
+				o.dir.printInfo();
+				*/
+			}
+		}
 		break;
 		case 32:
 		cout << endl;
