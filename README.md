@@ -10,7 +10,7 @@ Last update : 07/02/2014
 What is ulavalSFM ?
 -------------------
 
-ulavalSFM is a free software manager to prepare and do structure from motion in a parallel way. It's in development. Now, only the sift part is implemented. The structure from motion will be based on bundlerSFM : https://github.com/soravux/bundler_sfm 
+ulavalSFM is a free software manager to prepare and do structure from motion in a parallel way. It's in development. Now, only the sift part is implemented. The structure from motion will be based on bundlerSFM : https://github.com/snavely/bundler_sfm 
 
 Usage
 -----
