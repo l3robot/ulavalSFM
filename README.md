@@ -5,7 +5,7 @@ Version : 1.0
 
 Author : Émile Robitaille @ LERobot
 
-Last update : 07/02/2014
+Last update : 07/03/2014
 
 What is ulavalSFM ?
 -------------------
