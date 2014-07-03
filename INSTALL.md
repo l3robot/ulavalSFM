@@ -53,7 +53,7 @@ make
 make install
 ```
 
-Those instructions will build ulavalSFM and install it in ulavalSFM/bin/ directory.
+Those instructions will build ulavalSFM and install it in \<ulavalSFM_path\>/bin/ directory.
 
 
 
