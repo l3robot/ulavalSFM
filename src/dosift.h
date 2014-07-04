@@ -15,6 +15,17 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <vector>
 
+#include "directory.h"
+
+
+/* 
+*	Struct : SFeatures
+*	Description : Information on sift features
+*
+*	int NF : number of features	
+*	std::vector<cv::KeyPoint> keys : keypoints carateristics
+*	cv::Mat des : keypoints descriptor
+*/
 struct SFeatures
 {
 	int NF;
@@ -23,7 +34,9 @@ struct SFeatures
 	cv::Mat des;
 
 	SFeatures()
-	{}
+	{
+		NF = 0;
+	}
 }; 
 
 

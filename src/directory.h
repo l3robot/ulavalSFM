@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+#define IMGLIST "images.txt"
+
 
 /* 
 *	Class : Directory
@@ -25,20 +27,23 @@
 *		Directory(char* p_path) : Constructor who assign a directory directly  
 *		void assign(char* p_path) : assign a directory
 *		void update() : update the directory info
+*		void createIMGlist() : list images in IMGFILE
 *		int getNBImages() const : get the number of images
-*		int getNBSifts() const : get the number of .sift files
+*		int getNBSifts() const : get the number of .key files
 *		int getNBMatches() const : get the number of .match files
 *		string getPath() const : get the directory path name
+*		string getCompressState() const : get the .key files compress state
 *		string getImage(int i) const : get the image path name
-*		string getSift(int i) const : get the .sift file path name
+*		string getSift(int i) const : get the .key file path name
 *		string getMatch(int i) const : get the .match file path name
 *		void printInfo() const : print a string with the attributes value
 *		
 *	Attributes :
 *
+*		int m_compress : indicate if the key files are compress or not
 *		String m_path : the directory path name
 *		vector<string> m_images : vector storing all images path
-*		vector<string> m_sifts : vector storing all .sift files path
+*		vector<string> m_sifts : vector storing all .key files path
 *		vector<string> m_matches : vector storing all .match files path
 */
 namespace util
@@ -53,6 +58,7 @@ public:
 
 	void assign(char* p_path);
 	void update();
+	void createIMGlist();
 	int getNBImages() const;
 	int getNBSifts() const;
 	int getNBMatches() const;

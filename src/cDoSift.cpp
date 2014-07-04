@@ -27,6 +27,8 @@
 using namespace std;
 using namespace util;
 
+
+
 int main(int argc, char* argv[])
 {
 	MPI_Init(&argc, &argv);
@@ -78,7 +80,7 @@ int main(int argc, char* argv[])
 			file.pop_back();
 		}
 
-		file.append("sift");
+		file.append("key");
 
 		writeSiftFile(file, container);
 

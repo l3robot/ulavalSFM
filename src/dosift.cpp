@@ -57,7 +57,7 @@ void doSift(const string &path, struct SFeatures &container)
 *	Function : WriteSiftFile
 *	Description : write the keypoints and their descriptor in the sift files (Lowe's binairy format)
 *	
-*	file : path of the .sift file
+*	file : path of the .key file
 *	container : container for sift keypoints and their descriptor
 */
 void writeSiftFile(const string &file, const struct SFeatures &container)
@@ -72,6 +72,7 @@ void writeSiftFile(const string &file, const struct SFeatures &container)
        	for(int j = 0; j < 128; j++)
        	{
        	fprintf(f, "%d ", (int)container.des.at<float>(i,j));
+       	if ((j + 1) % 19 == 0) fprintf(f, "\n");
        	}
        	fprintf(f, "\n");
     }
@@ -106,7 +107,7 @@ void sift1Core(const util::Directory &dir)
 			file.pop_back();
 		}
 
-		file.append("sift");
+		file.append("key");
 
 		writeSiftFile(file, container);
 

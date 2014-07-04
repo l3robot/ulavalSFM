@@ -47,11 +47,11 @@ Directory::Directory(char* p_path)
 		{
 			m_images.push_back(string(file->d_name));
 		}
-		else if(strstr(file->d_name, ".sift"))
+		else if(strstr(file->d_name, ".key"))
 		{
 			m_sifts.push_back(string(file->d_name));
 		}
-		else if(strstr(file->d_name, ".match"))
+		else if(strstr(file->d_name, ".init.txt"))
 		{
 			m_matches.push_back(string(file->d_name));
 		}
@@ -81,17 +81,19 @@ void Directory::assign(char* p_path)
 		{
 			m_images.push_back(string(file->d_name));
 		}
-		else if(strstr(file->d_name, ".sift"))
+		else if(strstr(file->d_name, ".key"))
 		{
 			m_sifts.push_back(string(file->d_name));
 		}
-		else if(strstr(file->d_name, ".match"))
+		else if(strstr(file->d_name, ".init.txt"))
 		{
 			m_matches.push_back(string(file->d_name));
 		}
 	}
 
 	closedir(dir);
+
+	createIMGlist();
 }
 
 void Directory::update()
@@ -115,17 +117,42 @@ void Directory::update()
 		{
 			m_images.push_back(string(file->d_name));
 		}
-		else if(strstr(file->d_name, ".sift"))
+		else if(strstr(file->d_name, ".key"))
 		{
 			m_sifts.push_back(string(file->d_name));
 		}
-		else if(strstr(file->d_name, ".match"))
+		else if(strstr(file->d_name, ".init.txt"))
 		{
 			m_matches.push_back(string(file->d_name));
 		}
 	}
 
 	closedir(dir);
+}
+
+void Directory::createIMGlist()
+{
+	string file(m_path);
+
+	file.append(IMGLIST);
+
+	FILE* f = fopen(file.c_str(), "wb");
+
+	string img("./");
+
+	for (int i = 0; i < m_images.size(); i++)
+	{
+		img.append(getImage(i));
+
+		fprintf(f, "%s\n", img.c_str());
+
+		while (img[img.size() - 1] != '/')
+		{
+			img.pop_back();
+		}
+	}
+
+	fclose(f);
 }
 
 int Directory::getNBImages() const

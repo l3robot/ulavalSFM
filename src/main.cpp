@@ -16,6 +16,7 @@
 
 #include "util.h"
 #include "dosift.h"
+#include "domatch.h"
 
 using namespace std;
 
@@ -83,13 +84,10 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				cout << "MPI - ON COMPUTER" << endl << endl;
-				/*
 				o.dir.printInfo();
-				siftMCore(o.dir.getPath(), o.cores);
+				matchMCore(o.dir.getPath(), o.cores);
 				o.dir.update();
 				o.dir.printInfo();
-				*/
 			}
 		}
 		else
@@ -100,13 +98,10 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				cout << "NO MPI - ON COMPUTER" << endl << endl;
-				/*
 				o.dir.printInfo();
-				sift1Core(o.dir);
+				match1Core(o.dir);
 				o.dir.update();
 				o.dir.printInfo();
-				*/
 			}
 		}
 		break;
