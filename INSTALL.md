@@ -5,7 +5,11 @@ Version : 1.5
 
 Author : Émile Robitaille @ LERobot
 
+<<<<<<< HEAD
 Last update : 07/04/2014
+=======
+Last update : 07/03/2014
+>>>>>>> FETCH_HEAD
 
 DEPENDENCIES
 ------------
