@@ -1,16 +1,16 @@
 ulavalSFM
 =========
 
-Version : 1.5
+Version : 2.0
 
 Author : Émile Robitaille @ LERobot
 
-Last update : 07/04/2014
+Last update : 07/10/2014
 
 What is ulavalSFM ?
 -------------------
 
-ulavalSFM is a free software manager to prepare and do structure from motion in a parallel way. It's in development. Now, only the sift on 1 and multi cores and the matching part on 1 core are implemented. The structure from motion will be based on bundlerSFM : https://github.com/snavely/bundler_sfm. BundlerSFM will though recognize the sift compress with gzip (you have to do that for now) and match natively.  
+ulavalSFM is a free software manager to prepare and do structure from motion in a parallel way. It's in development. Now, only the sift and the matching part are implemented. The structure from motion will be based on bundlerSFM : https://github.com/snavely/bundler_sfm. BundlerSFM will though recognize the sift compress with gzip (you have to do that for now) and match natively.  
 
 Usage
 -----
@@ -36,7 +36,7 @@ Usage
 
 -s [dir] : Will do sift detection using OpenCV 2.4.9 implementation and write the features in a Lowe's binairy format.
 
--m [dir] : Will do match using OpenCV 2.4.9. It uses knn search to find the two best matches and uses a ratio test of 0.8 to eliminate most of bad maches. Not implemented yet.
+-m [dir] : Will do match using OpenCV 2.4.9. It uses knn search to find the two best matches and uses a ratio test of 0.6 to eliminate most of bad maches.
 
 Notes
 -----
