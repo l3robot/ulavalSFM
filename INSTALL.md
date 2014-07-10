@@ -1,11 +1,11 @@
 ulavalSFM installation
 ----------------------
 
-Version : 1.5
+Version : 2.0
 
 Author : Émile Robitaille @ LERobot
 
-Last update : 07/04/2014
+Last update : 07/10/2014
 
 DEPENDENCIES
 ------------
