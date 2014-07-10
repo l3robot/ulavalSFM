@@ -51,7 +51,7 @@ void listDir(const util::Directory &dir);
 //MPI distribution functions
 int* createDist(const util::Directory &dir, int netSize);
 void deleteDist(int* dist);
-
+int* createDist4Match(int numimages, int numcore);
 
 
 

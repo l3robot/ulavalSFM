@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	MPI_Comm_size(MPI_COMM_WORLD, &netSize);
 	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
 
-	Directory dir(argv[1]);
+	util::Directory dir(argv[1]);
 	struct SFeatures container;
 	string file(argv[1]);
 
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 
 	if(netID == 0)
 	{
-		printf("Le programme a pris environ %f secondes\n", MPI_Wtime() - the_time);
+		printf("The program takes approximately %f second(s)\n", MPI_Wtime() - the_time);
 	}
 
 	MPI_Finalize();

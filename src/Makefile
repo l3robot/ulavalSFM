@@ -12,6 +12,7 @@
 all: main.o util.o directory.o dosift.o cDoSift.cpp domatch.o 
 	g++ main.o util.o dosift.o domatch.o directory.o -gdwarf-2 --std=c++11 -o ulavalSFM -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
 	mpic++ cDoSift.cpp util.o directory.o dosift.o -gdwarf-2 --std=c++11 -o cDoSift -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
+	mpic++ cDoMatch.cpp util.o directory.o dosift.o domatch.o -gdwarf-2 --std=c++11 -o cDoMatch -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
 
 main.o: main.cpp util.h dosift.h domatch.h
 	g++ -gdwarf-2 --std=c++11 -c main.cpp -o main.o -I../include/
@@ -34,3 +35,4 @@ clean:
 install:
 	cp ulavalSFM ../bin/
 	cp cDoSift ../bin/
+	cp cDoMatch ../bin/

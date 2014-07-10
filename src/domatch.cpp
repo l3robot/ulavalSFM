@@ -24,8 +24,6 @@
 #include "dosift.h"
 #include "directory.h"
 
-#define MATCHFILE "matches.init.txt"
-
 using namespace std;
 using namespace cv;
 
@@ -50,7 +48,7 @@ void readSiftFile(const string &file, SFeatures &container)
 
 	float garbage, *pter;
 
-	fscanf(f, "%d %d", &container.NF, &garbage);
+	fscanf(f, "%d %f", &container.NF, &garbage);
 
 	Mat descriptor(container.NF, 128, CV_32F);
 	KeyPoint key;

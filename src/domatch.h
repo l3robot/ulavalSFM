@@ -18,6 +18,10 @@
 #include "dosift.h"
 #include "directory.h"
 
+#define MATCHFILE "matches.init.txt"
+#define BOSS 0
+#define SECRETARY 0
+
 /* 
 *	Struct : Matches
 *	Description : Information on matches
@@ -50,11 +54,6 @@ void writeMatchFile(FILE* f, const Matches &container, int i, int j);
 void match1Core(const util::Directory &dir);
 void matchMCore(const std::string &path, int numcore);
 void matchMCCore(const std::string &path, int numcore);
-
-
-
-
-
 
 
 

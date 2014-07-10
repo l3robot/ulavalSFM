@@ -266,9 +266,33 @@ void deleteDist(int* dist)
 	free(dist);
 }
 
+int* createDist4Match(int numimages, int numcore)
+{
+	int numtask = numimages * (numimages - 1) / 2;
 
+	int* dist = (int*) malloc(2 * numcore * sizeof(int));
 
+	int distFactor = numtask / (numcore - 1); 
+	int distError = numtask % (numcore - 1);
 
+	dist[0] = -1;
+	dist[1] = 0;
+
+	for (int i = 2; i < 2 * numcore; i+=2)
+	{
+		dist[i] = dist[i - 1];
+		if (i / 2 <= distError)
+		{
+			dist[i + 1] = dist[i] + distFactor + 1;
+		}
+		else
+		{
+			dist[i + 1] = dist[i] + distFactor;
+		}
+	}
+
+	return dist;
+}
 
 
 
