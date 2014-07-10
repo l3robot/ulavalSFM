@@ -39,7 +39,7 @@ This script will :
 - Add an export command of the new path in your .bashrc
 - Clone OpenCV with git in \<ulavalSFM_path\>/lib/ directory
 - Build OpenCV 2.4.9 and install it in the ulavalSFM directory
-- Build ulavalSFM and install it in ulavalSFM/bin/ directory
+- Build ulavalSFM and install it in \<ulavalSFM_path\>/bin/ directory
 
 It could take a while. You can add more worker cores by changing the argument after _make -j_ in the script.
 
