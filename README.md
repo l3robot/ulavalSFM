@@ -10,7 +10,7 @@ Last update : 07/22/2014
 What is ulavalSFM ?
 -------------------
 
-ulavalSFM is a free software manager to prepare and do structure from motion in a parallel way. It's in development. Now, only the sift and the matching part are implemented. The structure from motion will be based on bundlerSFM : https://github.com/snavely/bundler_sfm. My version of BundlerSFM will though recognize the "ulavalSFM" file and the new "matches.init.txt" file. For now, do all the 3 preparation parts on multiple cores with ulavalSFM, cd in the working directory and launch the modified "bundler.py" script available in my forked bundlerSFM repo.   
+ulavalSFM is a free software manager to prepare and do structure from motion in a parallel way. It's in development. Now, only the sift and the matching part are implemented. The structure from motion will be based on bundlerSFM : https://github.com/snavely/bundler_sfm. My version of BundlerSFM will though recognize the "ulavalSFM.txt" file and the new "matches.init.txt" file. For now, do all the 3 preparation parts on multiple cores with ulavalSFM, cd in the working directory and launch the modified "bundler.py" script available in my forked bundlerSFM repo.   
 
 Usage
 -----
