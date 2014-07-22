@@ -14,8 +14,14 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <vector>
+#include <string>
 
 #include "directory.h"
+
+#define F_NO_N -1
+#define F_KEYS 1
+#define F_DES 2
+#define F_ALL 3
 
 
 /* 
@@ -36,6 +42,42 @@ struct SFeatures
 	SFeatures()
 	{
 		NF = 0;
+	}
+
+	void reset()
+	{
+		NF = 0;
+		keys.clear();
+	}
+
+	void print(int c, int n)
+	{
+		if (n < 0)
+		{
+			if (c & 1)
+			{
+				std::cout << std::endl;
+				std::cout << "Header : " << std::endl;
+				int size = keys.size();
+				for (int i = 0; i < size; i++)
+					std::cout << "( " << keys[i].pt.x << ", " << keys[i].pt.y << ")" << std::endl;
+			}
+			if (c & 2)
+			{
+				std::cout << std::endl;
+				std::cout << "Descriptor : " << std::endl;
+				std::cout << des << std::endl;	
+			}
+		}
+		else
+		{
+			if (c & 1)
+			{
+				std::cout << std::endl;
+				std::cout << "Header [" << n << "] :" << std::endl;
+				std::cout << "( " << keys[n].pt.x << ", " << keys[n].pt.y << ")" << std::endl;
+			}
+		}
 	}
 }; 
 

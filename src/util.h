@@ -52,10 +52,6 @@ void listDir(const util::Directory &dir);
 int* createDist(const util::Directory &dir, int netSize);
 void deleteDist(int* dist);
 int* createDist4Match(int numimages, int numcore);
-
-
-
-
-
+int* createDist4Geometry(int NP, int netSize);
 
 #endif

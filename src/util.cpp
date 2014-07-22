@@ -120,8 +120,21 @@ void parseArgs(int argc, char* argv[], Opts &o)
 						o.choice = o.choice & 0;
 					}
 					break;
-					case 'a':
+					case 'g':
 					o.choice = o.choice | 32;
+					i++;
+					if(i < argc)
+					{
+						o.dir.assign(argv[i]);
+					}
+					else
+					{
+						i = argc;
+						o.choice = o.choice & 0;
+					}
+					break;
+					case 'a':
+					o.choice = o.choice | 64;
 					i++;
 					if(i < argc)
 					{
@@ -181,6 +194,7 @@ void printHelp()
 	cout << "-n [1-*]     : Specify the number of core(s) wanted (default 1, means no mpi)" << endl;
 	cout << "-s [dir]     : To find sift features of the directory images" << endl;
 	cout << "-m [dir]     : To match sift features of the directory images" << endl;
+	cout << "-g [dir]     : To compute geometric constraints of the directory images" << endl;
 	cout << "-a [dir]     : Do \"-s dir\" and then \"-m dir\"" << endl << endl;
 	cout << "Refer to README file for more information about the version" << endl << endl;
 }
@@ -266,6 +280,13 @@ void deleteDist(int* dist)
 	free(dist);
 }
 
+/* 
+*	Function : createDist4Match
+*	Description : create a distribution for the mpi workers
+*
+*	numimages : number of images
+*	netSize : size of network
+*/
 int* createDist4Match(int numimages, int numcore)
 {
 	int numtask = numimages * (numimages - 1) / 2;
@@ -295,7 +316,47 @@ int* createDist4Match(int numimages, int numcore)
 }
 
 
+/* 
+*	Function : createDist4Geometry
+*	Description : create a distribution for the mpi workers
+*
+*	NP : number of pairs
+*	netSize : size of network
+*/
+int* createDist4Geometry(int NP, int netSize)
+{
+	int* dist = (int*) malloc(2 * netSize * sizeof(int));
 
+	int factor = NP / (netSize - 1);
+	int error = NP % (netSize - 1);
+
+	dist[2] = 0;
+
+	if (error > 0)
+	{
+		dist[3] = factor + 1;
+	}
+	else
+	{
+		dist[3] = factor;
+	}
+
+	for(int i = 4; i < 2 * netSize; i+=2)
+	{
+		dist[i] = dist[i - 1];
+		
+		if (i / 2 < error)
+		{
+			dist[i + 1] = dist[i] + factor + 1;
+		}
+		else
+		{
+			dist[i + 1] = dist[i] + factor;
+		}
+	}
+
+	return dist;
+}
 
 
 

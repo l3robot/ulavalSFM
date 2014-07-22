@@ -81,7 +81,7 @@ void writeSiftFile(const string &file, const struct SFeatures &container)
 }
 
 /* 
-*	Function : Sift1Core
+*	Function : sift1Core
 *	Description : Find sift points and write those in files
 *	
 *	dir : directory information
@@ -121,7 +121,7 @@ void sift1Core(const util::Directory &dir)
 }
 
 /* 
-*	Function : SiftMCore
+*	Function : siftMCore
 *	Description : start to find sift point with OpenMPI on the given number of cores
 *	
 *	path : working directory
@@ -131,7 +131,7 @@ void siftMCore(const string &path, int numcore)
 {
 	stringstream c;
 
-	c << "mpirun -n " << numcore << " ./cDoSift " << path;
+	c << "mpirun -n " << numcore << " cDoSift " << path;
 
 	string command = c.str();
 
@@ -139,7 +139,7 @@ void siftMCore(const string &path, int numcore)
 }
 
 /* 
-*	Function : SiftCMCore
+*	Function : siftCMCore
 *	Description : start to find sift point with OpenMPI on the given number of cores and on the supercomputer
 *	
 *	path : working directory

@@ -35,30 +35,6 @@ using namespace cv;
 
 
 /* 
-*	Function : listDir
-*	Description : to make a list of .key file path
-*	
-*	dir : directory information
-*	list : vector of path which will be created
-*/
-void listDir(const util::Directory &dir, vector<string> &list)
-{
-	string path(dir.getPath());
-
-	int numimages = dir.getNBImages();
-
-	for(int i = 0; i < numimages; i++)
-	{
-		path.append(dir.getImage(i));
-		while(path[path.size() - 1] != '.') path.pop_back();
-		path.append("key");
-		list.push_back(path);
-		while(path[path.size() - 1] != '/') path.pop_back();
-	}
-}
-
-
-/* 
 *	Function : boss
 *	Description : code for the boss
 *	
@@ -157,7 +133,7 @@ void worker(const util::Directory &dir, int* recv)
 			readSiftFile(list[i], keys1);
 		}
 
-		for (int j = i + 1; j < numimages; j++)
+		for (int j = 0; j < i; j++)
 		{
 
 			if(seek == aim){readSiftFile(list[i], keys1);compute=1;}
@@ -168,9 +144,9 @@ void worker(const util::Directory &dir, int* recv)
 
 				doMatch(keys1, keys2, container);
 
-				serialMatch = serializeVector(container.matches, i, j);
+				serialMatch = serializeVector(container.matches, j, i);
 
-				cout << "[CORE " << netID << "]: " << container.NM << " match(es) found between " << dir.getImage(i) << " and " << dir.getImage(j) << endl;
+				cout << "[CORE " << netID << "]: " << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
 
 				container.reset();
 
@@ -191,18 +167,18 @@ void worker(const util::Directory &dir, int* recv)
 
 /* 
 *	Function : writeSerialMatch
-*	Description : code to write in the file from a serial structure
+*	Description : code to write in the file from a serial matches structure
 *	
 *	f : file descriptor
 *	serialMatches : serial structure
-*	i : images 1 index
-*	j : images 2 index
 */
 void writeSerialMatch(FILE* f, float* serialMatches)
 {
 	fprintf(f, "%d %d\n%d\n", (int) serialMatches[2], (int) serialMatches[3], (int) serialMatches[1]);
 
-	for(int i = 4; i < serialMatches[1] * 2; i+=2)
+	int end = (int) serialMatches[1] * 2 + 4;
+
+	for(int i = 4; i < end; i+=2)
 	{
 		fprintf(f, "%d %d\n", (int) serialMatches[i], (int) serialMatches[i+1]);
 	}
@@ -242,10 +218,12 @@ float* recvFromWorker()
 *	Function : secretary
 *	Description : code for the secretary
 *	
+*	path : directory path
 *	numcore : number of cores
 */
 void secretary(const string &path, int numcore)
 {
+	vector<float*> v_serialMatch;
 	float* serialMatch;
 
 	int end = 0;
@@ -261,15 +239,23 @@ void secretary(const string &path, int numcore)
 	{
 		if (serialMatch)
 		{
-			//printf("--> Écriture dans le fichier\n");
-			writeSerialMatch(f, serialMatch);
-			free(serialMatch);
+			v_serialMatch.push_back(serialMatch);
 		}
 		else
 		{
 			end++;
 		}
 		serialMatch = recvFromWorker();
+	}
+
+	cout << "--> Écriture dans le fichier..." << endl;
+
+	end = v_serialMatch.size();
+
+	for (int i = 0; i < end; i++)
+	{
+		writeSerialMatch(f, v_serialMatch[i]);
+		free(v_serialMatch[i]);
 	}
 
 	fclose(f);

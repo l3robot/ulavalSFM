@@ -27,6 +27,30 @@
 using namespace std;
 using namespace cv;
 
+
+/* 
+*	Function : listDir
+*	Description : to make a list of .key file path
+*	
+*	dir : directory information
+*	list : vector of path which will be created
+*/
+void listDir(const util::Directory &dir, vector<string> &list)
+{
+	string path(dir.getPath());
+
+	int numimages = dir.getNBImages();
+
+	for(int i = 0; i < numimages; i++)
+	{
+		path.append(dir.getImage(i));
+		while(path[path.size() - 1] != '.') path.pop_back();
+		path.append("key");
+		list.push_back(path);
+		while(path[path.size() - 1] != '/') path.pop_back();
+	}
+}
+
 /* 
 *	Function : readSiftFile
 *	Description : read a .sift file
@@ -83,13 +107,12 @@ void readSiftFile(const string &file, SFeatures &container)
 */
 void doMatch(const SFeatures &img1, const SFeatures &img2, Matches &container, float ratio)
 {
-	FlannBasedMatcher matcher;
+	FlannBasedMatcher matcher(new flann::KDTreeIndexParams(16), new flann::SearchParams(64));
 	vector<vector<DMatch> > two_matches;
-	float* pter;
 
-	matcher.knnMatch(img1.des, img2.des, two_matches, 2);
+	matcher.knnMatch(img2.des, img1.des, two_matches, 2);
 
-	for(int i = 0; i < img1.des.rows; i++)
+	for(int i = 0; i < img2.des.rows; i++)
 	{
 		if(two_matches[i][0].distance < ratio * two_matches[i][1].distance)
 		{
@@ -109,9 +132,9 @@ void doMatch(const SFeatures &img1, const SFeatures &img2, Matches &container, f
 *	i : index i
 *	j : index j
 */
-void writeMatchFile(FILE* f, const Matches &container, int i, int j)
+void writeMatchFile(FILE* f, const Matches &container, int j, int i)
 {
-	fprintf(f, "%d %d\n", i, j);
+	fprintf(f, "%d %d\n", j, i);
 	fprintf(f, "%d\n", container.NM);
 
 	for(int i = 0; i < container.NM; i++)
@@ -147,7 +170,7 @@ void match1Core(const util::Directory &dir)
 	int NBImages = dir.getNBImages();
 
 	cout << endl;
-
+	
 	for(int i = 0; i < NBImages; i++)
 	{
 		file.append(dir.getImage(i));
@@ -166,7 +189,7 @@ void match1Core(const util::Directory &dir)
 			file.pop_back();
 		}
 
-		for(int j = i + 1; j < NBImages; j++)
+		for(int j = 0; j < i; j++)
 		{
 			file.append(dir.getImage(j));
 
@@ -181,9 +204,9 @@ void match1Core(const util::Directory &dir)
 
 			doMatch(img1, img2, container);
 
-			cout << container.NM << " match(es) found between " << dir.getImage(i) << " and " << dir.getImage(j) << endl;
+			cout << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
 	
-			writeMatchFile(f, container, i, j);
+			if (container.NM >= 16) writeMatchFile(f, container, j, i);
 
 			container.reset();
 
@@ -210,7 +233,7 @@ void matchMCore(const string &path, int numcore)
 {
 	stringstream c;
 
-	c << "mpirun -n " << numcore << " ./cDoMatch " << path;
+	c << "mpirun -n " << numcore << " cDoMatch " << path;
 
 	string command = c.str();
 

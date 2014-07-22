@@ -17,6 +17,7 @@
 #include "util.h"
 #include "dosift.h"
 #include "domatch.h"
+#include "dogeometry.h"
 
 using namespace std;
 
@@ -107,7 +108,71 @@ int main(int argc, char* argv[])
 		break;
 		case 32:
 		cout << endl;
-		cout << "Process(es) will do sift and matches with " << o.cores << " core(s) on the " << BTOS(o.cluster) << ", working on \"" << o.dir.getPath() << "\" images." << endl << endl;
+		cout << "Process(es) will compute geometric constraints with " << o.cores << " core(s) on the " << BTOS(o.cluster) << ", working on \"" << o.dir.getPath() << "\" images." << endl << endl;
+		if (o.cores > 1)
+		{
+			if (o.cluster)
+			{
+				cout << "MPI - ON SUPERCOMPTER" << endl << endl;
+			}
+			else
+			{
+				o.dir.printInfo();
+				geometryMCore(o.dir.getPath(), o.cores);
+				o.dir.update();
+				o.dir.printInfo();
+			}
+		}
+		else
+		{
+			if (o.cluster)
+			{
+				cout << "NO MPI - ON SUPERCOMPTER" << endl << endl;
+			}
+			else
+			{
+				o.dir.printInfo();
+				geometry1Core(o.dir);
+				o.dir.update();
+				o.dir.printInfo();
+			}
+		}
+		break;
+		case 64:
+		cout << endl;
+		cout << "Process(es) will do sift, matches and geomtry with " << o.cores << " core(s) on the " << BTOS(o.cluster) << ", working on \"" << o.dir.getPath() << "\" images." << endl << endl;
+		if (o.cores > 1)
+		{
+			if (o.cluster)
+			{
+				cout << "MPI - ON SUPERCOMPTER" << endl << endl;
+			}
+			else
+			{
+				o.dir.printInfo();
+				siftMCore(o.dir.getPath(), o.cores);
+				matchMCore(o.dir.getPath(), o.cores);
+				geometryMCore(o.dir.getPath(), o.cores);
+				o.dir.update();
+				o.dir.printInfo();
+			}
+		}
+		else
+		{
+			if (o.cluster)
+			{
+				cout << "NO MPI - ON SUPERCOMPTER" << endl << endl;
+			}
+			else
+			{
+				o.dir.printInfo();
+				sift1Core(o.dir);
+				match1Core(o.dir);
+				geometry1Core(o.dir);
+				o.dir.update();
+				o.dir.printInfo();
+			}
+		}
 		break;
 		default:
 		printError();

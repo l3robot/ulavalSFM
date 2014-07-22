@@ -9,10 +9,11 @@
 
 .SUFFIXES:
 
-all: main.o util.o directory.o dosift.o cDoSift.cpp domatch.o 
-	g++ main.o util.o dosift.o domatch.o directory.o -gdwarf-2 --std=c++11 -o ulavalSFM -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
+all: main.o util.o directory.o dosift.o cDoSift.cpp domatch.o dogeometry.o
+	g++ main.o util.o dosift.o domatch.o dogeometry.o directory.o -gdwarf-2 --std=c++11 -o ulavalSFM -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
 	mpic++ cDoSift.cpp util.o directory.o dosift.o -gdwarf-2 --std=c++11 -o cDoSift -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
 	mpic++ cDoMatch.cpp util.o directory.o dosift.o domatch.o -gdwarf-2 --std=c++11 -o cDoMatch -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
+	mpic++ cDoGeometry.cpp util.o directory.o domatch.o dogeometry.o -gdwarf-2 --std=c++11 -o cDoGeometry -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
 
 main.o: main.cpp util.h dosift.h domatch.h
 	g++ -gdwarf-2 --std=c++11 -c main.cpp -o main.o -I../include/
@@ -26,13 +27,21 @@ directory.o: directory.cpp directory.h util.h
 dosift.o: dosift.cpp dosift.h directory.h
 	g++ -gdwarf-2 --std=c++11 -c dosift.cpp -o dosift.o -I../include/
 
-domatch.o: domatch.cpp domatch.h directory.h
+domatch.o: domatch.cpp domatch.h dosift.h directory.h
 	g++ -gdwarf-2 --std=c++11 -c domatch.cpp -o domatch.o -I../include/
+
+dogeometry.o: dogeometry.cpp dogeometry.h domatch.h directory.h
+	g++ -gdwarf-2 --std=c++11 -c dogeometry.cpp -o dogeometry.o -I../include/
 
 clean:
 	rm -rf *.o
 
 install:
 	cp ulavalSFM ../bin/
+	cp ulavalSFM /usr/local/bin/
 	cp cDoSift ../bin/
+	cp cDoSift /usr/local/bin/
 	cp cDoMatch ../bin/
+	cp cDoMatch /usr/local/bin/
+	cp cDoGeometry ../bin/
+	cp cDoGeometry /usr/local/bin/

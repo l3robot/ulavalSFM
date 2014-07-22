@@ -11,6 +11,7 @@
 #define DOMATCH
 
 #include <vector>
+#include <string>
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/features2d/features2d.hpp>
@@ -48,6 +49,7 @@ struct Matches
 
 };
 
+void listDir(const util::Directory &dir, std::vector<std::string> &list);
 void readSiftFile(const std::string &file, SFeatures &container);
 void doMatch(const SFeatures &img1, const SFeatures &img2, Matches &container, float ratio = 0.6);
 void writeMatchFile(FILE* f, const Matches &container, int i, int j);
@@ -55,7 +57,16 @@ void match1Core(const util::Directory &dir);
 void matchMCore(const std::string &path, int numcore);
 void matchMCCore(const std::string &path, int numcore);
 
-
-
-
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
