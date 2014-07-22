@@ -24,7 +24,8 @@ Usage
 * -n [1-*]     : Specify the number of core(s) wanted (default 1, means no mpi)
 * -s [dir]     : To find sift features of the directory images
 * -m [dir]     : To match sift features of the directory images
-* -a [dir]     : Do "-s dir" and then "-m dir"
+* -g [dir]     : To compute geometric constraints on the directory images
+* -a [dir]     : Do "-s dir", "-m dir" and then "-g dir"
 
 #### More details :
 
@@ -37,6 +38,8 @@ Usage
 -s [dir] : Will do sift detection using OpenCV 2.4.9 implementation and write the features in a Lowe's binairy format.
 
 -m [dir] : Will do match using OpenCV 2.4.9. It uses knn search to find the two best matches and uses a ratio test of 0.6 to eliminate most of bad maches.
+
+-g [dir] : It will pruned the double matches, pruned the outliers with a fundamental matrix found using RANSAC and compute geometric constraints needed by bundlerSFM to begin the structure from motion with a homographic matrix found using RANSAC as well. I use OpenCV to compute the matrix and the inliers.
 
 Notes
 -----
