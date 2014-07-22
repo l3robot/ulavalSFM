@@ -1,11 +1,11 @@
 ulavalSFM installation
 ----------------------
 
-Version : 2.0
+Version : 3.0
 
 Author : Émile Robitaille @ LERobot
 
-Last update : 07/10/2014
+Last update : 07/22/2014
 
 DEPENDENCIES
 ------------
@@ -42,6 +42,8 @@ This script will :
 - Build ulavalSFM and install it in \<ulavalSFM_path\>/bin/ directory
 
 It could take a while. You can add more worker cores by changing the argument after _make -j_ in the script.
+
+Note that is better to install it with a package management system, but if you are on a supercomputer and thus you don't have the permission, this script can save you time.
 
 #### If you already have OpenCV on your computer:
 
