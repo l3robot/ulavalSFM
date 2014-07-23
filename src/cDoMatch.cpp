@@ -15,6 +15,7 @@
 #include <vector>
 #include <dirent.h>
 #include <time.h>
+#include <unistd.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
@@ -160,7 +161,7 @@ void worker(const util::Directory &dir, int* recv)
 		}
 	}
 
-	//MPI_Buffer_detach(buf, &size);
+	MPI_Buffer_detach(buf, &size);
 	endComm(SECRETARY);
 }
 
@@ -191,16 +192,17 @@ void writeSerialMatch(FILE* f, float* serialMatches)
 float* recvFromWorker()
 {
 	MPI_Status status;
-	float* serialMatch;
+	float* serialMatch; 
+	float garbage;
 	int sender, s;
 
 	MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
 	int tag = status.MPI_TAG;
+	sender = status.MPI_SOURCE;
 
 	if(tag > 0)
 	{
-		sender = status.MPI_SOURCE;
 		MPI_Get_count(&status, MPI_FLOAT, &s);
 
 		serialMatch = (float*) malloc(s * sizeof(float));
@@ -208,6 +210,7 @@ float* recvFromWorker()
 	}
 	else
 	{
+		MPI_Recv(&garbage, 1, MPI_FLOAT, sender, tag, MPI_COMM_WORLD, &status);
 		serialMatch = NULL;
 	}
 
@@ -233,10 +236,9 @@ void secretary(const string &path, int numcore)
 
 	FILE* f = fopen(file.c_str(), "w");
 
-	serialMatch = recvFromWorker();
-
 	while(end < numcore)
 	{
+		serialMatch = recvFromWorker();
 		if (serialMatch)
 		{
 			v_serialMatch.push_back(serialMatch);
@@ -245,7 +247,6 @@ void secretary(const string &path, int numcore)
 		{
 			end++;
 		}
-		serialMatch = recvFromWorker();
 	}
 
 	cout << "--> Écriture dans le fichier..." << endl;
@@ -321,8 +322,6 @@ int main(int argc, char** argv)
 	{
 		printf("The program takes approximately %f second(s)\n", MPI_Wtime() - the_time);
 	}
-
-	MPI_Barrier(MPI_COMM_WORLD);
 
 	MPI_Finalize();
 

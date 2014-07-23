@@ -219,6 +219,7 @@ float* recvFromWorker()
 {
 	MPI_Status status;
 	float* serialMatchespp;
+	float garbage;
 	int sender, s;
 
 	MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -235,6 +236,7 @@ float* recvFromWorker()
 	}
 	else
 	{
+		MPI_Recv(&garbage, 1, MPI_FLOAT, sender, tag, MPI_COMM_WORLD, &status);
 		serialMatchespp = NULL;
 	}
 
@@ -311,12 +313,11 @@ void secretary(const string &path, int numcore)
 	vector<float*> v_serialMatchespp;
 	float* serialMatchespp;
 
-	int end = 0;
-
-	serialMatchespp = recvFromWorker();
+	int end = 1;
 
 	while(end < numcore)
 	{
+		serialMatchespp = recvFromWorker();
 		if (serialMatchespp)
 		{
 			v_serialMatchespp.push_back(serialMatchespp);
@@ -325,7 +326,6 @@ void secretary(const string &path, int numcore)
 		{
 			end++;
 		}
-		serialMatchespp = recvFromWorker();
 	}
 
 	cout << "--> Écriture dans le fichier..." << endl;
