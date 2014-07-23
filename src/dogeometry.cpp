@@ -133,7 +133,6 @@ void readMatchFile(const string &path, struct Constraints &container)
 	file.append(MATCHFILE);
 
 	FILE* f = fopen(file.c_str(), "r");
-	FILE* fil = fopen("test.out", "w");
 
 	if(!f)
 	{
@@ -367,7 +366,7 @@ void writeConstraints(const string &path, const vector<struct Matchespp> &contai
 	string file1(path);
 	string file2(path);
 
-	file1.append("matches2.init.txt");
+	file1.append("matches.init.txt");
 	file2.append("ulavalSFM.txt");
 
 	FILE *f1 = fopen(file1.c_str(), "wb");

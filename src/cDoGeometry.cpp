@@ -225,10 +225,10 @@ float* recvFromWorker()
 	MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
 	int tag = status.MPI_TAG;
+	sender = status.MPI_SOURCE;
 
 	if(tag > 0)
 	{
-		sender = status.MPI_SOURCE;
 		MPI_Get_count(&status, MPI_FLOAT, &s);
 
 		serialMatchespp = (float*) malloc(s * sizeof(float));
@@ -282,7 +282,7 @@ void writeSerialMatchespp(const string &path, const vector<float*> &container)
 		if(container[i][num] > 0)
 		{
 			NT++;
-
+			//BUG À RÉGLER ICI
 			fprintf(f2, "%d %d\n", (int) container[i][1], (int) container[i][2]);
 
 	        fprintf(f2, "%d\n", (int) container[i][num]);
