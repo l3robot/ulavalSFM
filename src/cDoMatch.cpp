@@ -226,7 +226,7 @@ void secretary(const string &path, int numcore)
 	vector<float*> v_serialMatch;
 	float* serialMatch;
 
-	int end = 0;
+	int end = 1;
 
 	string file(path);
 	file.append(MATCHFILE);
