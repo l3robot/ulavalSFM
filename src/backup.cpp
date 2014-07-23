@@ -394,7 +394,8 @@ float distancePL(float point[2], float line[3])
 	return (abs(line[0] * point[0] + line[1] * point[1] + line[2]) / sqrt(line[0] * line[0] + line[1] * line[1]));
 }
 
-double distancePL(double *F, float r[2], float l[2]) {
+double distancePL(double *F, float r[2], float l[2]) 
+{
     double Fl[3], Fr[3], pt;    
 
 #if 1
@@ -418,4 +419,52 @@ double distancePL(double *F, float r[2], float l[2]) {
 	 1.0 / (Fr[0] * Fr[0] + Fr[1] * Fr[1])) *
 	(pt * pt);
 }
+
+
+int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, vector<DMatch> &list, float treshold)
+{
+	Mat fMatrix;
+
+	int nummatch = list.size();
+
+	vector<Point2f> pts1, pts2;
+
+	Mat mask;
+
+	vector<DMatch> new_list;
+
+	int NI = 0;
+
+	if(!treshold) printf("\nPoint : \n");
+	 
+	for(int i = 0; i < nummatch; i++)
+	{
+		pts1.push_back(Point2f(keys1[list[i].queryIdx].pt.x, keys1[list[i].queryIdx].pt.y));
+		pts2.push_back(Point2f(keys2[list[i].trainIdx].pt.x, keys2[list[i].trainIdx].pt.y));
+
+		if(!treshold) printf("(%f, %f) ; (%f, %f)\n", pts1[i].x, pts1[i].y, pts2[i].x, pts2[i].y);
+
+		printf("(%f, %f) ; (%f, %f)\n", pts1[i].x, pts1[i].y, pts2[i].x, pts2[i].y);
+	}
+
+	exit(1);
+
+	if(!treshold) printf("\n");
+
+	fMatrix = findFundamentalMat(pts1, pts2, FM_RANSAC, 3.0, 0.99, mask);
+
+	for (int i = 0; i < nummatch; i++)
+	{
+		if(mask.at<uchar>(i))
+		{
+			new_list.push_back(list[i]);
+			NI++;
+		}
+	}
+
+	list = new_list;
+	
+	return NI;
+}
+
 

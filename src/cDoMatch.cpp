@@ -115,7 +115,7 @@ void worker(const util::Directory &dir, int* recv)
 
 	listDir(dir, list);
 
-	int size = 2000000*sizeof(float);
+	int size = 200000000*sizeof(float);
 
 	float* buf = (float*) malloc(size);
 

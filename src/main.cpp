@@ -167,7 +167,9 @@ int main(int argc, char* argv[])
 			{
 				o.dir.printInfo();
 				sift1Core(o.dir);
+				o.dir.update();
 				match1Core(o.dir);
+				o.dir.update();
 				geometry1Core(o.dir);
 				o.dir.update();
 				o.dir.printInfo();

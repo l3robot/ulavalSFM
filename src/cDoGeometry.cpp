@@ -39,8 +39,6 @@ using namespace util;
 */
 int* boss(int numcore, const util::Directory &dir, struct Constraints &container)
 {
-	printf("NP : %d\n", container.NP);
-
 	int* dis = createDist4Geometry(container.NP, numcore);
 
 	return dis;
@@ -173,9 +171,6 @@ void worker(const util::Directory &dir, int* recv, struct Constraints &container
 {
 	int start = recv[0];
 	int end = recv[1];
-
-	printf("start : %d\n", start);
-	printf("end : %d\n", end);
 
 	int netID;
 

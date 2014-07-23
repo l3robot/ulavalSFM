@@ -267,10 +267,15 @@ int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, 
 		pts1.push_back(Point2f(keys1[list[i].queryIdx].pt.x, keys1[list[i].queryIdx].pt.y));
 		pts2.push_back(Point2f(keys2[list[i].trainIdx].pt.x, keys2[list[i].trainIdx].pt.y));
 
-		if(!treshold) printf("(%f, %f) ; (%f, %f)\n", pts1[i].x, pts1[i].y, pts2[i].x, pts2[i].y);
+		//if(!treshold) printf("(%f, %f) ; (%f, %f)\n", pts1[i].x, pts1[i].y, pts2[i].x, pts2[i].y);
+		printf("(%f, %f) ; (%f, %f)\n", pts1[i].x, pts1[i].y, pts2[i].x, pts2[i].y);
 	}
 
 	if(!treshold) printf("\n");
+
+	cout << fMatrix << endl;
+
+	exit(1);
 
 	fMatrix = findFundamentalMat(pts1, pts2, FM_RANSAC, 3.0, 0.99, mask);
 
@@ -362,7 +367,7 @@ void writeConstraints(const string &path, const vector<struct Matchespp> &contai
 	string file1(path);
 	string file2(path);
 
-	file1.append("matches.init.txt");
+	file1.append("matches2.init.txt");
 	file2.append("ulavalSFM.txt");
 
 	FILE *f1 = fopen(file1.c_str(), "wb");
