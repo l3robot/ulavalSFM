@@ -199,7 +199,6 @@ void worker(const util::Directory &dir, int* recv, struct Constraints &container
 			serialMatch = serializeMatchespp(container.matches[i]);
 
 			cout << "[CORE " << netID << "]: " << container.matches[i].NI << " inlier(s) found between " << container.matches[i].idx[0] << " and " << container.matches[i].idx[1] << endl;
-
 			MPI_Bsend(serialMatch, serialMatch[0], MPI_FLOAT, SECRETARY, 1, MPI_COMM_WORLD);
 
 			destroyMatchespp(serialMatch);
@@ -264,6 +263,8 @@ void writeSerialMatchespp(const string &path, const vector<float*> &container)
 	int NP = container.size();
 	int NT = 0;
 
+	fprintf(f2, "\n");
+
 	for (int i = 0; i < NP; i++)
 	{
 		int NM = (int) container[i][3];
@@ -282,7 +283,7 @@ void writeSerialMatchespp(const string &path, const vector<float*> &container)
 		if(container[i][num] > 0)
 		{
 			NT++;
-			//BUG À RÉGLER ICI
+			//BUG À RÉGLER ICI Premiers ne sont pas affichés
 			fprintf(f2, "%d %d\n", (int) container[i][1], (int) container[i][2]);
 
 	        fprintf(f2, "%d\n", (int) container[i][num]);
@@ -338,7 +339,10 @@ void secretary(const string &path, int numcore)
 	for (int i = 0; i < end; i++)
 	{
 		free(serialMatchespp);
+		if (i % 2)
+			showProgress(i, end, 100, 1);
 	}
+	showProgress(end, end, 100, 0);
 }
 
 

@@ -359,13 +359,39 @@ int* createDist4Geometry(int NP, int netSize)
 }
 
 
+///////////////////////////////////////////////////////////////
+////                OTHER UTIL FUNCTIONS                   ////
+///////////////////////////////////////////////////////////////
 
 
 
 
+/* 
+*	Function : showProgress
+*	Description : Print a progress bar to show progression
+*
+*	i : where you are
+*	n : total of iterations
+*	w : width of the bar
+*	actualize : erase or not the bar
+*/
+void showProgress(int i, int n, int w, int actualize)
+{
+	float ratio = i / (float)n;
+	int c = ratio * w;
 
+	printf("%3d%% [", (int)(ratio*100) );
 
+	for (int i = 0; i < c; i++)
+		printf("=");
 
+	for (int i = c; i < w; i++)
+		printf(" ");
+	if(actualize)
+		printf("]\n\033[F\033[J");
+	else
+		printf("]\n");
+}
 
 
 

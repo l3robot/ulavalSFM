@@ -147,7 +147,7 @@ void worker(const util::Directory &dir, int* recv)
 
 				serialMatch = serializeVector(container.matches, j, i);
 
-				cout << "[CORE " << netID << "]: " << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
+				//cout << "[CORE " << netID << "]: " << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
 
 				container.reset();
 
@@ -224,12 +224,12 @@ float* recvFromWorker()
 *	path : directory path
 *	numcore : number of cores
 */
-void secretary(const string &path, int numcore)
+void secretary(const string &path, int numcore, int n)
 {
 	vector<float*> v_serialMatch;
 	float* serialMatch;
 
-	int end = 1;
+	int end = 1, i = 0, n = ;
 
 	string file(path);
 	file.append(MATCHFILE);
@@ -247,7 +247,11 @@ void secretary(const string &path, int numcore)
 		{
 			end++;
 		}
+		i++;
+		showProgress(i, n, 75, 1)
 	}
+
+	showProgress(n, n, 75, 0)
 
 	cout << "--> Écriture dans le fichier..." << endl;
 
@@ -308,8 +312,9 @@ int main(int argc, char** argv)
 
 	if(netID == 0)
 	{
+		int n = dir.getNBImages() * (dir.getNBImages() - 1) / 2;
 		deleteDist(dist);
-		secretary(dir.getPath(), netSize);
+		secretary(dir.getPath(), netSize, n);
 	}
 	else
 	{

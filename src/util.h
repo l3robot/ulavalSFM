@@ -54,4 +54,7 @@ void deleteDist(int* dist);
 int* createDist4Match(int numimages, int numcore);
 int* createDist4Geometry(int NP, int netSize);
 
+//other util functions
+void showProgress(int i, int n, int w, int actualize)
+
 #endif
