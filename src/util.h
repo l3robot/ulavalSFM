@@ -12,7 +12,7 @@
 
 #include "directory.h"
 
-#define VERSION "2.0"
+#define VERSION "3.0"
 
 #define BTOS(x) ((x)?"supercomputer":"computer")
 
@@ -55,6 +55,6 @@ int* createDist4Match(int numimages, int numcore);
 int* createDist4Geometry(int NP, int netSize);
 
 //other util functions
-void showProgress(int i, int n, int w, int actualize)
+void showProgress(int i, int n, int w, int actualize);
 
 #endif

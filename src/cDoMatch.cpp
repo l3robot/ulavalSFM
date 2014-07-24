@@ -116,16 +116,10 @@ void worker(const util::Directory &dir, int* recv)
 
 	listDir(dir, list);
 
-	int size = 200000000*sizeof(float);
-
-	float* buf = (float*) malloc(size);
-
 	struct SFeatures keys1, keys2;
 	struct Matches container;
 
 	float* serialMatch;		 
-
-	MPI_Buffer_attach(buf, size);
 
 	for(int i = 0; !stop; i++)
 	{
@@ -151,7 +145,7 @@ void worker(const util::Directory &dir, int* recv)
 
 				container.reset();
 
-				MPI_Bsend(serialMatch, serialMatch[0], MPI_FLOAT, SECRETARY, 1, MPI_COMM_WORLD);
+				MPI_Send(serialMatch, serialMatch[0], MPI_FLOAT, SECRETARY, 1, MPI_COMM_WORLD);
 
 				free(serialMatch);
 			}
@@ -161,7 +155,6 @@ void worker(const util::Directory &dir, int* recv)
 		}
 	}
 
-	MPI_Buffer_detach(buf, &size);
 	endComm(SECRETARY);
 }
 
@@ -229,31 +222,31 @@ void secretary(const string &path, int numcore, int n)
 	vector<float*> v_serialMatch;
 	float* serialMatch;
 
-	int end = 1, i = 0, n = ;
+	int end = 1, i = 0;
 
 	string file(path);
 	file.append(MATCHFILE);
 
-	FILE* f = fopen(file.c_str(), "w");
+	printf("--> Matching : \n");
+
+	n = n + numcore - 1;
 
 	while(end < numcore)
 	{
 		serialMatch = recvFromWorker();
 		if (serialMatch)
-		{
 			v_serialMatch.push_back(serialMatch);
-		}
 		else
-		{
 			end++;
-		}
 		i++;
-		showProgress(i, n, 75, 1)
+		showProgress(i, n, 75, 1);
 	}
 
-	showProgress(n, n, 75, 0)
+	showProgress(n, n, 75, 0);
 
-	cout << "--> Écriture dans le fichier..." << endl;
+	cout << "--> Writing file : " << endl;
+
+	FILE* f = fopen(file.c_str(), "w");
 
 	end = v_serialMatch.size();
 
@@ -261,7 +254,9 @@ void secretary(const string &path, int numcore, int n)
 	{
 		writeSerialMatch(f, v_serialMatch[i]);
 		free(v_serialMatch[i]);
+		showProgress(i, end, 75, 1);
 	}
+	showProgress(end, end, 75, 0);
 
 	fclose(f);
 }

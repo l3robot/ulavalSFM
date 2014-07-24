@@ -45,3 +45,9 @@ install:
 	cp cDoMatch /usr/local/bin/
 	cp cDoGeometry ../bin/
 	cp cDoGeometry /usr/local/bin/
+
+cinstall:
+	cp ulavalSFM ../bin/
+	cp cDoSift ../bin/
+	cp cDoMatch ../bin/
+	cp cDoGeometry ../bin/

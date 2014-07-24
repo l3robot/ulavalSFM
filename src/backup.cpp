@@ -468,3 +468,70 @@ int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, 
 }
 
 
+
+void worker(const util::Directory &dir, int* recv)
+{
+	int aim = recv[0];
+	int end = recv[1];
+
+	int numimages, netID, seek = 0, compute = 0, stop = 0;
+
+	numimages = dir.getNBImages();
+
+	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
+
+	vector<string> list;
+
+	listDir(dir, list);
+
+	//int size = 200000000*sizeof(float);
+
+	//float* buf = (float*) malloc(size);
+
+	struct SFeatures keys1, keys2;
+	struct Matches container;
+
+	float* serialMatch;		 
+
+	//MPI_Buffer_attach(buf, size);
+
+	for(int i = 0; !stop; i++)
+	{
+		if(compute)
+		{
+			readSiftFile(list[i], keys1);
+		}
+
+		for (int j = 0; j < i; j++)
+		{
+
+			if(seek == aim){readSiftFile(list[i], keys1);compute=1;}
+
+			if(compute)
+			{
+				readSiftFile(list[j], keys2);
+
+				doMatch(keys1, keys2, container);
+
+				serialMatch = serializeVector(container.matches, j, i);
+
+				//cout << "[CORE " << netID << "]: " << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
+
+				container.reset();
+
+				//MPI_Bsend(serialMatch, serialMatch[0], MPI_FLOAT, SECRETARY, 1, MPI_COMM_WORLD);
+				MPI_Send(serialMatch, serialMatch[0], MPI_FLOAT, SECRETARY, 1, MPI_COMM_WORLD);
+
+				free(serialMatch);
+			}
+
+			seek++;
+			if(seek == end){compute=0;stop=1;}
+		}
+	}
+
+	//MPI_Buffer_detach(buf, &size);
+	endComm(SECRETARY);
+}
+
+
