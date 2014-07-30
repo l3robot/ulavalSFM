@@ -53,6 +53,8 @@ Note that is better to install it with a package management system, but if you a
 
 #### If you already have OpenCV and rights on your computer:
 
+Please make sure openCV libraries are in your local lib folder
+
 DO :
 
 ```Bash
@@ -62,7 +64,7 @@ cd bundler_sfm/
 make clean
 make
 echo "export PATH="$PWD/bin/:$PATH"" >> $HOME/.bashrc
-export PATH="$PWD/bin/:$PATH
+export PATH="$PWD/bin/:$PATH"
 cd ../../src/
 make
 make install
