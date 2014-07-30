@@ -17,6 +17,7 @@
 #include "util.h"
 #include "dosift.h"
 #include "domatch.h"
+#include "doall.h"
 
 using namespace std;
 
@@ -102,7 +103,7 @@ int main(int argc, char* argv[])
 		case 32:
 		cout << endl;
 		cout << "Process(es) will do bundlerSFM part working on \"" << o.dir.getPath() << "\" images." << endl << endl;
-		bundler(o.dir.getPath());
+		Bundler(o.dir.getPath());
 		break;
 		case 64:
 		cout << endl;

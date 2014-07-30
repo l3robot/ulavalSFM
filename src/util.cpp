@@ -535,7 +535,7 @@ void createOptions(const string &path)
 	fprintf(f, "--run_bundle");
 	fprintf(f, "--constrain_focal_weight 0.0001");
 
-	fclose();
+	fclose(f);
 }
 
 void Bundler(const string &path)

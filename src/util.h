@@ -58,7 +58,7 @@ int* createDist4Geometry(int NP, int netSize);
 
 //other util functions
 void showProgress(int i, int n, int w, int actualize);
-int ffind(FILE* f, const string &sr, char* buffer);
+int ffind(FILE* f, const std::string &sr, char* buffer);
 void createSubmit(const std::string &path, int numcore, int seconds);
 
 //Bundler functions
