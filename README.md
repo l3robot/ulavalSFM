@@ -58,7 +58,7 @@ For now, I used a parallel design built on a relation root, workers, secretary. 
 
 ###### Sift parallel design
 
-There is a root which compute a distribution of all the image. Thanks to the distribution, the root gives a start point and a end point relative to a common loop to each worker (It becomes a worker too). Each worker find sift points and then write it in a <name>.key file.
+There is a root which compute a distribution of all the image. Thanks to the distribution, the root gives a start point and a end point relative to a common loop to each worker (It becomes a worker too). Each worker find sift points and then write it in a \<name\>.key file.
 
 ###### Matches parallel design
 
