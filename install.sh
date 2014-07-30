@@ -28,15 +28,15 @@ make -j 2
 make install
 echo "[ Building OpenCV ... done ]"
 
-cd ../bundler_sfm/
+cd ../../bundler_sfm/
 mkdir build/
 make clean
 make -j 2
-echo "[ Building OpenCV ... done ]"
+echo "[ Building bundler_sfm ... done ]"
 
-cd ../../../src/
+cd ../../src/
 make -j 2
-make install
+make cinstall
 echo "[ Building ulavalSFM ... done ]" 
 
 echo "[ YOU CAN RUN ULAVALSFM ]"
