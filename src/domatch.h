@@ -50,12 +50,12 @@ struct Matches
 };
 
 void listDir(const util::Directory &dir, std::vector<std::string> &list);
-void readSiftFile(const std::string &file, SFeatures &container);
-void doMatch(const SFeatures &img1, const SFeatures &img2, Matches &container, float ratio = 0.6);
-void writeMatchFile(FILE* f, const Matches &container, int i, int j);
+void readSiftFile(const std::string &file, struct SFeatures &container);
+int doMatch(const struct SFeatures &img1, const struct SFeatures &img2, struct Matchespp &container, float ratio = 0.6);
+void writeMatchFile(FILE* f, const struct Matches &container, int i, int j);
 void match1Core(const util::Directory &dir);
 void matchMCore(const std::string &path, int numcore);
-void matchMCCore(const std::string &path, int numcore);
+void matchMCCore(const std::string &path, int numcore, int seconds);
 
 #endif
 

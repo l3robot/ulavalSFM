@@ -30,6 +30,7 @@
 #include "util.h"
 #include "dosift.h"
 #include "domatch.h"
+#include "dogeometry.h"
 
 using namespace std;
 using namespace cv;
@@ -58,24 +59,44 @@ int* boss(int numcore, const util::Directory &dir)
 *	img1 : images 1 index
 *	img2 : images 2 index
 */
-float* serializeVector(vector<DMatch> tab, int img1, int img2)
+float* serializeContainer(const struct Matchespp &container)
 {
 	float* serialTab;
 
-	int s = tab.size() * 2 + 4;
+	int s = 15 + container.NM * 2;
 
 	serialTab = (float*) malloc(s * sizeof(float));
 
 	serialTab[0] = (float) s;
-	serialTab[1] = (float) tab.size();
-	serialTab[2] = (float) img1;
-	serialTab[3] = (float) img2;
+	serialTab[1] = (float) container.idx[0];
+	serialTab[2] = (float) container.idx[1];
+	serialTab[3] = (float) container.NM;
 
-	for(int i = 0; i < tab.size(); i++)
+	for(int i = 0; i < container.NM * 2; i+=2)
 	{
-		serialTab[4+i*2] = (float) tab[i].queryIdx;
-		serialTab[5+i*2] = (float) tab[i].trainIdx;
+		int idx = i + 4;
+		int idx2 = i/2;
+		serialTab[idx] = (float) container.matches[idx2].queryIdx;
+		serialTab[idx+1] = (float) container.matches[idx2].trainIdx;
 	}
+
+	int seek = 4 + container.NM * 2;
+
+	serialTab[seek] = (float) container.NI;
+
+	const double* M = container.H.ptr<double>();
+
+	serialTab[seek+1] = (float) M[0];
+	serialTab[seek+2] = (float) M[1];
+	serialTab[seek+3] = (float) M[2];
+	serialTab[seek+4] = (float) M[3];
+	serialTab[seek+5] = (float) M[4];
+	serialTab[seek+6] = (float) M[5];
+	serialTab[seek+7] = (float) M[6];
+	serialTab[seek+8] = (float) M[7];
+	serialTab[seek+9] = (float) M[8];
+
+	serialTab[seek+10] = container.ratio;
 
 	return serialTab;
 }
@@ -117,7 +138,6 @@ void worker(const util::Directory &dir, int* recv)
 	listDir(dir, list);
 
 	struct SFeatures keys1, keys2;
-	struct Matches container;
 
 	float* serialMatch;		 
 
@@ -125,21 +145,23 @@ void worker(const util::Directory &dir, int* recv)
 	{
 		if(compute)
 		{
-			readSiftFile(list[i], keys1);
+			readAndAdjustSiftFile(dir.getPath(), dir.getImage(i), list[i], keys1);
 		}
 
 		for (int j = 0; j < i; j++)
 		{
 
-			if(seek == aim){readSiftFile(list[i], keys1);compute=1;}
+			if(seek == aim){readAndAdjustSiftFile(dir.getPath(), dir.getImage(i), list[i], keys1);compute=1;}
 
 			if(compute)
 			{
-				readSiftFile(list[j], keys2);
+				struct Matchespp container(j, i);
+
+				readAndAdjustSiftFile(dir.getPath(), dir.getImage(i), list[j], keys2);
 
 				doMatch(keys1, keys2, container);
 
-				serialMatch = serializeVector(container.matches, j, i);
+				serialMatch = serializeContainer(container);
 
 				//cout << "[CORE " << netID << "]: " << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
 
@@ -179,10 +201,74 @@ void writeSerialMatch(FILE* f, float* serialMatches)
 }
 
 /* 
+*	Function : writeSerialMatchespp
+*	Description : code to write in the file from a serial matchespp structure
+*	
+*	path : directory path
+*	serialMatchespp : serial structure
+*/
+void writeSerialMatchespp(const string &path, const vector<float*> &container, int bar)
+{
+	string file1(path);
+	string file2(path);
+
+	file1.append("matches.init.txt");
+	file2.append("ulavalSFM.txt");
+
+	FILE *f1 = fopen(file1.c_str(), "wb");
+	FILE *f2 = fopen(file2.c_str(), "wb");
+
+	int NP = container.size();
+	int NT = 0;
+
+	fprintf(f2, "\n");
+
+	for (int i = 0; i < NP; i++)
+	{
+		int NM = (int) container[i][3];
+
+		fprintf(f1, "%d %d\n", (int) container[i][1], (int) container[i][2]);
+		fprintf(f1, "%d\n", NM);
+
+		int num = 4;
+
+		for(int j = 0; j < NM; j++)
+		{
+			fprintf(f1, "%d %d\n", (int) container[i][num], (int) container[i][num + 1]);
+			num += 2;
+		}
+
+		if(container[i][num] > 0)
+		{
+			NT++;
+			//BUG À RÉGLER ICI Premiers ne sont pas affichés
+			fprintf(f2, "%d %d\n", (int) container[i][1], (int) container[i][2]);
+
+	        fprintf(f2, "%d\n", (int) container[i][num]);
+	        fprintf(f2, "%f\n", container[i][num + 10]);
+
+	        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", container[i][num + 1], container[i][num + 2], 
+	        	container[i][num + 3], container[i][num + 4], container[i][num + 5], container[i][num + 6], 
+	        	container[i][num + 7], container[i][num + 8], container[i][num + 9]);
+		}
+
+		if (bar) showProgress(i, NP, 75, 1);
+	}
+
+	if (bar) showProgress(NP, NP, 75, 0);
+
+	fseek(f2, 0, SEEK_SET);
+	fprintf(f2, "%d\n", NT);
+
+	fclose(f1);
+	fclose(f2);
+}
+
+/* 
 *	Function : recvFromWorker
 *	Description : recv implementation for the secretary
 */
-float* recvFromWorker()
+float* recvFromWorker(vector<int> &list)
 {
 	MPI_Status status;
 	float* serialMatch; 
@@ -193,6 +279,8 @@ float* recvFromWorker()
 
 	int tag = status.MPI_TAG;
 	sender = status.MPI_SOURCE;
+
+	list.push_back(sender);
 
 	if(tag > 0)
 	{
@@ -217,9 +305,10 @@ float* recvFromWorker()
 *	path : directory path
 *	numcore : number of cores
 */
-void secretary(const string &path, int numcore, int n)
+void secretary(const string &path, int numcore, int n, int bar)
 {
 	vector<float*> v_serialMatch;
+	vector<int> list;
 	float* serialMatch;
 
 	int end = 1, i = 0;
@@ -233,32 +322,22 @@ void secretary(const string &path, int numcore, int n)
 
 	while(end < numcore)
 	{
-		serialMatch = recvFromWorker();
+		serialMatch = recvFromWorker(list);
 		if (serialMatch)
 			v_serialMatch.push_back(serialMatch);
 		else
 			end++;
 		i++;
-		showProgress(i, n, 75, 1);
+		if (bar) showProgress(i, n, 75, 1);
 	}
 
-	showProgress(n, n, 75, 0);
+	if (bar) showProgress(n, n, 75, 0);
 
 	cout << "--> Writing file : " << endl;
 
-	FILE* f = fopen(file.c_str(), "w");
+	writeSerialMatchespp(path, v_serialMatch, bar);
 
-	end = v_serialMatch.size();
-
-	for (int i = 0; i < end; i++)
-	{
-		writeSerialMatch(f, v_serialMatch[i]);
-		free(v_serialMatch[i]);
-		showProgress(i, end, 75, 1);
-	}
-	showProgress(end, end, 75, 0);
-
-	fclose(f);
+	cout << endl;
 }
 
 
@@ -268,6 +347,14 @@ int main(int argc, char** argv)
 
 	int* dist;
 	int recv[2];
+	int bar = 1;
+
+	//quick parsing of bar printing or not
+	if(argc > 2)
+	{
+		if(argv[2][0] == '0')
+			bar = 0;
+	}
 
 	double the_time;
 
@@ -309,7 +396,7 @@ int main(int argc, char** argv)
 	{
 		int n = dir.getNBImages() * (dir.getNBImages() - 1) / 2;
 		deleteDist(dist);
-		secretary(dir.getPath(), netSize, n);
+		secretary(dir.getPath(), netSize, n, bar);
 	}
 	else
 	{

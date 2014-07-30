@@ -61,6 +61,15 @@ struct Matchespp
 		ratio = 0.0;
 	}
 
+	Matchespp(int i, int j)
+	{
+		idx[0] = i;
+		idx[1] = j;
+		NM = 0;
+		H = cv::Mat(3, 3, CV_32F);
+		ratio = 0.0;
+	}
+
 	Matchespp(const Matchespp &new_matches)
 	{
 		idx[0] = new_matches.idx[0];

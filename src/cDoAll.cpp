@@ -1,10 +1,10 @@
 /*
-*	File : cDoSift.cpp
+*	File : cDoMatch.cpp
 *	Author : Émile Robitaille @ LERobot
-*	Creation date : 2014, June 30th
+*	Creation date : 07/08/2014
 *	Version : 1.0
 *	
-*	Description : Program to make sift in parallel
+*	Description : Program to make match in parallel
 */
 
 #include <stdio.h>
@@ -12,29 +12,46 @@
 #include <math.h>
 #include <string.h>
 #include <iostream>
+#include <vector>
+#include <dirent.h>
+#include <time.h>
+#include <unistd.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/nonfree/nonfree.hpp>
+#include <opencv2/nonfree/features2d.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#include <opencv2/flann/flann.hpp>
 #include <mpi.h>
 
 #include "directory.h"
 #include "util.h"
 #include "dosift.h"
+#include "domatch.h"
+#include "dogeometry.h"
+#include "cDoMatchs.h"
 
 using namespace std;
-using namespace util;
+using namespace cv;
 
 
-
-int main(int argc, char* argv[])
+int main(int argc, char** argv)
 {
 	MPI_Init(&argc, &argv);
 
-	int* dist = NULL;
+	int* dist;
 	int recv[2];
+	int bar = 1;
+
+	//quick parsing of bar printing or not
+	if(argc > 2)
+	{
+		if(argv[2][0] == '0')
+			bar = 0;
+	}
+
 	double the_time;
 
 	int netSize;
@@ -45,7 +62,17 @@ int main(int argc, char* argv[])
 
 	util::Directory dir(argv[1]);
 	struct SFeatures container;
+	struct Matches container;
 	string file(argv[1]);
+
+	if(netSize < 2)
+	{
+		if(netID == 0)
+		{
+			printf("[ERROR] At most 2 cores are needed\n");
+		}
+		exit(1);
+	}
 
 	if(netID == 0)
 	{
@@ -92,24 +119,64 @@ int main(int argc, char* argv[])
 			file.pop_back();
 		}
 
-		if (netID == 0)
+		if (netID == 0 && bar)
 			showProgress(i, end, 75, 1);
 	} 
 
-	if (netID == 0)
+	if (netID == 0 && bar)
 		showProgress(end, end, 75, 0);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	if(netID == 0)
 	{
-		printf("The program takes approximately %f second(s)\n", MPI_Wtime() - the_time);
+		printf("The sift search takes approximately %f second(s)\n", MPI_Wtime() - the_time);
+		the_time = MPI_Wtime();
+	}
+
+	MPI_Barrier(MPI_COMM_WORLD);
+
+	if(netID == 0)
+	{
+		the_time = MPI_Wtime();
+	}
+
+	MPI_Barrier(MPI_COMM_WORLD);
+
+	if(netID == 0)
+	{
+		dist = boss(netSize, dir);
+	}
+
+	MPI_Scatter(dist, 2, MPI_INT, recv, 2, MPI_INT, 0, MPI_COMM_WORLD);
+
+	if(netID == 0)
+	{
+		int n = dir.getNBImages() * (dir.getNBImages() - 1) / 2;
+		deleteDist(dist);
+		secretary(dir.getPath(), netSize, n, bar);
+	}
+	else
+	{
+		worker(dir, recv);
+	}
+
+	MPI_Barrier(MPI_COMM_WORLD);
+
+	if(netID == 0)
+	{
+		printf("The matching phase takes approximately %f second(s)\n", MPI_Wtime() - the_time);
+		string path(argv[1]);
+		the_time = MPI_Wtime();
+		bundler(path);
+		printf("The bundlerSFM phase takes approximately %f second(s)\n", MPI_Wtime() - the_time);
 	}
 
 	MPI_Finalize();
 
 	return 0;
 }
+
 
 
 

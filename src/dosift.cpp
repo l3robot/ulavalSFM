@@ -22,6 +22,7 @@
 
 #include "directory.h"
 #include "dosift.h"
+#include "util.h"
 
 using namespace std;
 using namespace cv;
@@ -94,7 +95,11 @@ void sift1Core(const util::Directory &dir)
 
 	cout << endl;
 
-	for(int i = 0; i < dir.getNBImages(); i++)
+	int n = dir.getNBImages();
+
+	printf("--> Sift searching begins : \n");
+
+	for(int i = 0; i < n; i++)
 	{
 		file.append(dir.getImage(i));
 
@@ -115,7 +120,11 @@ void sift1Core(const util::Directory &dir)
 		{
 			file.pop_back();
 		}
+
+		showProgress(i, n, 75, 1);
 	}
+
+	showProgress(n, n, 75, 0);
 
 	cout << endl;
 }

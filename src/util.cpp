@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <unistd.h>
 #include <string>
 #include <iostream>
 #include <dirent.h>
@@ -64,7 +65,7 @@ void parseArgs(int argc, char* argv[], Opts &o)
 					}
 					else
 					{
-						o.choice = o.choice & 0;
+						o.choice = 0;
 					}
 					i = argc;
 					break;
@@ -78,7 +79,7 @@ void parseArgs(int argc, char* argv[], Opts &o)
 					else
 					{
 						i = argc;
-						o.choice = o.choice & 0;
+						o.choice = 0;
 					}
 					break;
 					case 'n':
@@ -91,7 +92,20 @@ void parseArgs(int argc, char* argv[], Opts &o)
 					else
 					{
 						i = argc;
-						o.choice = o.choice & 0;
+						o.choice = 0;
+					}
+					break;
+					case 't':
+					i++;
+					if(i < argc)
+					{
+						if(!sscanf(argv[i], "%d", &o.seconds))o.seconds = 300;
+						if(o.seconds < 1)o.seconds = 300;
+					}
+					else
+					{
+						i = argc;
+						o.choice = 0;
 					}
 					break;
 					case 's':
@@ -104,7 +118,7 @@ void parseArgs(int argc, char* argv[], Opts &o)
 					else
 					{
 						i = argc;
-						o.choice = o.choice & 0;
+						o.choice = 0;
 					}
 					break;
 					case 'm':
@@ -117,10 +131,10 @@ void parseArgs(int argc, char* argv[], Opts &o)
 					else
 					{
 						i = argc;
-						o.choice = o.choice & 0;
+						o.choice = 0;
 					}
 					break;
-					case 'g':
+					case 'b':
 					o.choice = o.choice | 32;
 					i++;
 					if(i < argc)
@@ -130,7 +144,7 @@ void parseArgs(int argc, char* argv[], Opts &o)
 					else
 					{
 						i = argc;
-						o.choice = o.choice & 0;
+						o.choice = 0;
 					}
 					break;
 					case 'a':
@@ -143,11 +157,11 @@ void parseArgs(int argc, char* argv[], Opts &o)
 					else
 					{
 						i = argc;
-						o.choice = o.choice & 0;
+						o.choice = 0;
 					}
 					break;
 					default:
-					o.choice = o.choice & 0;
+					o.choice = 0;
 					break;
 				}
 		}
@@ -191,6 +205,7 @@ void printHelp()
 	cout << "-v  ---      : Print the software version" << endl;
 	cout << "-l [dir]     : Print information about the directory" << endl;
 	cout << "-c [0-1]     : On cluster or not. If 1, a script .sh file will be generated (default 0)" << endl;
+	cout << "-t [1-*]     : If on cluster, walltime needed (default 300)" << endl;
 	cout << "-n [1-*]     : Specify the number of core(s) wanted (default 1, means no mpi)" << endl;
 	cout << "-s [dir]     : To find sift features of the directory images" << endl;
 	cout << "-m [dir]     : To match sift features of the directory images" << endl;
@@ -394,6 +409,148 @@ void showProgress(int i, int n, int w, int actualize)
 }
 
 
+/* 
+*	Function : ffind
+*	Description : Find a option in an option file and store its value in buffers
+*
+*	f : file descriptor
+*	sr : option to search
+*	buffer : buffer to copy the option value
+*
+*	return : 1 if found, 0 if not
+*/
+int ffind(FILE* f, const string &sr, char* buffer)
+{
+	int c = 1;
+	char* pter = NULL;
+
+	while(fgets(buffer, 256, f))
+	{
+		if(strstr(buffer, sr.c_str()))
+		{
+			pter = strchr(buffer, ':');
+			sprintf(buffer, "%s", pter+1);
+			pter = strchr(buffer, ';');
+			*pter = '\0';
+			printf("Value %s found for option %s.\n", buffer, sr.c_str());
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+/* 
+*	Function : createSubmit
+*	Description : Create the submit file for the supercomputer
+*
+*	path : working directory path
+*	numcore : number of cores
+*	seconds : walltime
+*/
+void createSubmit(const string &path, int numcore, int seconds)
+{
+	system("mkdir ulavalSub");
+
+	char buffer[256];
+
+	strcpy(buffer, getenv("HOME"));
+
+	string ulavalsfm(buffer);
+	ulavalsfm.append("/.ulavalsfm");
+
+	FILE* fr = fopen(ulavalsfm.c_str(), "r");
+
+	if (!fr)
+	{
+		cout << "[ERROR] The file \"~/.ulavalsfm\" does not exist" << endl;
+		cout << "[ERROR] Create a the file with the caracteristics you want" << endl;
+		cout << "[ERROR] Use the README for more information" << endl;
+		cout << "[ERROR] Program is forced to quit" << endl;
+		exit(1);
+	}
+
+	FILE* fw = fopen("ulavalSub/submit.sh", "w");
+
+	if (!fw)
+	{
+		cout << "[ERROR] The file \"ulavalSubmit/submit.sh\" cannot be opened" << endl;
+		cout << "[ERROR] Program is forced to quit" << endl;
+		exit(1);
+	}
+
+	if(!ffind(fr, "RAP", buffer))
+	{
+		cout << "[ERROR] You have not precised a RAP number in \"~/.ulavalsfm\"" << endl;
+		cout << "[ERROR] Add the line : \"RAP:<RAP number>;\"" << endl;
+		cout << "[ERROR] Program is forced to quit" << endl;
+		exit(1);
+	}
+
+	string RAP(buffer);
+
+	fclose(fr);
+
+	fprintf(fw, "%s\n", "# Shell used by ulavalsfm to launch matches phase -- ulavalsfm");
+	fprintf(fw, "%s\n", "#PBS -S /bin/bash");
+	fprintf(fw, "%s\n", "#PBS -N ulavalsfm_matches # Nom de la tâche");
+	fprintf(fw, "%s%s%s\n", "#PBS -A ", RAP.c_str(), " # Identifiant Rap; ID");
+	fprintf(fw, "%s%d%s\n", "#PBS -l nodes=", numcore/8, ":ppn=8 # Nombre de noeuds et nombre de processus par noeud");
+	fprintf(fw, "%s%d%s\n", "#PBS -l walltime=", seconds, " # Durée en secondes");
+	fprintf(fw, "%s\n", "#PBS -o ./ulavalSub/out.txt #sortie");
+	fprintf(fw, "\n");
+	fprintf(fw, "%s%s%s\n", "cd \"", path.c_str(), "\"");
+	fprintf(fw, "\n");
+	fprintf(fw, "%s\n", "module load compilers/gcc/4.8.0");
+	fprintf(fw, "%s\n", "module load mpi/openmpi/1.6.4_gcc");
+	fprintf(fw, "\n");
+	fprintf(fw, "%s\n", "mpiexec cDoMatch . 0");
+
+	fclose(fw);
+}
+
+
+
+///////////////////////////////////////////////////////////////
+////                  BUNDLER FUNCTIONS                    ////
+///////////////////////////////////////////////////////////////
+
+
+void createOptions(const string &path)
+{
+	string file(path);
+
+	file.append("options.txt");
+
+	FILE* f = fopen(file.c_str(), "w");
+
+	fprintf(f, "--output_all bundle_");
+	fprintf(f, "--constrain_focal");
+	fprintf(f, "--estimate_distortion");
+	fprintf(f, "--variable_focal_length");
+	fprintf(f, "--output bundle.out");
+	fprintf(f, "--output_dir bundle");
+	fprintf(f, "--use_focal_estimate");
+	fprintf(f, "--match_table matches.init.txt");
+	fprintf(f, "--run_bundle");
+	fprintf(f, "--constrain_focal_weight 0.0001");
+
+	fclose();
+}
+
+void Bundler(const string &path)
+{
+	createOptions(path);
+
+	chdir(path.c_str());
+
+	string command("bundler ");
+	command.append("list.txt ");
+	command.append("--options_file ");
+	command.append("options.txt");
+
+	system(command.c_str());
+}
 
 
 

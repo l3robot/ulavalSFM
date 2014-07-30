@@ -29,6 +29,7 @@ struct Opts
 {
 	int choice;
 	int cores;
+	int seconds;
 	bool cluster;
 	util::Directory dir;
 
@@ -37,6 +38,7 @@ struct Opts
 	{
 		choice = 0;
 		cores = 1;
+		seconds = 300;
 		cluster = false;
 	}
 };
@@ -56,5 +58,11 @@ int* createDist4Geometry(int NP, int netSize);
 
 //other util functions
 void showProgress(int i, int n, int w, int actualize);
+int ffind(FILE* f, const string &sr, char* buffer);
+void createSubmit(const std::string &path, int numcore, int seconds);
+
+//Bundler functions
+void createOptions(const std::string &path);
+void Bundler(const std::string &path);
 
 #endif

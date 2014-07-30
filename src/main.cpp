@@ -17,7 +17,6 @@
 #include "util.h"
 #include "dosift.h"
 #include "domatch.h"
-#include "dogeometry.h"
 
 using namespace std;
 
@@ -53,10 +52,8 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				o.dir.printInfo();
 				siftMCore(o.dir.getPath(), o.cores);
 				o.dir.update();
-				o.dir.printInfo();
 			}
 		}
 		else
@@ -67,10 +64,8 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				o.dir.printInfo();
 				sift1Core(o.dir);
 				o.dir.update();
-				o.dir.printInfo();
 			}
 		}
 		break;
@@ -81,98 +76,61 @@ int main(int argc, char* argv[])
 		{
 			if (o.cluster)
 			{
-				cout << "MPI - ON SUPERCOMPTER" << endl << endl;
+				matchMCCore(o.dir.getPath(), o.cores, o.seconds);
+				o.dir.update();
 			}
 			else
 			{
-				o.dir.printInfo();
 				matchMCore(o.dir.getPath(), o.cores);
 				o.dir.update();
-				o.dir.printInfo();
 			}
 		}
 		else
 		{
 			if (o.cluster)
 			{
-				cout << "NO MPI - ON SUPERCOMPTER" << endl << endl;
+				matchMCCore(o.dir.getPath(), o.cores, o.seconds);
+				o.dir.update();
 			}
 			else
 			{
-				o.dir.printInfo();
 				match1Core(o.dir);
 				o.dir.update();
-				o.dir.printInfo();
 			}
 		}
 		break;
 		case 32:
 		cout << endl;
-		cout << "Process(es) will compute geometric constraints with " << o.cores << " core(s) on the " << BTOS(o.cluster) << ", working on \"" << o.dir.getPath() << "\" images." << endl << endl;
-		if (o.cores > 1)
-		{
-			if (o.cluster)
-			{
-				cout << "MPI - ON SUPERCOMPTER" << endl << endl;
-			}
-			else
-			{
-				o.dir.printInfo();
-				geometryMCore(o.dir.getPath(), o.cores);
-				o.dir.update();
-				o.dir.printInfo();
-			}
-		}
-		else
-		{
-			if (o.cluster)
-			{
-				cout << "NO MPI - ON SUPERCOMPTER" << endl << endl;
-			}
-			else
-			{
-				o.dir.printInfo();
-				geometry1Core(o.dir);
-				o.dir.update();
-				o.dir.printInfo();
-			}
-		}
+		cout << "Process(es) will do bundlerSFM part working on \"" << o.dir.getPath() << "\" images." << endl << endl;
+		bundler(o.dir.getPath());
 		break;
 		case 64:
 		cout << endl;
-		cout << "Process(es) will do sift, matches and geomtry with " << o.cores << " core(s) on the " << BTOS(o.cluster) << ", working on \"" << o.dir.getPath() << "\" images." << endl << endl;
+		cout << "Process(es) will do sift, matches and bundlerSFM with " << o.cores << " core(s) on the " << BTOS(o.cluster) << ", working on \"" << o.dir.getPath() << "\" images." << endl << endl;
 		if (o.cores > 1)
 		{
 			if (o.cluster)
 			{
-				cout << "MPI - ON SUPERCOMPTER" << endl << endl;
+				allMCCore(o.dir.getPath(), o.cores, o.seconds);
+				o.dir.update();
 			}
 			else
 			{
-				o.dir.printInfo();
-				siftMCore(o.dir.getPath(), o.cores);
-				matchMCore(o.dir.getPath(), o.cores);
-				geometryMCore(o.dir.getPath(), o.cores);
+				allMCore(o.dir.getPath(), o.cores);
 				o.dir.update();
-				o.dir.printInfo();
 			}
 		}
 		else
 		{
 			if (o.cluster)
 			{
-				cout << "NO MPI - ON SUPERCOMPTER" << endl << endl;
+				allMCCore(o.dir.getPath(), o.cores, o.seconds);
+				o.dir.update();
 			}
 			else
 			{
-				o.dir.printInfo();
-				sift1Core(o.dir);
+				all1Core(o.dir);
 				o.dir.update();
-				match1Core(o.dir);
-				o.dir.update();
-				geometry1Core(o.dir);
-				o.dir.update();
-				o.dir.printInfo();
 			}
 		}
 		break;

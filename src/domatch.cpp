@@ -20,9 +20,11 @@
 #include <opencv2/nonfree/nonfree.hpp>
 #include <opencv2/features2d/features2d.hpp>
 
+#include "util.h"
 #include "domatch.h"
 #include "dosift.h"
 #include "directory.h"
+#include "dogeometry.h"
 
 using namespace std;
 using namespace cv;
@@ -104,8 +106,10 @@ void readSiftFile(const string &file, SFeatures &container)
 *	img1 : container with img1 sift information
 *	img2 : container with img2 sift information
 *	container : matches information
+*
+*	return : 1 if NI > 0, else 0
 */
-void doMatch(const SFeatures &img1, const SFeatures &img2, Matches &container, float ratio)
+int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, float ratio)
 {
 	FlannBasedMatcher matcher(new flann::KDTreeIndexParams(16), new flann::SearchParams(64));
 	vector<vector<DMatch> > two_matches;
@@ -120,6 +124,38 @@ void doMatch(const SFeatures &img1, const SFeatures &img2, Matches &container, f
 			container.matches.push_back(two_matches[i][0]);
 		}
 	}
+
+	//Prune double matches
+	struct Matchespp new_container(container.idx);
+	
+	pruneDoubleMatch(new_container, container);
+
+	if (new_container.NM >= 20) container.assign(new_container);
+	else container.reset();
+	///////////////////////
+
+	//FMatrix filter
+	if (container.NM > 0)
+	{
+		int NI = fMatrixFilter(img2.keys, img1.keys, container.matches);
+
+		if (NI >= 16) container.NM = NI;
+		else container.reset();
+	}
+	////////////////
+
+	//Transform info
+	if (container.NM > 0)
+	{
+		transformInfo(img2.keys, img1.keys, container);
+
+		if (container.NI < 10){ container.reset(false); return 0;}
+
+		return 1;
+	}
+	////////////////
+
+	return 0;
 }
 
 
@@ -132,7 +168,7 @@ void doMatch(const SFeatures &img1, const SFeatures &img2, Matches &container, f
 *	i : index i
 *	j : index j
 */
-void writeMatchFile(FILE* f, const Matches &container, int j, int i)
+void writeMatchFile(FILE* f, const Matchespp &container, int j, int i)
 {
 	fprintf(f, "%d %d\n", j, i);
 	fprintf(f, "%d\n", container.NM);
@@ -142,7 +178,6 @@ void writeMatchFile(FILE* f, const Matches &container, int j, int i)
 		fprintf(f, "%d %d\n", container.matches[i].queryIdx, container.matches[i].trainIdx);
 	}
 }
-
 
 /* 
 *	Function : match1Core
@@ -155,7 +190,13 @@ void match1Core(const util::Directory &dir)
 	double the_time;
 	struct SFeatures img1;
 	struct SFeatures img2;
-	struct Matches container;
+	struct Matchespp container;
+
+	vector<struct Matchespp> v_serialMatch;
+
+	int n = dir.getNBImages() * (dir.getNBImages() - 1) / 2;
+	int prog = 0;
+	int NT = 0;
 
 	string file(dir.getPath());
 	file.append(MATCHFILE);
@@ -170,6 +211,8 @@ void match1Core(const util::Directory &dir)
 	int NBImages = dir.getNBImages();
 
 	cout << endl;
+
+	cout << "--> Matching : " << endl;
 	
 	for(int i = 0; i < NBImages; i++)
 	{
@@ -182,7 +225,7 @@ void match1Core(const util::Directory &dir)
 
 		file.append("key");
 
-		readSiftFile(file, img1);
+		readAndAdjustSiftFile(dir.getPath(), dir.getImage(i), file, img1);
 
 		while (file[file.size() - 1] != '/')
 		{
@@ -200,13 +243,13 @@ void match1Core(const util::Directory &dir)
 
 			file.append("key");
 
-			readSiftFile(file, img2);
+			readAndAdjustSiftFile(dir.getPath(), dir.getImage(j), file, img2);
 
-			doMatch(img1, img2, container);
+			if (doMatch(img1, img2, container)) NT++;
 
-			cout << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
+			//cout << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
 	
-			if (container.NM >= 16) writeMatchFile(f, container, j, i);
+			if (container.NM >= 16) v_serialMatch.push_back(container);
 
 			container.reset();
 
@@ -215,9 +258,17 @@ void match1Core(const util::Directory &dir)
 				file.pop_back();
 			}
 		}
+		prog++;
+		showProgress(prog, n, 75, 1);
 	}
 
+	showProgress(n, n, 75, 0);
+
 	cout << endl;
+
+	cout << "--> Writing files :" << endl;
+
+	writeConstraints(dir.getPath(), v_serialMatch, v_serialMatch.size(), NT);
 
 	fclose(f);
 }
@@ -247,17 +298,23 @@ void matchMCore(const string &path, int numcore)
 *	path : working directory
 *	numcore : number of cores
 */
-void matchMCCore(const string &path, int numcore)
+void matchMCCore(const string &path, int numcore, int seconds)
 {
 	stringstream c;
 
-	c << "msub submitMatch.sh";
+	printf("--> Create the script : \n");
+
+	createSubmit(path, numcore, seconds);
+
+	printf("--> Launch the script : \n");
+
+	c << "msub ulavalSub/submit.sh";
 
 	string command = c.str();
 
 	system(command.c_str());
 
-	cout << "You'll be warned by email when the process will terminate" << endl << endl;
+	cout << "Process launch, you can enter the command \"watch -n 10 showq -u $USER\" to see the progression." << endl << endl;
 }
 
 

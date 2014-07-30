@@ -274,8 +274,6 @@ int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, 
 
 	//cout << fMatrix << endl;
 
-	//exit(1);
-
 	fMatrix = findFundamentalMat(pts1, pts2, FM_RANSAC, 3.0, 0.99, mask);
 
 	for (int i = 0; i < nummatch; i++)
