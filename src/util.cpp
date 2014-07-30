@@ -181,8 +181,8 @@ void printVersion()
 
 	cout << "Version : " << VERSION <<  endl;
 	cout << "Author      : Émile Robitaille @ LERobot" << endl;
-	cout << "Description : Manager used to run sift, match, structure from motion (not yet)" << endl << endl;
-	cout << "License     : - This software is freeware, OpenSource, free to distribute" << endl;
+	cout << "Description : Manager used to run sift, match, structure from motion" << endl << endl;
+	cout << "License     : - This software is freeware, OpenSource, free to distribute, under GNU GPL license" << endl;
 	cout << "              - Extern libraries/softwares keep of course their license(s)" << endl << endl;
 }
 
@@ -209,7 +209,7 @@ void printHelp()
 	cout << "-n [1-*]     : Specify the number of core(s) wanted (default 1, means no mpi)" << endl;
 	cout << "-s [dir]     : To find sift features of the directory images" << endl;
 	cout << "-m [dir]     : To match sift features of the directory images" << endl;
-	cout << "-g [dir]     : To compute geometric constraints of the directory images" << endl;
+	cout << "-b [dir]     : To run bundler on the given directory" << endl;
 	cout << "-a [dir]     : Do \"-s dir\" and then \"-m dir\"" << endl << endl;
 	cout << "Refer to README file for more information about the version" << endl << endl;
 }
