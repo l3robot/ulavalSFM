@@ -72,7 +72,9 @@ git clone https://github.com/LERobot/bundler_sfm
 cd bundler_sfm/
 make clean
 make
-echo "export PATH="$PWD/bin/:$PATH"" >> $HOME/.bashrc
+echo "export LD_LIBRARY_PATH=$PWD/lib/:$LD_LIBRARY_PATH" >> $HOME/.bashrc
+export PATH="$PWD/lib/:$LD_LIBRARY_PATH"
+echo "export PATH=$PWD/bin/:$PATH" >> $HOME/.bashrc
 export PATH="$PWD/bin/:$PATH"
 cd ../../src/
 make
