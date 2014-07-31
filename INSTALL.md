@@ -17,7 +17,7 @@ DEPENDENCIES
 
 #### To build bundler_sfm
 
-* lapack 3.2.1
+* lapack 3.2.1 : http://www.netlib.org/lapack/
 
 #### To build ulavalSFM
 
