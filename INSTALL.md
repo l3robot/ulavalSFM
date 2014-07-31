@@ -15,6 +15,10 @@ DEPENDENCIES
 * cmake 2.8.10.2 : http://www.cmake.org
 * git 1.8.2.1 http://git-scm.com (Test version, it should work with others. It is used only to clone)
 
+#### To build bundler_sfm
+
+* lapack 3.2.1
+
 #### To build ulavalSFM
 
 * g++ 4.8.0 (it should work with 4.9.0) : https://gcc.gnu.org
