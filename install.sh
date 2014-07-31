@@ -8,8 +8,8 @@
 
 echo "#Added by ulavalSFM" >> $HOME/.bashrc
 echo "export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"" >> $HOME/.bashrc
-echo "export PATH="$PWD/bin/:$PWD/lib/bundler_sfm/bin/:$PATH:$PATH"" >> $HOME/.bashrc
-export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"
+echo "export PATH="$PWD/bin/:$PWD/bundler_sfm/lib/:$PWD/lib/bundler_sfm/bin/:$PATH:$PATH"" >> $HOME/.bashrc
+export LD_LIBRARY_PATH="$PWD/lib/:$PWD/bundler_sfm/lib/:$LD_LIBRARY_PATH"
 export PATH="$PWD/bin/:$PWD/lib/bundler_sfm/bin/:$PATH"
 echo "[ Adding library and executable path in .bashrc file ... done ]"
 
