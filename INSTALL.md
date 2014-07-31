@@ -28,7 +28,7 @@ DEPENDENCIES
 
 #### To read the exif, used by the python script
 
-* PIL 1.1.7. With Pillow for python 3.3 
+* PIL 1.1.7. With Pillow for python 3.3 : http://www.pythonware.com/products/pil/
 
 INSTALL INSTRUCTIONS
 --------------------
