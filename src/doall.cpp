@@ -1,10 +1,10 @@
 /*
-*	File : domatch.cpp
+*	File : doall.cpp
 *	Author : Émile Robitaille @ LERobot
-*	Creation date : 07/03/2014
+*	Creation date : 07/30/2014
 *	Version : 1.0
 *	
-*	Description : Functions relative to match
+*	Description : Functions relative to all
 */
 
 #include <stdio.h>
@@ -34,7 +34,7 @@ void all1Core(const util::Directory &dir)
 {
 	sift1Core(dir);
 	match1Core(dir);
-	bundler(dir.getPath());
+	Bundler(dir.getPath());
 }
 
 /* 

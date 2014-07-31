@@ -1,10 +1,10 @@
 /*
-*	File : cDoMatch.cpp
+*	File : cDoAll.cpp
 *	Author : Émile Robitaille @ LERobot
-*	Creation date : 07/08/2014
+*	Creation date : 07/30/2014
 *	Version : 1.0
 *	
-*	Description : Program to make match in parallel
+*	Description : Program to make all the algorithms in parallel
 */
 
 #include <stdio.h>
@@ -23,7 +23,7 @@
 #include "dosift.h"
 #include "domatch.h"
 #include "dogeometry.h"
-#include "cDoMatchs.h"
+#include "cDoMatch.h"
 
 using namespace std;
 using namespace cv;
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
 		printf("The matching phase takes approximately %f second(s)\n", MPI_Wtime() - the_time);
 		string path(argv[1]);
 		the_time = MPI_Wtime();
-		bundler(path);
+		Bundler(path);
 		printf("The bundlerSFM phase takes approximately %f second(s)\n", MPI_Wtime() - the_time);
 	}
 

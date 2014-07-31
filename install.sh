@@ -16,7 +16,7 @@ export PATH="$PWD/bundler_sfm/bin/:$PATH"
 echo "[ Adding library and executable path in .bashrc file ... done ]"
 
 cd lib/
-git clone https://github.com/Itseez/opencv
+git clone -b 2.4.9.x-prep https://github.com/Itseez/opencv
 echo "[ Cloning OpenCV ... done ]"
 git clone https://github.com/LERobot/bundler_sfm
 echo "[ Cloning bundler_sfm ... done ]"
