@@ -33,6 +33,8 @@ INSTALL INSTRUCTIONS
 DO :
 
 ```Bash
+git clone https://github.com/LERobot/ulavalSFM
+cd <ulavalSFM>/
 chmod +x install.sh
 ./install.sh
 ```
@@ -58,6 +60,7 @@ Please make sure openCV libraries are in your local lib folder
 DO :
 
 ```Bash
+git clone https://github.com/LERobot/ulavalSFM
 cd <ulavalSFM_path>/lib/
 git clone https://github.com/LERobot/bundler_sfm
 cd bundler_sfm/
