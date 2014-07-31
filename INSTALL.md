@@ -34,7 +34,7 @@ DEPENDENCIES
 INSTALL INSTRUCTIONS
 --------------------
 
-#### If you don't have OpenCV and/or don't have the rights on the computer, here is a way to install it and install bundler_sfm with my script :
+#### If you don't have OpenCV and/or don't have the rights on the computer, here is a way to install it and install bundler_sfm with my linux script :
 
 DO :
 
