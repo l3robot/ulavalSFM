@@ -1,10 +1,10 @@
 /*
-*	File : domatch.h
+*	File : cDoMatchLib.h
 *	Author : Émile Robitaille @ LERobot
-*	Creation date : 07/03/2014
+*	Creation date : 07/30/2014
 *	Version : 1.0
 *	
-*	Description : Functions relative to match
+*	Description : Functions relative to match in parallel
 */
 
 #ifndef CDOMATCH

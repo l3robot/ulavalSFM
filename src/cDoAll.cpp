@@ -54,7 +54,6 @@ int main(int argc, char** argv)
 
 	util::Directory dir(argv[1]);
 	struct SFeatures container;
-	struct Matches container;
 	string file(argv[1]);
 
 	if(netSize < 2)
