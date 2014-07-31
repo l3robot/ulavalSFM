@@ -24,8 +24,7 @@ DEPENDENCIES
 * g++ 4.8.0 (it should work with 4.9.0) : https://gcc.gnu.org
 * OpenMPI 1.6.4 : http://www.open-mpi.org
 * OpenCV 2.4.9 : https://github.com/Itseez/opencv
-* bundler\_sfm (My modified version, based on modified soravux's version) : https://github.com/LERobot/bundler_sfm
-* Original bundler\_sfm copy by <a href=https://github.com/snavely>Noah Snavely</a> : https://github.com/snavely/bundler_sfm
+* bundler\_sfm (My modified version, based on modified soravux's version, <a href=https://github.com/snavely>Noah Snavely</a>'s <a href=https://github.com/snavely/bundler\_sfm>original</a>) : https://github.com/LERobot/bundler_sfm
  
 
 #### To read the exif, used by the python script
