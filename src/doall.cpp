@@ -70,7 +70,7 @@ void allMCCore(const string &path, int numcore, int seconds)
 
 	printf("--> Create the script : \n");
 
-	createSubmit(path, numcore, seconds);
+	createSubmit(path, numcore, seconds, 2);
 
 	printf("--> Launch the script : \n");
 

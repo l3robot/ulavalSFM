@@ -535,3 +535,65 @@ void worker(const util::Directory &dir, int* recv)
 }
 
 
+
+
+
+
+
+/* 
+*	Function : writeSerialMatchespp
+*	Description : code to write in the file from a serial matchespp structure
+*	
+*	path : directory path
+*	serialMatchespp : serial structure
+*/
+void writeSerialMatchespp(const string &path, const vector<float*> &container, int bar)
+{
+	string file1(path);
+	string file2(path);
+
+	file1.append("matches.init.txt");
+	file2.append("ulavalSFM.txt");
+
+	FILE *f1 = fopen(file1.c_str(), "wb");
+	FILE *f2 = fopen(file2.c_str(), "wb");
+
+	int NP = container.size();
+
+	for (int i = 0; i < NP; i++)
+	{
+		int NM = (int) container[i][3];
+
+		fprintf(f1, "%d %d\n", (int) container[i][1], (int) container[i][2]);
+		fprintf(f1, "%d\n", NM);
+
+		int num = 4;
+
+		for(int j = 0; j < NM; j++)
+		{
+			fprintf(f1, "%d %d\n", (int) container[i][num], (int) container[i][num + 1]);
+			num += 2;
+		}
+
+		if(container[i][num] > 0)
+		{
+			//BUG À RÉGLER ICI Premiers ne sont pas affichés
+			fprintf(f2, "%d %d\n", (int) container[i][1], (int) container[i][2]);
+
+	        fprintf(f2, "%d\n", (int) container[i][num]);
+	        fprintf(f2, "%f\n", container[i][num + 10]);
+
+	        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", container[i][num + 1], container[i][num + 2], 
+	        	container[i][num + 3], container[i][num + 4], container[i][num + 5], container[i][num + 6], 
+	        	container[i][num + 7], container[i][num + 8], container[i][num + 9]);
+		}
+
+		if (bar) showProgress(i, NP, 75, 1);
+	}
+
+	if (bar) showProgress(NP, NP, 75, 0);
+
+	fclose(f1);
+	fclose(f2);
+}
+

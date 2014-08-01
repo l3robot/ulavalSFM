@@ -160,7 +160,7 @@ void worker(const util::Directory &dir, int* recv)
 			{
 				struct Matchespp container(j, i);
 
-				readAndAdjustSiftFile(dir.getPath(), dir.getImage(i), list[j], keys2);
+				readAndAdjustSiftFile(dir.getPath(), dir.getImage(j), list[j], keys2);
 
 				doMatch(keys1, keys2, container);
 
@@ -203,6 +203,28 @@ void writeSerialMatch(FILE* f, float* serialMatches)
 	}
 }
 
+
+float* searchIDX(int i, int j, const vector<float*> &container, int* reverse)
+{
+	int num = container.size();
+
+	*reverse = 0;
+
+	for(int a = 0; a < num; a++)
+	{
+		if((int) container[a][1] == i && (int) container[a][2] == j)
+			return container[a];
+		if((int) container[a][1] == j && (int) container[a][2] == i)
+		{
+			*reverse = 1;
+			return container[a];
+		}
+	}
+
+	return NULL;
+}
+
+
 /* 
 *	Function : writeSerialMatchespp
 *	Description : code to write in the file from a serial matchespp structure
@@ -210,7 +232,7 @@ void writeSerialMatch(FILE* f, float* serialMatches)
 *	path : directory path
 *	serialMatchespp : serial structure
 */
-void writeSerialMatchespp(const string &path, const vector<float*> &container, int bar)
+void writeSerialMatchespp(const string &path, const vector<float*> &container, int n, int bar)
 {
 	string file1(path);
 	string file2(path);
@@ -221,47 +243,75 @@ void writeSerialMatchespp(const string &path, const vector<float*> &container, i
 	FILE *f1 = fopen(file1.c_str(), "wb");
 	FILE *f2 = fopen(file2.c_str(), "wb");
 
-	int NP = container.size();
-	int NT = 0;
+	int ni = ( 1 + sqrt( 1 + 8 * n ) ) / 2;
 
-	fprintf(f2, "\n");
-
-	for (int i = 0; i < NP; i++)
-	{
-		int NM = (int) container[i][3];
-
-		fprintf(f1, "%d %d\n", (int) container[i][1], (int) container[i][2]);
-		fprintf(f1, "%d\n", NM);
-
-		int num = 4;
-
-		for(int j = 0; j < NM; j++)
+	for (int i = 0; i < ni; i++)
+	{	
+		for (int j = 0; j < ni; j++)
 		{
-			fprintf(f1, "%d %d\n", (int) container[i][num], (int) container[i][num + 1]);
-			num += 2;
+			int reverse;
+			float* pter = searchIDX(i, j, container, &reverse);
+
+			if (pter != NULL && !reverse)
+			{
+				int NM = (int) pter[3];
+
+				fprintf(f1, "%d %d\n", (int) pter[1], (int) pter[2]);
+				fprintf(f1, "%d\n", NM);
+
+				int num = 4;
+
+				for(int j = 0; j < NM; j++)
+				{
+					fprintf(f1, "%d %d\n", (int) pter[num], (int) pter[num + 1]);
+					num += 2;
+				}
+
+				if(pter[num] > 0)
+				{
+					fprintf(f2, "%d %d\n", (int) pter[1], (int) pter[2]);
+
+			        fprintf(f2, "%d\n", (int) pter[num]);
+			        fprintf(f2, "%f\n", pter[num + 10]);
+
+			        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", pter[num + 1], pter[num + 2], 
+			        	pter[num + 3], pter[num + 4], pter[num + 5], pter[num + 6], 
+			        	pter[num + 7], pter[num + 8], pter[num + 9]);
+				}
+			}
+			else if (pter != NULL && reverse)
+			{
+				int NM = (int) pter[3];
+
+				fprintf(f1, "%d %d\n", (int) pter[2], (int) pter[1]);
+				fprintf(f1, "%d\n", NM);
+
+				int num = 4;
+
+				for(int j = 0; j < NM; j++)
+				{
+					fprintf(f1, "%d %d\n", (int) pter[num + 1], (int) pter[num]);
+					num += 2;
+				}
+
+				if(pter[num] > 0)
+				{
+					fprintf(f2, "%d %d\n", (int) pter[2], (int) pter[1]);
+
+			        fprintf(f2, "%d\n", 0);
+			        fprintf(f2, "%f\n", 0.0);
+
+			        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", pter[num + 1], pter[num + 4], 
+			        	pter[num + 7], pter[num + 2], pter[num + 5], pter[num + 8], 
+			        	pter[num + 3], pter[num + 6], pter[num + 9]);
+				}
+			}
+
+			if (bar) showProgress(i * ni + j, ni * ni, 75, 1);
 		}
-
-		if(container[i][num] > 0)
-		{
-			NT++;
-			//BUG À RÉGLER ICI Premiers ne sont pas affichés
-			fprintf(f2, "%d %d\n", (int) container[i][1], (int) container[i][2]);
-
-	        fprintf(f2, "%d\n", (int) container[i][num]);
-	        fprintf(f2, "%f\n", container[i][num + 10]);
-
-	        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", container[i][num + 1], container[i][num + 2], 
-	        	container[i][num + 3], container[i][num + 4], container[i][num + 5], container[i][num + 6], 
-	        	container[i][num + 7], container[i][num + 8], container[i][num + 9]);
-		}
-
-		if (bar) showProgress(i, NP, 75, 1);
 	}
 
-	if (bar) showProgress(NP, NP, 75, 0);
-
-	fseek(f2, 0, SEEK_SET);
-	fprintf(f2, "%d\n", NT);
+	if (bar) showProgress(ni * ni, ni * ni, 75, 0);
 
 	fclose(f1);
 	fclose(f2);
@@ -321,7 +371,7 @@ void secretary(const string &path, int numcore, int n, int bar)
 
 	printf("--> Matching : \n");
 
-	n = n + numcore - 1;
+	int tbar = n + numcore - 1;
 
 	while(end < numcore)
 	{
@@ -331,14 +381,14 @@ void secretary(const string &path, int numcore, int n, int bar)
 		else
 			end++;
 		i++;
-		if (bar) showProgress(i, n, 75, 1);
+		if (bar) showProgress(i, tbar, 75, 1);
 	}
 
-	if (bar) showProgress(n, n, 75, 0);
+	if (bar) showProgress(n, tbar, 75, 0);
 
 	cout << "--> Writing file : " << endl;
 
-	writeSerialMatchespp(path, v_serialMatch, bar);
+	writeSerialMatchespp(path, v_serialMatch, n, bar);
 
 	cout << endl;
 }

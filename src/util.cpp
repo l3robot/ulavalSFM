@@ -448,7 +448,7 @@ int ffind(FILE* f, const string &sr, char* buffer)
 *	numcore : number of cores
 *	seconds : walltime
 */
-void createSubmit(const string &path, int numcore, int seconds)
+void createSubmit(const string &path, int numcore, int seconds, int option)
 {
 	system("mkdir ulavalSub");
 
@@ -504,7 +504,12 @@ void createSubmit(const string &path, int numcore, int seconds)
 	fprintf(fw, "%s\n", "module load compilers/gcc/4.8.0");
 	fprintf(fw, "%s\n", "module load mpi/openmpi/1.6.4_gcc");
 	fprintf(fw, "\n");
-	fprintf(fw, "%s\n", "mpiexec cDoMatch . 0");
+	if (option == 0)
+		fprintf(fw, "%s\n", "mpiexec cDoSift . 0");
+	else if (option == 1)
+		fprintf(fw, "%s\n", "mpiexec cDoMatch . 0");
+	else if (option == 2)
+		fprintf(fw, "%s\n", "mpiexec cDoAll . 0");
 
 	fclose(fw);
 }
@@ -524,16 +529,17 @@ void createOptions(const string &path)
 
 	FILE* f = fopen(file.c_str(), "w");
 
-	fprintf(f, "--output_all bundle_");
-	fprintf(f, "--constrain_focal");
-	fprintf(f, "--estimate_distortion");
-	fprintf(f, "--variable_focal_length");
-	fprintf(f, "--output bundle.out");
-	fprintf(f, "--output_dir bundle");
-	fprintf(f, "--use_focal_estimate");
-	fprintf(f, "--match_table matches.init.txt");
-	fprintf(f, "--run_bundle");
-	fprintf(f, "--constrain_focal_weight 0.0001");
+	fprintf(f, "--output_all bundle_\n");
+	fprintf(f, "--constrain_focal\n");
+	fprintf(f, "--estimate_distortion\n");
+	fprintf(f, "--variable_focal_length\n");
+	fprintf(f, "--output bundle.out\n");
+	fprintf(f, "--output_dir bundle\n");
+	fprintf(f, "--output_all bundle_\n");
+	fprintf(f, "--use_focal_estimate\n");
+	fprintf(f, "--match_table matches.init.txt\n");
+	fprintf(f, "--run_bundle\n");
+	fprintf(f, "--constrain_focal_weight 0.0001\n");
 
 	fclose(f);
 }
@@ -544,8 +550,10 @@ void Bundler(const string &path)
 
 	chdir(path.c_str());
 
+	system("mkdir bundle");
+
 	string command("bundler ");
-	command.append("list.txt ");
+	command.append("images.txt ");
 	command.append("--options_file ");
 	command.append("options.txt");
 

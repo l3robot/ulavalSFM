@@ -49,7 +49,8 @@ int main(int argc, char* argv[])
 		{
 			if (o.cluster)
 			{
-				cout << "MPI - ON SUPERCOMPTER" << endl << endl;
+				siftMCCore(o.dir.getPath(), o.cores, o.seconds);
+				o.dir.update();
 			}
 			else
 			{
@@ -61,7 +62,8 @@ int main(int argc, char* argv[])
 		{
 			if (o.cluster)
 			{
-				cout << "NO MPI - ON SUPERCOMPTER" << endl << endl;
+				siftMCCore(o.dir.getPath(), o.cores, o.seconds);
+				o.dir.update();
 			}
 			else
 			{
@@ -77,11 +79,13 @@ int main(int argc, char* argv[])
 		{
 			if (o.cluster)
 			{
+				o.dir.createIMGlist();
 				matchMCCore(o.dir.getPath(), o.cores, o.seconds);
 				o.dir.update();
 			}
 			else
 			{
+				o.dir.createIMGlist();
 				matchMCore(o.dir.getPath(), o.cores);
 				o.dir.update();
 			}
@@ -90,11 +94,13 @@ int main(int argc, char* argv[])
 		{
 			if (o.cluster)
 			{
+				o.dir.createIMGlist();
 				matchMCCore(o.dir.getPath(), o.cores, o.seconds);
 				o.dir.update();
 			}
 			else
 			{
+				o.dir.createIMGlist();
 				match1Core(o.dir);
 				o.dir.update();
 			}
@@ -112,11 +118,13 @@ int main(int argc, char* argv[])
 		{
 			if (o.cluster)
 			{
+				o.dir.createIMGlist();
 				allMCCore(o.dir.getPath(), o.cores, o.seconds);
 				o.dir.update();
 			}
 			else
 			{
+				o.dir.createIMGlist();
 				allMCore(o.dir.getPath(), o.cores);
 				o.dir.update();
 			}
@@ -125,11 +133,13 @@ int main(int argc, char* argv[])
 		{
 			if (o.cluster)
 			{
+				o.dir.createIMGlist();
 				allMCCore(o.dir.getPath(), o.cores, o.seconds);
 				o.dir.update();
 			}
 			else
 			{
+				o.dir.createIMGlist();
 				all1Core(o.dir);
 				o.dir.update();
 			}

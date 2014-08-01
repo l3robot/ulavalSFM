@@ -139,6 +139,8 @@ int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, 
 	{
 		int NI = fMatrixFilter(img2.keys, img1.keys, container.matches);
 
+		//cout << "FMATRIX : [ " << container.idx[0] << ", " << container.idx[1] << " ] : " << NI << " inliers found out of " << container.NM << endl;
+
 		if (NI >= 16) container.NM = NI;
 		else container.reset();
 	}
@@ -148,6 +150,8 @@ int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, 
 	if (container.NM > 0)
 	{
 		transformInfo(img2.keys, img1.keys, container);
+
+		//cout << "TRANSFORM : [ " << container.idx[0] << ", " << container.idx[1] << " ] : " << container.NI << " inliers found out of " << container.NM << endl;
 
 		if (container.NI < 10){ container.reset(false); return 0;}
 
@@ -190,7 +194,6 @@ void match1Core(const util::Directory &dir)
 	double the_time;
 	struct SFeatures img1;
 	struct SFeatures img2;
-	struct Matchespp container;
 
 	vector<struct Matchespp> v_serialMatch;
 
@@ -245,13 +248,13 @@ void match1Core(const util::Directory &dir)
 
 			readAndAdjustSiftFile(dir.getPath(), dir.getImage(j), file, img2);
 
+			struct Matchespp container(j, i);
+
 			if (doMatch(img1, img2, container)) NT++;
 
 			//cout << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
 	
-			if (container.NM >= 16) v_serialMatch.push_back(container);
-
-			container.reset();
+			if (container.NM) v_serialMatch.push_back(container);
 
 			while (file[file.size() - 1] != '/')
 			{
@@ -259,16 +262,16 @@ void match1Core(const util::Directory &dir)
 			}
 		}
 		prog++;
-		showProgress(prog, n, 75, 1);
+		//showProgress(prog, n, 75, 1);
 	}
 
-	showProgress(n, n, 75, 0);
+	//showProgress(n, n, 75, 0);
 
 	cout << endl;
 
 	cout << "--> Writing files :" << endl;
 
-	writeConstraints(dir.getPath(), v_serialMatch, v_serialMatch.size(), NT);
+	writeConstraints(dir.getPath(), v_serialMatch, v_serialMatch.size());
 
 	fclose(f);
 }
@@ -304,7 +307,7 @@ void matchMCCore(const string &path, int numcore, int seconds)
 
 	printf("--> Create the script : \n");
 
-	createSubmit(path, numcore, seconds);
+	createSubmit(path, numcore, seconds, 1);
 
 	printf("--> Launch the script : \n");
 

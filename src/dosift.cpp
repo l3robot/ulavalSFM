@@ -105,7 +105,7 @@ void sift1Core(const util::Directory &dir)
 
 		doSift(file, container);
 
-		cout << container.keys.size() << " sift point(s) found in " << dir.getImage(i) << endl;
+		//cout << container.keys.size() << " sift point(s) found in " << dir.getImage(i) << endl;
 
 		while (file[file.size() - 1] != '.')
 		{
@@ -158,13 +158,19 @@ void siftMCCore(const string &path, int numcore)
 {
 	stringstream c;
 
-	c << "msub submitSIFT.sh";
+	printf("--> Create the script : \n");
+
+	createSubmit(path, numcore, seconds, 0);
+
+	printf("--> Launch the script : \n");
+
+	c << "msub ulavalSub/submit.sh";
 
 	string command = c.str();
 
 	system(command.c_str());
 
-	cout << "You'll be warned by email when the process will terminate" << endl << endl;
+	cout << "Process launch, you can enter the command \"watch -n 10 showq -u $USER\" to see the progression." << endl << endl;
 }
 
 

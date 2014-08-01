@@ -23,7 +23,7 @@
 #include "dosift.h"
 #include "domatch.h"
 #include "dogeometry.h"
-#include "cDoMatch.h"
+#include "cDoMatchLib.h"
 
 using namespace std;
 using namespace cv;

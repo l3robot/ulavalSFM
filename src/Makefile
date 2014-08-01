@@ -9,7 +9,7 @@
 
 .SUFFIXES:
 
-all: main.o util.o directory.o dosift.o cDoSift.cpp cDoMatch.cpp cDoMatch.h cDoAll.cpp doall.o domatch.o dogeometry.o cdomatchlib.o
+all: main.o util.o directory.o dosift.o cDoSift.cpp cdomatchlib.o cDoMatch.cpp cDoAll.cpp doall.o domatch.o dogeometry.o cdomatchlib.o
 	g++ main.o util.o dosift.o domatch.o dogeometry.o directory.o doall.o -gdwarf-2 --std=c++11 -o ulavalSFM -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
 	mpic++ cDoSift.cpp util.o directory.o dosift.o -gdwarf-2 --std=c++11 -o cDoSift -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
 	mpic++ cDoMatch.cpp util.o directory.o dosift.o domatch.o dogeometry.o cdomatchlib.o -gdwarf-2 --std=c++11 -o cDoMatch -I../include/ -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann

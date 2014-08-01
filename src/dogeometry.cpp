@@ -359,7 +359,7 @@ void transformInfo(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2,
 *	NP : number of good pairs
 *	NT : number of good transform pairs
 */
-void writeConstraints(const string &path, const vector<struct Matchespp> &container, int NP, int NT)
+void writeConstraints(const string &path, const vector<struct Matchespp> &container, int NP)
 {
 	string file1(path);
 	string file2(path);
@@ -369,8 +369,6 @@ void writeConstraints(const string &path, const vector<struct Matchespp> &contai
 
 	FILE *f1 = fopen(file1.c_str(), "wb");
 	FILE *f2 = fopen(file2.c_str(), "wb");
-
-	fprintf(f2, "%d\n", NT);
 
 	for (int i = 0; i < NP; i++)
 	{
@@ -426,7 +424,7 @@ void geometry1Core(const util::Directory &dir)
 	transformInfo(container);
 
 	cout << "--> Write the information ..." << endl << endl;
-	writeConstraints(dir.getPath(), container.matches, container.NP, container.NT);
+	writeConstraints(dir.getPath(), container.matches, container.NP);
 
 	cout << endl;
 }
