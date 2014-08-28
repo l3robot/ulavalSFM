@@ -21,11 +21,12 @@
 int* boss(int numcore, const util::Directory &dir);
 float* serializeContainer(const struct Matchespp &container);
 void endComm(int sender);
-void worker(const util::Directory &dir, int* recv);
-void writeSerialMatch(FILE* f, float* serialMatches);
-void writeSerialMatchespp(const std::string &path, const std::vector<float*> &container, int bar);
+void worker(const util::Directory &dir, int* recv, int geo = 1);
+void writeSerialMatch(const std::string &path, const std::vector<float*> &container, int n, int bar);
+float* searchIDX(int i, int j, const std::vector<float*> &container, int* reverse);
+void writeSerialMatchespp(const std::string &path, const std::vector<float*> &container, int n, int bar);
 float* recvFromWorker(std::vector<int> &list);
-void secretary(const std::string &path, int numcore, int n, int bar);
+void secretary(const std::string &path, int numcore, int n, int bar, int geo = 1);
 
 #endif
 

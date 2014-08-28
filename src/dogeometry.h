@@ -192,7 +192,7 @@ void fMatrixFilter(struct Constraints &container);
 int fMatrixFilter(const std::vector<cv::KeyPoint> &keys1, const std::vector<cv::KeyPoint> &keys2, std::vector<cv::DMatch> &list, float treshold = 3.0);
 void transformInfo(struct Constraints &container);
 void transformInfo(const std::vector<cv::KeyPoint> &keys1, const std::vector<cv::KeyPoint> &keys2, struct Matchespp &list, float treshold = 6.0);
-void writeConstraints(const std::string &path, const std::vector<struct Matchespp> &container, int NP);
+void writeConstraints(const std::string &path, const std::vector<struct Matchespp> &container, int n, int bar = 1);
 void geometry1Core(const util::Directory &dir);
 void geometryMCore(const std::string &path, int numcore);
 void geometryMCCore(const std::string &path, int numcore);

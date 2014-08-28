@@ -30,7 +30,7 @@ dosift.o: dosift.cpp dosift.h directory.h util.h
 domatch.o: domatch.cpp domatch.h dosift.h directory.h dogeometry.h util.h
 	g++ -gdwarf-2 --std=c++11 -c domatch.cpp -o domatch.o -I../include/
 
-dogeometry.o: dogeometry.cpp dogeometry.h domatch.h directory.h
+dogeometry.o: dogeometry.cpp dogeometry.h domatch.h directory.h util.h
 	g++ -gdwarf-2 --std=c++11 -c dogeometry.cpp -o dogeometry.o -I../include/
 
 cdomatchlib.o: cDoMatchLib.cpp cDoMatchLib.h directory.h util.h dosift.h domatch.h dogeometry.h

@@ -33,12 +33,15 @@ int main(int argc, char** argv)
 	int* dist;
 	int recv[2];
 	int bar = 1;
+	int geo = 1;
 
-	//quick parsing of bar printing or not
+	//quick parsing of bar printing or not and geometric
 	if(argc > 2)
 	{
 		if(argv[2][0] == '0')
 			bar = 0;
+		if(argv[3][0] == '0')
+			geo = 0;
 	}
 
 	double the_time;
@@ -80,11 +83,11 @@ int main(int argc, char** argv)
 	{
 		int n = dir.getNBImages() * (dir.getNBImages() - 1) / 2;
 		deleteDist(dist);
-		secretary(dir.getPath(), netSize, n, bar);
+		secretary(dir.getPath(), netSize, n, bar, geo);
 	}
 	else
 	{
-		worker(dir, recv);
+		worker(dir, recv, geo);
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);

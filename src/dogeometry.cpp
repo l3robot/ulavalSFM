@@ -21,6 +21,7 @@
 #include <opencv2/nonfree/nonfree.hpp>
 #include <opencv2/features2d/features2d.hpp>
 
+#include "util.h"
 #include "domatch.h"
 #include "dogeometry.h"
 #include "directory.h"
@@ -354,12 +355,13 @@ void transformInfo(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2,
 /* 
 *	Function : writeConstraints
 *	Description : write constraints information in a file for the modified bundlerSFM
-*	
+*
+*	path : path of the working directory	
 *	container : information on matches
-*	NP : number of good pairs
-*	NT : number of good transform pairs
+*	n : number of images
+*	bar : print the progress bar or not
 */
-void writeConstraints(const string &path, const vector<struct Matchespp> &container, int NP)
+void writeConstraints(const string &path, const vector<struct Matchespp> &container, int n, int bar)
 {
 	string file1(path);
 	string file2(path);
@@ -370,29 +372,70 @@ void writeConstraints(const string &path, const vector<struct Matchespp> &contai
 	FILE *f1 = fopen(file1.c_str(), "wb");
 	FILE *f2 = fopen(file2.c_str(), "wb");
 
-	for (int i = 0; i < NP; i++)
+	int ni = ( 1 + sqrt( 1 + 8 * n ) ) / 2;
+
+	for (int i = 0; i < ni; i++)
 	{
-		fprintf(f1, "%d %d\n", container[i].idx[0], container[i].idx[1]);
-		fprintf(f1, "%d\n", container[i].NM);
-
-		for(int j = 0; j < container[i].NM; j++)
+		for (int j = 0; j < ni; j++)
 		{
-			fprintf(f1, "%d %d\n", container[i].matches[j].queryIdx, container[i].matches[j].trainIdx);
-		}
+			int reverse;
+			int idx = findIDX(i, j, container, &reverse);
 
-		if(container[i].NI > 0)
-		{
-			fprintf(f2, "%d %d\n", container[i].idx[0], container[i].idx[1]);
+			if (idx > 0 && !reverse)
+			{
+				struct Matchespp box(container[idx]);
 
-	        fprintf(f2, "%d\n", container[i].NI);
-	        fprintf(f2, "%f\n", container[i].ratio);
+				fprintf(f1, "%d %d\n", box.idx[0], box.idx[1]);
+				fprintf(f1, "%d\n", box.NM);
 
-	        const double *M = container[i].H.ptr<double>();
+				for(int j = 0; j < box.NM; j++)
+					fprintf(f1, "%d %d\n", box.matches[j].queryIdx, box.matches[j].trainIdx);
 
-	        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", M[0], M[1], M[2], M[3], M[4], M[5], M[6], M[7], M[8]);
+				if (box.NI > 0)
+				{
+					fprintf(f2, "%d %d\n", box.idx[0], box.idx[1]);
+
+			        fprintf(f2, "%d\n", box.NI);
+			        fprintf(f2, "%f\n", box.ratio);
+
+			        const double *M = box.H.ptr<double>();
+
+			        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", M[0], M[1], M[2], 
+			        											M[3], M[4], M[5], 
+			        											M[6], M[7], M[8]);
+				}
+			}
+			else if (idx > 0 && reverse)
+			{
+				struct Matchespp box(container[idx]);
+
+				fprintf(f1, "%d %d\n", box.idx[1], box.idx[0]);
+				fprintf(f1, "%d\n", box.NM);
+
+				for(int j = 0; j < box.NM; j++)
+					fprintf(f1, "%d %d\n", box.matches[j].trainIdx, box.matches[j].queryIdx);
+
+				if (box.NI > 0)
+				{
+					fprintf(f2, "%d %d\n", box.idx[1], box.idx[0]);
+
+			        fprintf(f2, "%d\n", 0);
+			        fprintf(f2, "%f\n", 0.0);
+
+			        const double *M = box.H.ptr<double>();
+
+			        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", M[0], M[3], M[6], 
+			        											M[1], M[4], M[7], 
+			        											M[2], M[5], M[8]);
+				}
+			}
+
+			if (bar) showProgress(i * ni + j, ni * ni, 75, 1);
+
 		}
 	}
 
+	if (bar) showProgress(ni * ni, ni * ni, 75, 0);
 
 	fclose(f1);
 	fclose(f2);

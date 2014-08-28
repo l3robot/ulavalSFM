@@ -30,6 +30,7 @@ struct Opts
 	int choice;
 	int cores;
 	int seconds;
+	int geo;
 	bool cluster;
 	util::Directory dir;
 
@@ -39,6 +40,7 @@ struct Opts
 		choice = 0;
 		cores = 1;
 		seconds = 300;
+		geo = 1;
 		cluster = false;
 	}
 };

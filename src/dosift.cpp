@@ -154,7 +154,7 @@ void siftMCore(const string &path, int numcore)
 *	path : working directory
 *	numcore : number of cores
 */
-void siftMCCore(const string &path, int numcore)
+void siftMCCore(const string &path, int numcore, int seconds)
 {
 	stringstream c;
 

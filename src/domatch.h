@@ -51,10 +51,11 @@ struct Matches
 
 void listDir(const util::Directory &dir, std::vector<std::string> &list);
 void readSiftFile(const std::string &file, struct SFeatures &container);
-int doMatch(const struct SFeatures &img1, const struct SFeatures &img2, struct Matchespp &container, float ratio = 0.6);
-void writeMatchFile(FILE* f, const struct Matches &container, int i, int j);
-void match1Core(const util::Directory &dir);
-void matchMCore(const std::string &path, int numcore);
+int doMatch(const struct SFeatures &img1, const struct SFeatures &img2, struct Matchespp &container, int geo = 1, float ratio = 0.6);
+int findIDX(int i, int j, const std::vector<struct Matchespp> &container, int* reverse);
+void writeMatchFile(const std::string &path, const std::vector<struct Matchespp> &container, int n, int bar = 1);
+void match1Core(const util::Directory &dir, int geo = 1);
+void matchMCore(const std::string &path, int numcore, int geo);
 void matchMCCore(const std::string &path, int numcore, int seconds);
 
 #endif

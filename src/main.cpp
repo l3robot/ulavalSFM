@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 			else
 			{
 				o.dir.createIMGlist();
-				matchMCore(o.dir.getPath(), o.cores);
+				matchMCore(o.dir.getPath(), o.cores, o.geo);
 				o.dir.update();
 			}
 		}
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 			else
 			{
 				o.dir.createIMGlist();
-				match1Core(o.dir);
+				match1Core(o.dir, o.geo);
 				o.dir.update();
 			}
 		}

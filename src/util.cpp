@@ -95,6 +95,18 @@ void parseArgs(int argc, char* argv[], Opts &o)
 						o.choice = 0;
 					}
 					break;
+					case 'g':
+					i++;
+					if(i < argc)
+					{
+						if(!sscanf(argv[i], "%d", &o.geo))o.geo = 1;
+					}
+					else
+					{
+						i = argc;
+						o.choice = 0;
+					}
+					break;
 					case 't':
 					i++;
 					if(i < argc)

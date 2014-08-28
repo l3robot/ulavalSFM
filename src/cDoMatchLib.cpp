@@ -124,8 +124,9 @@ void endComm(int sender)
 *	
 *	dir : directory information
 *	recv : relative information about distribution
+*	geo : if to do geometry or not
 */
-void worker(const util::Directory &dir, int* recv)
+void worker(const util::Directory &dir, int* recv, int geo)
 {
 	int aim = recv[0];
 	int end = recv[1];
@@ -162,7 +163,7 @@ void worker(const util::Directory &dir, int* recv)
 
 				readAndAdjustSiftFile(dir.getPath(), dir.getImage(j), list[j], keys2);
 
-				doMatch(keys1, keys2, container);
+				doMatch(keys1, keys2, container, geo);
 
 				serialMatch = serializeContainer(container);
 
@@ -186,24 +187,81 @@ void worker(const util::Directory &dir, int* recv)
 
 /* 
 *	Function : writeSerialMatch
-*	Description : code to write in the file from a serial matches structure
+*	Description : code to write in the file from a serial matches structure, without geo
 *	
 *	f : file descriptor
-*	serialMatches : serial structure
+*	container : contains matches information
+*	n : number of images
+*	bar : to print bar or not
 */
-void writeSerialMatch(FILE* f, float* serialMatches)
+void writeSerialMatch(const string &path, const vector<float*> &container, int n, int bar)
 {
-	fprintf(f, "%d %d\n%d\n", (int) serialMatches[2], (int) serialMatches[3], (int) serialMatches[1]);
+	string file1(path);
 
-	int end = (int) serialMatches[1] * 2 + 4;
+	file1.append("matches.init.txt");
 
-	for(int i = 4; i < end; i+=2)
-	{
-		fprintf(f, "%d %d\n", (int) serialMatches[i], (int) serialMatches[i+1]);
+	FILE *f1 = fopen(file1.c_str(), "wb");
+
+	int ni = ( 1 + sqrt( 1 + 8 * n ) ) / 2;
+
+	for (int i = 0; i < ni; i++)
+	{	
+		for (int j = 0; j < ni; j++)
+		{
+			int reverse;
+			float* pter = searchIDX(i, j, container, &reverse);
+
+			if (pter != NULL && !reverse)
+			{
+				int NM = (int) pter[3];
+
+				fprintf(f1, "%d %d\n", (int) pter[1], (int) pter[2]);
+				fprintf(f1, "%d\n", NM);
+
+				int num = 4;
+
+				for(int j = 0; j < NM; j++)
+				{
+					fprintf(f1, "%d %d\n", (int) pter[num], (int) pter[num + 1]);
+					num += 2;
+				}
+			}
+			else if (pter != NULL && reverse)
+			{
+				int NM = (int) pter[3];
+
+				fprintf(f1, "%d %d\n", (int) pter[2], (int) pter[1]);
+				fprintf(f1, "%d\n", NM);
+
+				int num = 4;
+
+				for(int j = 0; j < NM; j++)
+				{
+					fprintf(f1, "%d %d\n", (int) pter[num + 1], (int) pter[num]);
+					num += 2;
+				}
+			}
+
+			if (bar) showProgress(i * ni + j, ni * ni, 75, 1);
+		}
 	}
+
+	if (bar) showProgress(ni * ni, ni * ni, 75, 0);
+
+	fclose(f1);
 }
 
-
+/* 
+*	Function : searchIDX
+*	Description : code to search the tab idx of a certain i and j match
+*	
+*	i : first image
+*	j : second image
+*	container : vector of matches informations
+*	reverse : indicate if found but in the reverse order
+*
+*	return : the serial information if found, else NULL
+*/
 float* searchIDX(int i, int j, const vector<float*> &container, int* reverse)
 {
 	int num = container.size();
@@ -230,7 +288,9 @@ float* searchIDX(int i, int j, const vector<float*> &container, int* reverse)
 *	Description : code to write in the file from a serial matchespp structure
 *	
 *	path : directory path
-*	serialMatchespp : serial structure
+*	container : contains the matches information
+*	n : number of images
+*	bar : to print bar or not
 */
 void writeSerialMatchespp(const string &path, const vector<float*> &container, int n, int bar)
 {
@@ -241,6 +301,7 @@ void writeSerialMatchespp(const string &path, const vector<float*> &container, i
 	file2.append("ulavalSFM.txt");
 
 	FILE *f1 = fopen(file1.c_str(), "wb");
+
 	FILE *f2 = fopen(file2.c_str(), "wb");
 
 	int ni = ( 1 + sqrt( 1 + 8 * n ) ) / 2;
@@ -271,12 +332,12 @@ void writeSerialMatchespp(const string &path, const vector<float*> &container, i
 				{
 					fprintf(f2, "%d %d\n", (int) pter[1], (int) pter[2]);
 
-			        fprintf(f2, "%d\n", (int) pter[num]);
-			        fprintf(f2, "%f\n", pter[num + 10]);
+				    fprintf(f2, "%d\n", (int) pter[num]);
+				    fprintf(f2, "%f\n", pter[num + 10]);
 
-			        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", pter[num + 1], pter[num + 2], 
-			        	pter[num + 3], pter[num + 4], pter[num + 5], pter[num + 6], 
-			        	pter[num + 7], pter[num + 8], pter[num + 9]);
+				    fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", pter[num + 1], pter[num + 2], 
+				     	pter[num + 3], pter[num + 4], pter[num + 5], pter[num + 6], 
+				       	pter[num + 7], pter[num + 8], pter[num + 9]);
 				}
 			}
 			else if (pter != NULL && reverse)
@@ -357,12 +418,17 @@ float* recvFromWorker(vector<int> &list)
 *	
 *	path : directory path
 *	numcore : number of cores
+*	n : number of images
+*	bar : if to print the bar or not
+*	geo : if to print geo information or not
 */
-void secretary(const string &path, int numcore, int n, int bar)
+void secretary(const string &path, int numcore, int n, int bar, int geo)
 {
 	vector<float*> v_serialMatch;
 	vector<int> list;
 	float* serialMatch;
+
+	printf("GEO : %d\n", geo);
 
 	int end = 1, i = 0;
 
@@ -388,7 +454,10 @@ void secretary(const string &path, int numcore, int n, int bar)
 
 	cout << "--> Writing file : " << endl;
 
-	writeSerialMatchespp(path, v_serialMatch, n, bar);
+	if (geo)
+		writeSerialMatchespp(path, v_serialMatch, n, bar);
+	else
+		writeSerialMatch(path, v_serialMatch, n, bar);
 
 	cout << endl;
 }

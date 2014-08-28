@@ -86,7 +86,7 @@ void doSift(const std::string &path, struct SFeatures &container);
 void writeSiftFile(const std::string &file, const struct SFeatures &container);
 void sift1Core(const util::Directory &dir);
 void siftMCore(const std::string &path, int numcore);
-void siftMCCore(const std::string &path, int numcore);
+void siftMCCore(const std::string &path, int numcore, int seconds);
 
 
 

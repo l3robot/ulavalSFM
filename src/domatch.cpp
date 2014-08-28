@@ -106,10 +106,12 @@ void readSiftFile(const string &file, SFeatures &container)
 *	img1 : container with img1 sift information
 *	img2 : container with img2 sift information
 *	container : matches information
+*	geo : if to do geometry or not
+*	container : ratio for the distance filter
 *
 *	return : 1 if NI > 0, else 0
 */
-int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, float ratio)
+int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, int geo, float ratio)
 {
 	FlannBasedMatcher matcher(new flann::KDTreeIndexParams(16), new flann::SearchParams(64));
 	vector<vector<DMatch> > two_matches;
@@ -125,63 +127,137 @@ int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, 
 		}
 	}
 
-	//Prune double matches
-	struct Matchespp new_container(container.idx);
-	
-	pruneDoubleMatch(new_container, container);
-
-	if (new_container.NM >= 20) container.assign(new_container);
-	else container.reset();
-	///////////////////////
-
-	//FMatrix filter
-	if (container.NM > 0)
+	if (geo)
 	{
-		int NI = fMatrixFilter(img2.keys, img1.keys, container.matches);
 
-		//cout << "FMATRIX : [ " << container.idx[0] << ", " << container.idx[1] << " ] : " << NI << " inliers found out of " << container.NM << endl;
+		//Prune double matches
+		struct Matchespp new_container(container.idx);
+		
+		pruneDoubleMatch(new_container, container);
 
-		if (NI >= 16) container.NM = NI;
+		if (new_container.NM >= 20) container.assign(new_container);
 		else container.reset();
+		///////////////////////
+
+		//FMatrix filter
+		if (container.NM > 0)
+		{
+			int NI = fMatrixFilter(img2.keys, img1.keys, container.matches);
+
+			//cout << "FMATRIX : [ " << container.idx[0] << ", " << container.idx[1] << " ] : " << NI << " inliers found out of " << container.NM << endl;
+
+			if (NI >= 16) container.NM = NI;
+			else container.reset();
+		}
+		////////////////
+
+		//Transform info
+		if (container.NM > 0)
+		{
+			transformInfo(img2.keys, img1.keys, container);
+
+			//cout << "TRANSFORM : [ " << container.idx[0] << ", " << container.idx[1] << " ] : " << container.NI << " inliers found out of " << container.NM << endl;
+
+			if (container.NI < 10){ container.reset(false); return 0;}
+
+			return 1;
+		}
+		////////////////
+
 	}
-	////////////////
-
-	//Transform info
-	if (container.NM > 0)
-	{
-		transformInfo(img2.keys, img1.keys, container);
-
-		//cout << "TRANSFORM : [ " << container.idx[0] << ", " << container.idx[1] << " ] : " << container.NI << " inliers found out of " << container.NM << endl;
-
-		if (container.NI < 10){ container.reset(false); return 0;}
-
-		return 1;
-	}
-	////////////////
 
 	return 0;
 }
 
+/* 
+*	Function : findIDX
+*	Description : find idx of a match
+*	
+*	i : idx of image 1
+*	j : idx of image 2
+*	container : vector filled with all the matches
+*	reverse : indicate if the images idx are in order or reversed
+*
+*	return : -1 if not found, idx if found
+*/
+int findIDX(int i, int j, const vector<struct Matchespp> &container, int* reverse)
+{
+	int num = container.size();
+
+	*reverse = 0;
+
+	for(int a = 0; a < num; a++)
+	{
+		if((int) container[a].idx[0] == i && (int) container[a].idx[1] == j)
+			return a;
+		if((int) container[a].idx[0] == j && (int) container[a].idx[1] == i)
+		{
+			*reverse = 1;
+			return a;
+		}
+	}
+
+	return -1;
+}
+
 
 /* 
-*	Function : writeMatch
-*	Description : write match in a file
+*	Function : writeMatchFile
+*	Description : write matches in a file
 *	
-*	f : file descriptor
+*	path : path of the working directory
 *	container : container with matches information
-*	i : index i
-*	j : index j
+*	n : numbre of images
+*	bar : print or not a progress bar
 */
-void writeMatchFile(FILE* f, const Matchespp &container, int j, int i)
+void writeMatchFile(const string &path, const vector<struct Matchespp> &container, int n, int bar)
 {
-	fprintf(f, "%d %d\n", j, i);
-	fprintf(f, "%d\n", container.NM);
+	string file(path);
 
-	for(int i = 0; i < container.NM; i++)
+	file.append("matches.init.txt");
+
+	FILE* f = fopen(file.c_str(), "wb");
+
+	int ni = ( 1 + sqrt( 1 + 8 * n ) ) / 2;
+
+	for (int i = 0; i < ni; i++)
 	{
-		fprintf(f, "%d %d\n", container.matches[i].queryIdx, container.matches[i].trainIdx);
+		for (int j = 0; j < ni; j++)
+		{
+			int reverse;
+			int idx = findIDX(i, j, container, &reverse);
+
+			if (idx > 0 && !reverse)
+			{
+				struct Matchespp box(container[idx]);
+
+				fprintf(f, "%d %d\n", box.idx[0], box.idx[1]);
+				fprintf(f, "%d\n", box.NM);
+
+				for(int j = 0; j < box.NM; j++)
+					fprintf(f, "%d %d\n", box.matches[j].queryIdx, box.matches[j].trainIdx);
+			}
+			else if (idx > 0 && reverse)
+			{
+				struct Matchespp box(container[idx]);
+
+				fprintf(f, "%d %d\n", box.idx[1], box.idx[0]);
+				fprintf(f, "%d\n", box.NM);
+
+				for(int j = 0; j < box.NM; j++)
+					fprintf(f, "%d %d\n", box.matches[j].trainIdx, box.matches[j].queryIdx);
+			}
+
+			if (bar) showProgress(i * ni + j, ni * ni, 75, 1);
+
+		}
 	}
+
+	if (bar) showProgress(ni * ni, ni * ni, 75, 0);
+
+	fclose(f);
 }
+
 
 /* 
 *	Function : match1Core
@@ -189,7 +265,7 @@ void writeMatchFile(FILE* f, const Matchespp &container, int j, int i)
 *	
 *	dir : directory information
 */
-void match1Core(const util::Directory &dir)
+void match1Core(const util::Directory &dir, int geo)
 {
 	double the_time;
 	struct SFeatures img1;
@@ -250,7 +326,7 @@ void match1Core(const util::Directory &dir)
 
 			struct Matchespp container(j, i);
 
-			if (doMatch(img1, img2, container)) NT++;
+			if (doMatch(img1, img2, container, geo)) NT++;
 
 			//cout << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
 	
@@ -260,18 +336,21 @@ void match1Core(const util::Directory &dir)
 			{
 				file.pop_back();
 			}
+
+			prog++;
+			showProgress(prog, n, 75, 1);
+
 		}
-		prog++;
-		//showProgress(prog, n, 75, 1);
 	}
 
-	//showProgress(n, n, 75, 0);
+	showProgress(n, n, 75, 0);
 
 	cout << endl;
 
 	cout << "--> Writing files :" << endl;
 
-	writeConstraints(dir.getPath(), v_serialMatch, v_serialMatch.size());
+	if (geo) writeConstraints(dir.getPath(), v_serialMatch, n);
+	else writeMatchFile(dir.getPath(), v_serialMatch, n);
 
 	fclose(f);
 }
@@ -283,11 +362,13 @@ void match1Core(const util::Directory &dir)
 *	path : working directory
 *	numcore : number of cores
 */
-void matchMCore(const string &path, int numcore)
+void matchMCore(const string &path, int numcore, int geo)
 {
 	stringstream c;
-
-	c << "mpirun -n " << numcore << " cDoMatch " << path;
+	if (geo)
+		c << "mpirun -n " << numcore << " cDoMatch " << path;
+	else
+		c << "mpirun -n " << numcore << " cDoMatch " << path << " 1 0";
 
 	string command = c.str();
 
