@@ -24,6 +24,9 @@ Usage
 * -n [1-*]     : Specify the number of core(s) wanted (default 1, means no mpi)
 * -s [dir]     : To find sift features of the directory images
 * -m [dir]     : To match sift features of the directory images
+
+Don't use these options for now, a simplier python script will follow to do all the algorithms :
+
 * -b [dir]     : To run bundler on the given directory
 * -a [dir]     : Do something alike to "-s dir", "-m dir" and then "-b dir"
 
