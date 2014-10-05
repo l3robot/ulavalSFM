@@ -17,20 +17,20 @@ cd lib/
 git clone https://github.com/Itseez/opencv >> out.txt 2>&1
 if [ $? -eq 0 ]; then
 	echo "[ ERROR : cloning OpenCV, check out.txt for more information ]"
-else; then
+else
 	echo "[ Cloning OpenCV ... done ]"
 fi
 git clone https://github.com/LERobot/bundler_sfm >> out.txt 2>&1
 if [ $? -eq 0 ]; then
 	echo "[ ERROR : Cloning BundlerSFM, check out.txt for more information ]"
-else; then
+else
 	echo "[ Cloning BundlerSFM ... done ]"
 fi
 
 cd opencv/
 if [ -d build ]; then
 	echo "[ build directory already exists]"
-else; then
+else
 	mkdir build/
 	echo "[ build directory creation ... done]"
 fi
@@ -39,13 +39,13 @@ cmake -D CMAKE_INSTALL_PREFIX="../../../" -D CMAKE_LIBRARY_PATH="../../" -D CMAK
 make -j $(N) >> out.txt 2>&1
 if [ $? -eq 0 ]; then
 	echo "[ ERROR : Building OpenCV, check out.txt for more information ]"
-else; then
+else
 	echo "[ Building OpenCV ... done ]"
 fi
 make install >> out.txt 2>&1
 if [ $? -eq 0 ]; then
 	echo "[ ERROR : Installing OpenCV, check out.txt for more information ]"
-else; then
+else
 	echo "[ Installing OpenCV ... done ]"
 fi
 
@@ -54,14 +54,14 @@ make clean >> out.txt 2>&1
 make -j 2 >> out.txt 2>&1
 if [ $? -eq 0 ]; then
 	echo "[ ERROR : Building BundlerSFM, check out.txt for more information ]"
-else; then
+else
 	echo "[ Building BundlerSFM ... done ]"
 fi
 mv bin/* ../../bin/ >> out.txt 2>&1
 mv lib/* ../../lib/ >> out.txt 2>&1
 if [ $? -eq 0 ]; then
 	echo "[ ERROR : Installing BundlerSFM, check out.txt for more information ]"
-else; then
+else
 	echo "[ Installing BundlerSFM ... done ]"
 fi
 
@@ -70,13 +70,13 @@ make clean >> out.txt 2>&1
 make -j 2 out.txt >> 2>&1
 if [ $? -eq 0 ]; then
 	echo "[ ERROR : Building ulavalSFM, check out.txt for more information ]"
-else; then
+else
 	echo "[ Building ulavalSFM ... done ]"
 fi
 make install out.txt >> 2>&1
 if [ $? -eq 0 ]; then
 	echo "[ ERROR : Installing ulavalSFM, check out.txt for more information ]"
-else; then
+else
 	echo "[ Installing ulavalSFM ... done ]"
 fi
 
