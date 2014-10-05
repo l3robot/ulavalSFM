@@ -36,13 +36,13 @@ ulavalSFM Manager Usage
 * -h  ---      : Print this menu
 * -v  ---      : Print the software version
 * -l [dir]     : Print information about the directory
-* -c [0-1]     : On cluster or not. If 1, a script .sh file will be generated (default 0)
 * -n [1-*]     : Specify the number of core(s) wanted (default 1, means no mpi)
 * -s [dir]     : To find sift features of the directory images
 * -m [dir]     : To match sift features of the directory images
 
 Don't use these options for now, a simplier python script will follow to do all the algorithms :
 
+* -c [0-1]     : On cluster or not. If 1, a script .sh file will be generated (default 0)
 * -b [dir]     : To run bundler on the given directory
 * -a [dir]     : Do something alike to "-s dir", "-m dir" and then "-b dir"
 
