@@ -42,7 +42,7 @@ DO :
 git clone https://github.com/LERobot/ulavalSFM
 cd <ulavalSFM>/
 chmod +x install.sh
-./install.sh
+source install.sh
 ```
 
 This script will :
