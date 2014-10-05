@@ -20,6 +20,7 @@
 #
 # #### END LICENSE BLOCK ####
 
+# Modified version -- by Émile Robitaille L3Robot
 # À FAIRE
 # Faire une création de liste, seulement liée au matching pour l'instant, problème
 # Faire une version pour colosse 
