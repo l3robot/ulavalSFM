@@ -5,7 +5,7 @@ Version : 3.0
 
 Author : Émile Robitaille @ LERobot
 
-Last update : 07/30/2014
+Last update : 10/05/2014
 
 DEPENDENCIES
 ------------
