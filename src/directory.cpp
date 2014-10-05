@@ -58,6 +58,8 @@ Directory::Directory(char* p_path)
 	}
 
 	closedir(dir);
+	
+	createIMGlist();
 }
 
 void Directory::assign(char* p_path)
