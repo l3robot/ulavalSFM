@@ -28,8 +28,8 @@ Python script usage (multicores)
 
 SOON !!
 
-Usage
------
+ulavalSFM Manager Usage
+-----------------------
 
 #### Displayed on terminal
 
