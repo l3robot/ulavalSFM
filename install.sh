@@ -39,7 +39,7 @@ else
 fi
 cd build/
 cmake -D CMAKE_INSTALL_PREFIX="../../../" -D CMAKE_LIBRARY_PATH="../../" -D CMAKE_INCLUDE_PATH="../../../include/" .. >> out.txt 2>&1
-make -j $(N) >> $OUT 2>&1
+make -j $N >> $OUT 2>&1
 if [ $? -ne 0 ]; then
 	echo "[ ERROR : Building OpenCV, check out.txt for more information ]"
 	return
