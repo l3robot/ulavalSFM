@@ -427,7 +427,7 @@ def sift_images(images, cores, verbose=False, force_rebuild=False):
     for i in images:
         key_filename = i.rsplit('.', 1)[0] + ".key"
         if not force_rebuild and os.path.isfile(key_filename + ".gz") or os.path.isfile(key_filename):
-            if verbose: print("Skipping file {0}".format(image))
+            if verbose: print("Skipping file {0}".format(i))
         else:
             todo.append(i)
 
@@ -569,7 +569,7 @@ def run_bundler(images=[], verbose=False, parallel=True, force_rebuild=False,
 
     with open("images.txt", "r") as fp:
         images = fp.read()
-        images = tmp.split()
+        images = images.split()
 
     if verbose:
         print("Here's the image list :")
