@@ -31,7 +31,7 @@ else
 	echo "[ Cloning BundlerSFM ... done ]"
 fi
 
-cd opencv/
+cd opencv-2.4.9/
 if [ -d build ]; then
 	echo "[ build directory already exists]"
 else
