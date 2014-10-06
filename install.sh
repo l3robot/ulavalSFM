@@ -15,7 +15,8 @@ export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"
 echo "[ Adding library path in .bashrc file ... done ]"
 
 cd lib/
-git clone https://github.com/Itseez/opencv >> $OUT 2>&1
+#only 2.4.9 branch
+git clone -b 2.4.9.x-prep --single-branch https://github.com/Itseez/opencv.git opencv-2.4.9 >> $OUT 2>&1
 if [ $? -ne 0 ]; then
 	echo "[ ERROR : cloning OpenCV, check out.txt for more information ]"
 	return
