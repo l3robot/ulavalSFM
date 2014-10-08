@@ -23,7 +23,12 @@ if [ $? -ne 0 ]; then
 else
 	echo "[ Cloning OpenCV ... done ]"
 fi
-git clone https://github.com/LERobot/bundler_sfm >> $OUT 2>&1
+#For colosse cluster users
+if [$1 -eq "-colosse"]; then
+	git clone https://github.com/lvsn/bundler_sfm >> $OUT 2>&1
+else
+	git clone https://github.com/LERobot/bundler_sfm >> $OUT 2>&1
+fi
 if [ $? -ne 0 ]; then
 	echo "[ ERROR : Cloning BundlerSFM, check out.txt for more information ]"
 	return
