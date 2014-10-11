@@ -24,7 +24,7 @@ else
 	echo "[ Cloning OpenCV ... done ]"
 fi
 #For colosse cluster users
-if [ $1 -eq "-colosse" ]; then
+if [ $1 == "-colosse" ]; then
 	git clone https://github.com/lvsn/bundler_sfm >> $OUT 2>&1
 else
 	git clone https://github.com/LERobot/bundler_sfm >> $OUT 2>&1
