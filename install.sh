@@ -81,14 +81,14 @@ fi
 
 cd ../../src/
 make clean >> $OUT 2>&1
-make -j 2 $OUT >> 2>&1
+make -j 2 >> $OUT 2>&1
 if [ $? -ne 0 ]; then
 	echo "[ ERROR : Building ulavalSFM, check out.txt for more information ]"
 	return
 else
 	echo "[ Building ulavalSFM ... done ]"
 fi
-make install $OUT >> 2>&1
+make install >> $OUT 2>&1
 if [ $? -ne 0 ]; then
 	echo "[ ERROR : Installing ulavalSFM, check out.txt for more information ]"
 	return
