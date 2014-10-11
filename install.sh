@@ -38,10 +38,10 @@ fi
 
 cd opencv-2.4.9/
 if [ -d build ]; then
-	echo "[ build directory already exists]"
+	echo "[ WARNING : build directory already exists]"
 else
 	mkdir build/
-	echo "[ build directory creation ... done]"
+	echo "[ Creation of build directory ... done]"
 fi
 cd build/
 cmake -D CMAKE_INSTALL_PREFIX="../../../" -D CMAKE_LIBRARY_PATH="../../" -D CMAKE_INCLUDE_PATH="../../../include/" .. >> out.txt 2>&1
@@ -69,6 +69,7 @@ if [ $? -ne 0 ]; then
 else
 	echo "[ Building BundlerSFM ... done ]"
 fi
+rm -f bin/bundler.py
 mv bin/* ../../bin/ >> $OUT 2>&1
 mv lib/* ../../ >> $OUT 2>&1
 if [ $? -ne 0 ]; then
