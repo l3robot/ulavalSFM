@@ -16,4 +16,10 @@ Utilisateurs de Colosse, supercalculateur de l'Université Laval
 
 ###### Installation
 
+```Bash
+git clone https://github.com/LERobot/ulavalSFM
+cd <ulavalSFM>/
+chmod +x install.sh
+source install.sh
+```
 
