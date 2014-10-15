@@ -22,10 +22,10 @@
 
 # Modified version -- by Émile Robitaille L3Robot
 # À FAIRE
-# Faire une création de liste, seulement liée au matching pour l'instant, problème
+# Faire une création de liste, seulement liée au matching pour l'instant, léger problème
 # Faire une version pour colosse 
-#
-#
+# Modifier le code des sifts et des matchs pour qu'il puisse prendre une liste en paramètre
+# Avoir une meilleure gestion de scratch
 #
 
 from __future__ import print_function
@@ -342,6 +342,54 @@ CCD_WIDTHS = {
      "SONY DSC-W80"                              : 5.75,   # 1/2.5"
 }
 
+def findRAP():
+     homePath = os.getenv("HOME")
+     ulavalPath = homePath + "/.ulavalsfm"
+     f = open(ulavalPath, "r")
+     content = f.read()
+     i = content.find("RAP:")
+     i+=4
+     return content[i:i+10]
+
+def create_submit(nc, walltime):
+     RAP = findRAP()
+     actualPath = os.getenv("PWD")
+     binPath = actualPath + "/../"
+     scratchPath = "/scratch/" + RAP
+
+     header = "# Shell used to launch the SfM\n"
+     interpreter = "#PBS -S /bin/bash\n"
+     name = "#PBS -N ulavalsfm # Nom de la tâche\n"
+     RAP = "#PBS -A " + RAP + " # Identifiant Rap; ID\n"
+     cores = "#PBS -l nodes=" + str(int(nc/8)) + ":ppn=8 # Nombre de noeuds et nombre de processus par noeud\n"
+     wall = "#PBS -l walltime=" + str(walltime) + " # Durée en secondes\n"
+     out = "#PBS -o ./out.txt #sortie\n\n"
+
+     addPath = "export PATH=" + binPath + ":$PATH\n"
+     move = "mv . " + scratchPath + "\n"
+     path = "cd " + scratchPath + "\n\n"
+
+     dosift = "mpirun cDoSift . 0\n"
+     domatch = "mpirun cDoMatch . 0\n\n"
+
+     moveback = "mv . " + binPath + "\n"
+     pathback = "cd " + actualPath + "\n"
+
+     f = open("submit.sh", "w")
+
+     f.write(header + interpreter + name + RAP + cores + wall + out + addPath + move + path + dosift + domatch + moveback + pathback);
+
+     f.close()
+
+def check_process(pid):
+     user = os.getenv("USER")
+
+     check = os.popen("showq -u " + user).read()
+
+     while check.find(pid) != -1:
+          check = os.popen("showq -u " + user).read()
+          os.sleep(5)
+
 def get_images():
     """Searches the present directory for JPEG images."""
     images = glob.glob("./*.[jJ][pP][gG]")
@@ -546,26 +594,31 @@ def bundler(image_list=None, options_file=None, shell=False, *args, **kwargs):
         os.remove(image_list_file)
 
 def run_bundler(images=[], verbose=False, parallel=True, force_rebuild=False,
-                flmul=1.0, nc=1):
+                flmul=1.0, nc=1, cluster=False, walltime=300):
     """Prepare images and run bundler with default options."""
 
     # Create list of images
     if len(images) == 0:
         images = get_images()
 
-    # Extract SIFT features from images
-    if verbose: print("[- Extracting keypoints -]")
-    sift_images(
-        images,
-        nc,
-        verbose=verbose,
-        force_rebuild=force_rebuild,
-    )
+    if not cluster:
+         # Extract SIFT features from images
+         if verbose: print("[- Extracting keypoints -]")
+         sift_images(
+             images,
+             nc,
+             verbose=verbose,
+             force_rebuild=force_rebuild,
+         )
 
-    # Match images
-    if verbose: print("[- Matching keypoints (this can take a while) -]")
-    match_images(nc, verbose=verbose,
-                 force_rebuild=force_rebuild)
+         # Match images
+         if verbose: print("[- Matching keypoints (this can take a while) -]")
+         match_images(nc, verbose=verbose,
+                      force_rebuild=force_rebuild)
+     else :
+          if verbose: print("[- Sift search and matching phase on cluster using " + str(int(nc/8)) + " core(s)")
+          create_submit(nc, walltime)
+          check_process()
 
     with open("images.txt", "r") as fp:
         images = fp.read()
@@ -617,6 +670,10 @@ if __name__ == '__main__':
         help="focal length multiplier (applied on exif data)", default=1.0)
     parser.add_argument('--number-cores', type=int,
         help="Number of cores for sift research and matching phase", default=1)
+    parser.add_argument('--walltime', type=int,
+        help="Number of second until the end of the sift/matching", default=300)
+    parser.add_argument('--cluster', action='store_true',
+        help="If to be run on cluster or not", default=False)
     args = parser.parse_args()
 
     if args.extract_focal:
@@ -632,5 +689,7 @@ if __name__ == '__main__':
             force_rebuild=args.force_rebuild,
             flmul=args.focal_length_multiplier,
             nc=args.number_cores,
+            cluster=args.cluster,
+            walltime=args.walltime,
         )
 
