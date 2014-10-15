@@ -9,6 +9,12 @@
 N="1"
 OUT="$PWD/out.txt"
 
+if [ $# -ne 1 ]; then
+	arg1="-nocolosse"
+else
+	arg1=$1
+fi
+
 #echo "#Added by ulavalSFM" >> $HOME/.bashrc
 #echo "export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"" >> $HOME/.bashrc
 export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"
@@ -24,7 +30,7 @@ else
 	echo "[ Cloning OpenCV ... done ]"
 fi
 #For colosse cluster users
-if [ $1 == "-colosse" ]; then
+if [ $arg1 == "-colosse" ]; then
 	git clone https://github.com/lvsn/bundler_sfm >> $OUT 2>&1
 else
 	git clone https://github.com/LERobot/bundler_sfm >> $OUT 2>&1
