@@ -33,6 +33,7 @@ mv <your_image_dir_path> <your_ulavalsfm_bin_path>
 cd <your_ulavalsfm_bin_path>/<your_image_dir>
 python ../bundler.py --no-parallel --verbose --number-cores <number_cores_u_want> --cluster --walltime <walltime_u_want>
 ```
+You can change some bundlerSFM options if you want. Refer to BundlerSFM repo : https://github.com/snavely/bundler_sfm.
 
 ulavalSFM Manager Usage
 -----------------------
@@ -79,7 +80,7 @@ Note that OpenCV does not give scale so I used size instead to make the format c
 
 #### Parallel design
 
-For now, I used a parallel design built on a relation root, workers, secretary. It is built using MPI.
+For now, I used a parallel design based on a relation between root, workers and secretary. It is built using MPI.
 
 ###### Sift parallel design
 
