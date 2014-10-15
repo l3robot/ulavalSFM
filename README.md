@@ -26,7 +26,13 @@ You can change some bundlerSFM options if you want. Refer to BundlerSFM repo : h
 Python script usage (multicores)
 --------------------------------
 
-SOON !!
+--Unstable--
+
+```Bash
+mv <your_image_dir_path> <your_ulavalsfm_bin_path>
+cd <your_ulavalsfm_bin_path>/<your_image_dir>
+python ../bundler.py --no-parallel --verbose --number-cores <number_cores_u_want> --cluster --walltime <walltime_u_want>
+```
 
 ulavalSFM Manager Usage
 -----------------------
