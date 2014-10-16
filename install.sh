@@ -94,7 +94,7 @@ if [ $? -ne 0 ]; then
 else
 	echo "[ Building ulavalSFM ... done ]"
 fi
-make install >> $OUT 2>&1
+make cinstall >> $OUT 2>&1
 if [ $? -ne 0 ]; then
 	echo "[ ERROR : Installing ulavalSFM, check out.txt for more information ]"
 	return
