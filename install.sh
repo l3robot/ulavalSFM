@@ -77,7 +77,7 @@ else
 fi
 rm -f bin/bundler.py
 mv bin/* ../../bin/ >> $OUT 2>&1
-mv lib/* ../../ >> $OUT 2>&1
+mv lib/* ../ >> $OUT 2>&1
 if [ $? -ne 0 ]; then
 	echo "[ ERROR : Installing BundlerSFM, check out.txt for more information ]"
 	return
