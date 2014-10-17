@@ -26,13 +26,15 @@
 # Faire une version pour colosse 
 # Modifier le code des sifts et des matchs pour qu'il puisse prendre une liste en paramètre
 # Avoir une meilleure gestion de scratch
-#
+# Améliorer le temps d'attente avant de partir BundlerSFM !! Rajouter progression / Regarder PID
+# Essayer de deviner le temps de walltime avec une fonction en faisant plein de tests
 
 from __future__ import print_function
 
 import argparse
 import gzip
 import os
+import time
 import sys
 import glob
 import subprocess
@@ -388,7 +390,7 @@ def check_process(pid):
 
      while check.find(pid) != -1:
           check = os.popen("showq -u " + user).read()
-          os.sleep(5)
+          time.sleep(5)
 
 def get_images():
     """Searches the present directory for JPEG images."""
@@ -615,10 +617,11 @@ def run_bundler(images=[], verbose=False, parallel=True, force_rebuild=False,
          if verbose: print("[- Matching keypoints (this can take a while) -]")
          match_images(nc, verbose=verbose,
                       force_rebuild=force_rebuild)
-     else :
-          if verbose: print("[- Sift search and matching phase on cluster using " + str(int(nc/8)) + " core(s)")
-          create_submit(nc, walltime)
-          check_process()
+    else :
+         if verbose: print("[- Sift search and matching phase on cluster using " + str(int(nc/8)) + " core(s)")
+         create_submit(nc, walltime)
+         os.system("msub submit.sh")
+         check_process()
 
     with open("images.txt", "r") as fp:
         images = fp.read()
