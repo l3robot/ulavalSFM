@@ -22,6 +22,8 @@ RAP:<Votre RAP colosse ici>;
 
 ###### Installation
 
+- Installer anaconda version Linux dans votre home https://store.continuum.io/cshop/anaconda/
+
 ```Bash
 git clone https://github.com/LERobot/ulavalSFM
 cd <ulavalSFM>/
