@@ -15,10 +15,10 @@ RAP:<Votre RAP colosse ici>;
 
 ###### Module à charger/changer
 
-- module swap compilers/intel compilers/gcc/4.8
 - module add apps/cmake/2.8.12.1
 - module add apps/git/1.8.5.3
 - module add libs/mkl/11.1
+- module add libs/opencv/2.4.9
 
 ###### Installation
 
