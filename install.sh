@@ -21,6 +21,8 @@ export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"
 echo "[ Adding library path in .bashrc file ... done ]"
 
 cd lib/
+
+if [ $arg1 != "-colosse" ]; then
 #only 2.4.9 branch
 git clone -b 2.4.9.x-prep --single-branch https://github.com/Itseez/opencv.git opencv-2.4.9 >> $OUT 2>&1
 if [ $? -ne 0 ]; then
@@ -29,6 +31,13 @@ if [ $? -ne 0 ]; then
 else
 	echo "[ Cloning OpenCV ... done ]"
 fi
+
+else
+
+echo "[ON COLOSSE : Skipping OpenCV download]"
+
+fi
+
 #For colosse cluster users
 if [ $arg1 == "-colosse" ]; then
 	git clone https://github.com/lvsn/bundler_sfm >> $OUT 2>&1
@@ -42,6 +51,7 @@ else
 	echo "[ Cloning BundlerSFM ... done ]"
 fi
 
+if [ $arg1 != "-colosse" ]; then
 cd opencv-2.4.9/
 if [ -d build ]; then
 	echo "[ WARNING : build directory already exists]"
@@ -49,6 +59,7 @@ else
 	mkdir build/
 	echo "[ Creation of build directory ... done]"
 fi
+
 cd build/
 cmake -D CMAKE_INSTALL_PREFIX="../../../" -D CMAKE_LIBRARY_PATH="../../" -D CMAKE_INCLUDE_PATH="../../../include/" .. >> out.txt 2>&1
 make -j $N >> $OUT 2>&1
@@ -64,6 +75,12 @@ if [ $? -ne 0 ]; then
 	return
 else
 	echo "[ Installing OpenCV ... done ]"
+fi
+
+else 
+
+echo "[ON COLOSSE : Skipping OpenCV installation]"
+
 fi
 
 cd ../../bundler_sfm/
