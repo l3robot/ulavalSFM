@@ -83,10 +83,8 @@ echo "[ON COLOSSE : Skipping OpenCV installation]"
 
 fi
 
-if [ arg1 == "-colosse" ]; then
-
+if [ $arg1 == "-colosse" ]; then
 	cd bundler_sfm/
-
 else
 	cd ../../bundler_sfm/
 fi
