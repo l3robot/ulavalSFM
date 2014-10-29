@@ -83,7 +83,14 @@ echo "[ON COLOSSE : Skipping OpenCV installation]"
 
 fi
 
-cd ../../bundler_sfm/
+if [ arg1 == "-colosse" ]; then
+
+	cd bundler_sfm/
+
+else
+	cd ../../bundler_sfm/
+fi
+
 make clean >> $OUT 2>&1
 make -j 2 >> $OUT 2>&1
 if [ $? -ne 0 ]; then
