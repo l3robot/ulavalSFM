@@ -576,10 +576,10 @@ def bundler(image_list=None, options_file=None, shell=False, *args, **kwargs):
 
     # Add lib folder to LD_LIBRARY_PATH
     env = dict(os.environ)
-    if 'DYLD_LIBRARY_PATH' in env:
-        env['DYLD_LIBRARY_PATH'] = env['DYLD_LIBRARY_PATH'] + ':' + LIB_PATH
+    if 'LD_LIBRARY_PATH' in env:
+        env['LD_LIBRARY_PATH'] = env['LD_LIBRARY_PATH'] + ':' + LIB_PATH
     else:
-        env['DYLD_LIBRARY_PATH'] = LIB_PATH
+        env['LD_LIBRARY_PATH'] = LIB_PATH
 
     try:    os.mkdir("bundle")
     except: pass
