@@ -26,7 +26,9 @@ You can change some bundlerSFM options if you want. Refer to BundlerSFM repo : h
 Python script usage (multicores)
 --------------------------------
 
---Unstable--
+--Unstable now--
+
+Tested on CentOS6 with a Lustre file system. It is named scratch/ and it is hard coded in the python script. Change the code to make it work on your cluster should not be too difficult.
 
 ```Bash
 mv <your_image_dir_path> <your_ulavalsfm_bin_path>
