@@ -357,7 +357,7 @@ def create_submit(nc, walltime):
      RAP = findRAP()
      actualPath = os.getenv("PWD")
      binPath = actualPath + "/../"
-     scratchPath = "/scratch/" + RAP + "/.ulavalsfm"
+     scratchPath = "/scratch/" + RAP + "/.ulavalsfm_dir"
 
      try:    os.mkdir(scratchPath)
      except: pass
