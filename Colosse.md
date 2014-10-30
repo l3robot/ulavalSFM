@@ -19,6 +19,7 @@ RAP:<Votre RAP colosse ici>;
 - module add apps/git/1.8.5.3
 - module add libs/mkl/11.1
 - module add libs/opencv/2.4.9
+- module add libs/ceres-solver/1.9.0
 
 ###### Installation
 
@@ -27,7 +28,6 @@ RAP:<Votre RAP colosse ici>;
 ```Bash
 git clone https://github.com/LERobot/ulavalSFM
 cd <ulavalSFM>/
-chmod +x install.sh
 source install.sh -colosse
 ```
 
