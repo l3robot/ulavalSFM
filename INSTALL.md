@@ -18,6 +18,7 @@ DEPENDENCIES
 #### To build bundler_sfm
 
 * lapack 3.2.1 : http://www.netlib.org/lapack/
+* ceres-solver 1.9.0 : http://ceres-solver.org
 
 #### To build ulavalSFM
 
