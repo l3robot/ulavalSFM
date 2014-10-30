@@ -26,7 +26,7 @@
 # Faire une version pour colosse 
 # Modifier le code des sifts et des matchs pour qu'il puisse prendre une liste en paramètre
 # Avoir une meilleure gestion de scratch
-# Améliorer le temps d'attente avant de partir BundlerSFM !! Rajouter progression / Regarder PID
+# Améliorer le temps d'attente avant de partir BundlerSFM !! Rajouter progression
 # Essayer de deviner le temps de walltime avec une fonction en faisant plein de tests
 
 from __future__ import print_function
@@ -64,8 +64,8 @@ as output."""
 #   - jhead
 
 MOD_PATH = os.path.dirname(__file__)
-BIN_PATH = os.path.join(MOD_PATH, "../../lib/bundler_sfm/bin")
-LIB_PATH = os.path.join(MOD_PATH, "../../lib/bundler_sfm/lib")
+BIN_PATH = os.path.join(MOD_PATH, ".")
+LIB_PATH = os.path.join(MOD_PATH, "../lib/")
 BIN_SIFT = "ulavalSFM"
 BIN_BUNDLER = None
 BIN_MATCHKEYS = "ulavalSFM"
@@ -357,7 +357,10 @@ def create_submit(nc, walltime):
      RAP = findRAP()
      actualPath = os.getenv("PWD")
      binPath = actualPath + "/../"
-     scratchPath = "/scratch/" + RAP
+     scratchPath = "/scratch/" + RAP + "/.ulavalsfm"
+
+     try:    os.mkdir(scratchPath)
+     except: pass
 
      header = "# Shell used to launch the SfM\n"
      interpreter = "#PBS -S /bin/bash\n"
@@ -368,18 +371,19 @@ def create_submit(nc, walltime):
      out = "#PBS -o ./out.txt #sortie\n\n"
 
      addPath = "export PATH=" + binPath + ":$PATH\n"
-     move = "mv . " + scratchPath + "\n"
+     clean = "rm -rf " + scratchPath + "/*\n"
+     move = "mv * " + scratchPath + "\n"
      path = "cd " + scratchPath + "\n\n"
 
      dosift = "mpirun cDoSift . 0\n"
      domatch = "mpirun cDoMatch . 0\n\n"
 
-     moveback = "mv . " + binPath + "\n"
+     moveback = "mv * " + actualPath + "\n"
      pathback = "cd " + actualPath + "\n"
 
      f = open("submit.sh", "w")
 
-     f.write(header + interpreter + name + RAP + cores + wall + out + addPath + move + path + dosift + domatch + moveback + pathback);
+     f.write(header + interpreter + name + RAP + cores + wall + out + addPath + clean + move + path + dosift + domatch + moveback + pathback);
 
      f.close()
 
@@ -618,10 +622,12 @@ def run_bundler(images=[], verbose=False, parallel=True, force_rebuild=False,
          match_images(nc, verbose=verbose,
                       force_rebuild=force_rebuild)
     else :
-         if verbose: print("[- Sift search and matching phase on cluster using " + str(int(nc/8)) + " core(s)")
+         if verbose: print("[- Sift search and matching phase on cluster using " + str(int(nc/8)) + " core(s) -]")
          create_submit(nc, walltime)
-         os.system("msub submit.sh")
-         check_process()
+         pid = os.popen("msub submit.sh").read()
+         pid = int(pid)
+         print("The PID is : " + str(pid))
+         check_process(str(pid))
 
     with open("images.txt", "r") as fp:
         images = fp.read()
