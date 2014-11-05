@@ -1,11 +1,9 @@
 ulavalSFM
 =========
 
-Version : 3.0
+Version : 4.0
 
 Author : Émile Robitaille @ LERobot
-
-Last update : 10/05/2014
 
 What is ulavalSFM ?
 -------------------
@@ -25,8 +23,6 @@ You can change some bundlerSFM options if you want. Refer to BundlerSFM repo : h
 
 Python script usage (multicores)
 --------------------------------
-
---Unstable now--
 
 Tested on CentOS6 with a Lustre file system. The file system I've been using is named scratch/ and his path is hard coded in the python script. Change the code to make it work on your cluster should not be too difficult.
 
