@@ -5,8 +5,8 @@ Utilisateurs de Colosse, supercalculateur de l'Université Laval
 
 ###### Divers
 
-- Se connecter sur CentOS6 !!! Tout est fonctionnel sur CentOS6 puisqu'il y aura migration
-- Créez un fichier .ulavalSFM dans $HOME où vous écrirez :
+- Créez un fichier .ulavalsfm dans $HOME où vous écrirez :
+
 ```Bash
 #File used by ulavalSFM
 
