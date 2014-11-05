@@ -370,20 +370,16 @@ def create_submit(nc, walltime):
      wall = "#PBS -l walltime=" + str(walltime) + " # Durée en secondes\n"
      out = "#PBS -o ./out.txt #sortie\n\n"
 
+     init = "cd " + actualPath + "\n\n"
+
      addPath = "export PATH=" + binPath + ":$PATH\n"
-     clean = "rm -rf " + scratchPath + "/*\n"
-     move = "mv * " + scratchPath + "\n"
-     path = "cd " + scratchPath + "\n\n"
 
-     dosift = "mpirun cDoSift . 0\n"
-     domatch = "mpirun cDoMatch . 0\n\n"
-
-     moveback = "mv * " + actualPath + "\n"
-     pathback = "cd " + actualPath + "\n"
+     dosift = "mpirun cDoSift ./ 0\n"
+     domatch = "mpirun cDoMatch ./ 0\n\n"
 
      f = open("submit.sh", "w")
 
-     f.write(header + interpreter + name + RAP + cores + wall + out + addPath + clean + move + path + dosift + domatch + moveback + pathback);
+     f.write(header + interpreter + name + RAP + cores + wall + out + init + addPath + dosift + domatch);
 
      f.close()
 
