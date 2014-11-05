@@ -375,7 +375,7 @@ def create_submit(nc, walltime):
      addPath = "export PATH=" + binPath + ":$PATH\n"
 
      dosift = "mpirun cDoSift ./ 0\n"
-     domatch = "mpirun cDoMatch ./ 0\n\n"
+     domatch = "mpirun cDoMatch ./ 0 1\n\n"
 
      f = open("submit.sh", "w")
 
