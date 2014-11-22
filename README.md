@@ -13,7 +13,7 @@ ulavalSFM is a free software manager to prepare and do structure from motion in 
 The python package I use
 ------------------------
 
-Because it's pretty simple to install on a cluster, reliable and doesn't need rights to proceed installation in $HOME, I use anaconda python 3.4 package http://continuum.io/downloads#34 (make sure it is python 3.4). Be sure that your python bin path is $HOME/anaconda3/bin/ and it should work on your cluster.
+Because it's pretty simple to install on a cluster and reliable, I use anaconda python 3.4 package http://continuum.io/downloads#34 (make sure it is python 3.4). Be sure that your python bin path is $HOME/anaconda3/bin/ and it should work on your cluster.
 
 Python script usage (multithreading)
 ------------------------------------
