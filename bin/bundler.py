@@ -22,10 +22,8 @@
 
 # Modified version -- by Émile Robitaille L3Robot
 # À FAIRE
-# Faire une création de liste, seulement liée au matching pour l'instant, léger problème
-# Faire une version pour colosse 
+# Faire une création de liste, seulement liée au matching pour l'instant, léger problème 
 # Modifier le code des sifts et des matchs pour qu'il puisse prendre une liste en paramètre
-# Avoir une meilleure gestion de scratch
 # Améliorer le temps d'attente avant de partir BundlerSFM !! Rajouter progression
 # Essayer de deviner le temps de walltime avec une fonction en faisant plein de tests
 
@@ -353,35 +351,67 @@ def findRAP():
      i+=4
      return content[i:i+10]
 
-def create_submit(nc, walltime):
+def create_submit(nc, walltime, status):
      RAP = findRAP()
      actualPath = os.getenv("PWD")
-     binPath = actualPath + "/../"
-     scratchPath = "/scratch/" + RAP + "/.ulavalsfm_dir"
-
-     try:    os.mkdir(scratchPath)
-     except: pass
+     binPath = os.getenv("PATH")
+     libPath = os.getenv("LD_LIBRARY_PATH")
 
      header = "# Shell used to launch the SfM\n"
      interpreter = "#PBS -S /bin/bash\n"
      name = "#PBS -N ulavalsfm # Nom de la tâche\n"
      RAP = "#PBS -A " + RAP + " # Identifiant Rap; ID\n"
      cores = "#PBS -l nodes=" + str(int(nc/8)) + ":ppn=8 # Nombre de noeuds et nombre de processus par noeud\n"
+     cores2 = "#PBS -l nodes=1:ppn=8 # Nombre de noeuds et nombre de processus par noeud\n"
      wall = "#PBS -l walltime=" + str(walltime) + " # Durée en secondes\n"
-     out = "#PBS -o ./out.txt #sortie\n\n"
+     wall2 = "#PBS -l walltime=" + str(walltime) * 10 + " # Durée en secondes\n"
+     out = "#PBS -o ./outSFM.txt #sortie\n\n"
 
      init = "cd " + actualPath + "\n\n"
 
      addPath = "export PATH=" + binPath + ":$PATH\n"
+     addPath2 = "export LD_LIBRARY_PATH=" + libPath + ":$PATH\n"
 
      dosift = "mpirun cDoSift ./ 0\n"
      domatch = "mpirun cDoMatch ./ 0 1\n\n"
 
-     f = open("submit.sh", "w")
+     submitsfm = "msub submitSFM.sh\n\n"
 
-     f.write(header + interpreter + name + RAP + cores + wall + out + init + addPath + dosift + domatch);
+     doSFM = "bundler.py --no-parallel --verbose\n\n"
 
-     f.close()
+     f = open("submitPrep.sh", "w")
+     fsfm = open("submitSFM.sh", "w")
+
+     if status == 0:
+          fsfm.write(header + interpreter + name + RAP + cores2 + wall2 + out + init + addPath + addPath2 + doSFM)
+          f.write(header + interpreter + name + RAP + cores + wall + out + init + addPath + addPath2 + dosift + domatch + submitsfm)
+
+          f.close()
+          fsfm.close()
+
+          pid = os.popen("msub submitPrep.sh").read()
+          pid = int(pid)
+
+     elif status == 1:
+          fsfm.write(header + interpreter + name + RAP + cores2 + wall2 + out + init + addPath + addPath2 + doSFM)
+          f.write(header + interpreter + name + RAP + cores + wall + out + init + addPath + addPath2 + domatch + submitsfm)
+
+          f.close()
+          fsfm.close()
+
+          pid = os.popen("msub submitPrep.sh").read()
+          pid = int(pid)
+
+     else :
+          fsfm.write(header + interpreter + name + RAP + cores2 + wall2 + out + init + addPath + addPath2 + doSFM)
+
+          f.close()
+          fsfm.close()
+
+          pid = os.popen("msub submitSFM.sh").read()
+          pid = int(pid)
+
+     return pid
 
 def check_process(pid):
      user = os.getenv("USER")
@@ -596,7 +626,7 @@ def bundler(image_list=None, options_file=None, shell=False, *args, **kwargs):
         os.remove(image_list_file)
 
 def run_bundler(images=[], verbose=False, parallel=True, force_rebuild=False,
-                flmul=1.0, nc=1, cluster=False, walltime=300):
+                flmul=1.0, nc=1, cluster=False, walltime=300, status=0):
     """Prepare images and run bundler with default options."""
 
     # Create list of images
@@ -619,9 +649,7 @@ def run_bundler(images=[], verbose=False, parallel=True, force_rebuild=False,
                       force_rebuild=force_rebuild)
     else :
          if verbose: print("[- Sift search and matching phase on cluster using " + str(int(nc/8)) + " core(s) -]")
-         create_submit(nc, walltime)
-         pid = os.popen("msub submit.sh").read()
-         pid = int(pid)
+         pid = create_submit(nc, walltime, status)
          print("The PID is : " + str(pid))
          check_process(str(pid))
 
@@ -679,6 +707,8 @@ if __name__ == '__main__':
         help="Number of second until the end of the sift/matching", default=300)
     parser.add_argument('--cluster', action='store_true',
         help="If to be run on cluster or not", default=False)
+    parser.add_argument('--status', type=int,
+        help="0 : sift,match,sfm | 1 : match,sfm | 2 : sfm", default=0)
     args = parser.parse_args()
 
     if args.extract_focal:
@@ -696,5 +726,6 @@ if __name__ == '__main__':
             nc=args.number_cores,
             cluster=args.cluster,
             walltime=args.walltime,
+            stats=args.status,
         )
 

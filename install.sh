@@ -13,8 +13,8 @@ else
 	arg1=$1
 fi
 
-#echo "#Added by ulavalSFM" >> $HOME/.bashrc
-#echo "export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"" >> $HOME/.bashrc
+echo "#Added by ulavalSFM 4.0" >> $HOME/.bashrc
+echo "export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"" >> $HOME/.bashrc
 export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"
 echo "[ Adding library path in .bashrc file ... done ]"
 
@@ -121,5 +121,12 @@ if [ $? -ne 0 ]; then
 else
 	echo "[ Installing ulavalSFM ... done ]"
 fi
+
+if [ $arg1 == "-colosse" ]; then
+	sed -i '' "1s;.*;#!$HOME/anaconda3/bin/python;" ../bin/bundler.py
+	chmod +x ../bin/bundler.py
+fi
+
+cd ~
 
 echo "[ YOU CAN RUN ULAVALSFM ]"
