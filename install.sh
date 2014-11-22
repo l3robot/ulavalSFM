@@ -123,7 +123,7 @@ else
 fi
 
 if [ $arg1 == "-colosse" ]; then
-	sed -i '' "1s;.*;#!$HOME/anaconda3/bin/python;" ../bin/bundler.py
+	sed -i "1s;.*;#!$HOME/anaconda3/bin/python;" ../bin/bundler.py
 	chmod +x ../bin/bundler.py
 fi
 
