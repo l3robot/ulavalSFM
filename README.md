@@ -10,13 +10,17 @@ What is ulavalSFM ?
 
 ulavalSFM is a free software manager to prepare and do structure from motion in a parallel way. It's in development. The structure from motion will be based on bundlerSFM : https://github.com/snavely/bundler_sfm. My version of BundlerSFM will though recognize the "ulavalSFM.txt" file and the new "matches.init.txt" file. Your images have to be in JPEG only .jpg ext. Check my gists <a href=https://gist.github.com/LERobot/dbcc6385d83442013592>ext</a> to quickly change the extensions and <a href=https://gist.github.com/LERobot/3985e40fb8e941f90c5c>checkJPG</a> to find hidden PNG file to delete.
 
+The python package I use
+------------------------
+
+Because it's pretty simple to install on a cluster, reliable and doesn't need rights to proceed installation in $HOME, I use anaconda python 3.4 package http://continuum.io/downloads#34 (make sure it is python 3.4). Be sure that your python bin path is $HOME/anaconda3/bin/ and it should work on your cluster.
+
 Python script usage (multithreading)
 ------------------------------------
 
 ```Bash
-mv <your_image_dir_path> <your_ulavalsfm_bin_path>
-cd <your_ulavalsfm_bin_path>/<your_image_dir>
-python ../bundler.py --no-parallel --verbose --number-cores <number_cores_u_want>
+cd <your_image_dir>
+bundler.py --no-parallel --verbose --number-cores <number_cores_u_want>
 ```
 
 You can change some bundlerSFM options if you want. Refer to BundlerSFM repo : https://github.com/snavely/bundler_sfm.
@@ -24,12 +28,11 @@ You can change some bundlerSFM options if you want. Refer to BundlerSFM repo : h
 Python script usage (multicores)
 --------------------------------
 
-Tested on CentOS6 with a Lustre file system. The file system I've been using is named scratch/ and his path is hard coded in the python script. Change the code to make it work on your cluster should not be too difficult.
+Tested on CentOS6 with a Lustre file system. Change the code to make it work on your cluster should not be too difficult. Basically, you'll have to change the dispatcher call and the submit file construction in bundler.py.
 
 ```Bash
-mv <your_image_dir_path> <your_ulavalsfm_bin_path>
-cd <your_ulavalsfm_bin_path>/<your_image_dir>
-python ../bundler.py --no-parallel --verbose --number-cores <number_cores_u_want> --cluster --walltime <walltime_u_want>
+cd <your_image_dir>
+bundler.py --no-parallel --verbose --number-cores <number_cores_u_want> --cluster --walltime <walltime_u_want>
 ```
 You can change some bundlerSFM options if you want. Refer to BundlerSFM repo : https://github.com/snavely/bundler_sfm.
 
