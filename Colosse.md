@@ -24,7 +24,7 @@ RAP:<Votre RAP colosse ici>;
 ###### Installation
 
 - Installer anaconda version Linux dans votre home https://store.continuum.io/cshop/anaconda/
-- Pour que le programme soit plus rapide, installer ulavalSFM sur $SCRATCH
+- TRÈS IMPORTANT : le chemin exécutable d'anaconda doit être $HOME/anaconda3/bin
 
 ```Bash
 cd $SCRATCH
@@ -36,11 +36,9 @@ source install.sh -colosse
 ###### Utilisation
 
 ```Bash
-cd <ulavalSFM>/bin
-cp <chemin_vers_votre_dataset> <ulavalSFM>/bin
-cd <dataset>
-python ../bundler.py --no-parallel --verbose --number-cores <number_cores_u_want> --cluster --walltime <walltime_u_want>
+cd <votre_dataset>
+bundler.py --no-parallel --verbose --number-cores <number_cores_u_want> --cluster --walltime <walltime_u_want>
 ```
-Le programme exécutera les SIFTs et les appariements sur le cluster, attendra la fin de l'exécution et exécutera finalement bundlerSFM
+Le programme exécutera les SIFTs et les appariements sur le cluster, finalement bundlerSFM sur colosse
 
 
