@@ -647,44 +647,45 @@ def run_bundler(images=[], verbose=False, parallel=True, force_rebuild=False,
          if verbose: print("[- Matching keypoints (this can take a while) -]")
          match_images(nc, verbose=verbose,
                       force_rebuild=force_rebuild)
-    else :
+
+         with open("images.txt", "r") as fp:
+             images = fp.read()
+             images = images.split()
+
+         if verbose:
+             print("Here's the image list :")
+             print(images)
+
+         #images = ["IMG_2869.jpg", "IMG_2870.jpg", "IMG_2871.jpg"]
+
+         # Extract focal length
+         if type(images) == list:
+             if verbose: print("[- Extracting EXIF tags from images -]")
+             images = extract_focal_length(images, verbose=verbose, flmul=flmul)
+
+         # Run Bundler
+         if verbose:
+             print("[- Running Bundler -]")
+             
+         bundler(image_list=images,
+                 options_file="options.txt",
+                 verbose=verbose,
+                 match_table="matches.init.txt",
+                 output="bundle.out",
+                 output_all="bundle_",
+                 output_dir="bundle",
+                 variable_focal_length=True,
+                 use_focal_estimate=True,
+                 constrain_focal=True,
+                 constrain_focal_weight=0.0001,
+                 estimate_distortion=True,
+                 run_bundle=True)
+
+     else :
          if verbose: print("[- Sift search and matching phase on cluster using " + str(int(nc/8)) + " core(s) -]")
          pid = create_submit(nc, walltime, status)
          print("The PID is : " + str(pid))
-         check_process(str(pid))
-
-    with open("images.txt", "r") as fp:
-        images = fp.read()
-        images = images.split()
-
-    if verbose:
-        print("Here's the image list :")
-        print(images)
-
-    #images = ["IMG_2869.jpg", "IMG_2870.jpg", "IMG_2871.jpg"]
-
-    # Extract focal length
-    if type(images) == list:
-        if verbose: print("[- Extracting EXIF tags from images -]")
-        images = extract_focal_length(images, verbose=verbose, flmul=flmul)
-
-    # Run Bundler
-    if verbose:
-        print("[- Running Bundler -]")
-        
-    bundler(image_list=images,
-            options_file="options.txt",
-            verbose=verbose,
-            match_table="matches.init.txt",
-            output="bundle.out",
-            output_all="bundle_",
-            output_dir="bundle",
-            variable_focal_length=True,
-            use_focal_estimate=True,
-            constrain_focal=True,
-            constrain_focal_weight=0.0001,
-            estimate_distortion=True,
-            run_bundle=True)
+         #check_process(str(pid))
 
     if verbose: print("[- Done -]")
 
