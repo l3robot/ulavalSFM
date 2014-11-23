@@ -681,7 +681,7 @@ def run_bundler(images=[], verbose=False, parallel=True, force_rebuild=False,
                  estimate_distortion=True,
                  run_bundle=True)
 
-     else :
+    else :
          if verbose: print("[- Sift search and matching phase on cluster using " + str(int(nc/8)) + " core(s) -]")
          pid = create_submit(nc, walltime, status)
          print("The PID is : " + str(pid))
@@ -727,6 +727,6 @@ if __name__ == '__main__':
             nc=args.number_cores,
             cluster=args.cluster,
             walltime=args.walltime,
-            stats=args.status,
+            status=args.status,
         )
 
