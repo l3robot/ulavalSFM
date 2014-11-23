@@ -25,10 +25,13 @@ DEPENDENCIES
 * OpenCV 2.4.9 : https://github.com/Itseez/opencv
 * bundler\_sfm (My modified version, based on modified soravux's version. <a href=https://github.com/snavely>Noah Snavely</a>'s <a href=https://github.com/snavely/bundler\_sfm>original</a>) : https://github.com/LERobot/bundler_sfm
  
+#### Python Package
+
+* Anaconda http://continuum.io/downloads#34 make sure it is python 3.4
 
 #### To read the exif, used by the python script
 
-* PIL 1.1.7. With Pillow for python 3.3 : http://www.pythonware.com/products/pil/
+* PIL 1.1.7. With Pillow for python 3.4 (comes with anaconda) : http://www.pythonware.com/products/pil/
 
 INSTALL INSTRUCTIONS
 --------------------
