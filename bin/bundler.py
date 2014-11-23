@@ -364,7 +364,7 @@ def create_submit(nc, walltime, status):
      cores = "#PBS -l nodes=" + str(int(nc/8)) + ":ppn=8 # Nombre de noeuds et nombre de processus par noeud\n"
      cores2 = "#PBS -l nodes=1:ppn=8 # Nombre de noeuds et nombre de processus par noeud\n"
      wall = "#PBS -l walltime=" + str(walltime) + " # Durée en secondes\n"
-     wall2 = "#PBS -l walltime=" + str(walltime) * 10 + " # Durée en secondes\n"
+     wall2 = "#PBS -l walltime=" + str(int(walltime)*10) + " # Durée en secondes\n"
      out = "#PBS -o ./outSFM.txt #sortie\n\n"
 
      init = "cd " + actualPath + "\n\n"
