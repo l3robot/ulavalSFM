@@ -13,9 +13,11 @@ else
 	arg1=$1
 fi
 
-echo "#Added by ulavalSFM 4.0" >> $HOME/.bashrc
-echo "export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"" >> $HOME/.bashrc
+echo "#Added by ulavalSFM 4.0 installer" >> $HOME/.bashrc
+echo "export LD_LIBRARY_PATH="\$PWD/lib/:\$LD_LIBRARY_PATH"" >> $HOME/.bashrc
+echo "export PATH="\$PWD/bin/:\$PATH"" >> $HOME/.bashrc
 export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"
+export PATH="$PWD/bin/:$PATH"
 echo "[ Adding library path in .bashrc file ... done ]"
 
 cd lib/
