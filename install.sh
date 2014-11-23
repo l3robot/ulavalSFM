@@ -126,6 +126,7 @@ fi
 
 sed -i "1s;.*;#!$HOME/anaconda3/bin/python;" ../bin/bundler.py
 chmod +x ../bin/bundler.py
+chmod +x ../bin/ext.sh
 
 cd ~
 
