@@ -589,7 +589,7 @@ def bundler(image_list=None, options_file=None, shell=False, *args, **kwargs):
         with tempfile.NamedTemporaryFile(delete=False) as fp:
             for image,value in list(image_list.items()):
                 if value == None:
-                    fp.write(bytes(image, 'utf-8') + '\n')
+                    fp.write(bytes(image, 'utf-8') + b'\n')
                 else:
                     fp.write(b' '.join([
                         bytes(image, 'utf-8'),
