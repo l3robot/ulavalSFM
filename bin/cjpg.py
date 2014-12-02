@@ -23,6 +23,6 @@ for i in b:
 			f = open(c, "rb")
 			image = f.read()
 			print(">> Will transform " + i + " in its true format, because it's not a jpeg file...")
-			name = i[0:-4] + "." + ext
+			name = i[0:-4] + "." + str(ext)
 			command = "mv " + a + i + " " + a + name
 			os.system(command)
