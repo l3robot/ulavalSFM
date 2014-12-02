@@ -15,12 +15,13 @@ if a[len(a)-1] != '/':
 b = os.listdir(a)
  
 for i in b:
+	end = i[len(i)-4:len(i)]
 	ext = imghdr.what(i)
-	if ext != "jpeg":
-		c = a + i
-		f = open(c, "rb")
-		image = f.read()
-		if image[0] == 0x89 and image[1] == 0x50:
+	if end == ".jpg" or end == ".JPG":
+		if ext != "jpeg":
+			c = a + i
+			f = open(c, "rb")
+			image = f.read()
 			print(">> Will transform " + i + " in its true format, because it's not a jpeg file...")
 			name = i[0:-4] + "." + ext
 			command = "mv " + a + i + " " + a + name
