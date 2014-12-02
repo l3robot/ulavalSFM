@@ -8,7 +8,7 @@ Author : Émile Robitaille @ LERobot
 What is ulavalSFM ?
 -------------------
 
-ulavalSFM is a free software manager to prepare and do structure from motion in a parallel way. It's in development. The structure from motion will be based on bundlerSFM : https://github.com/snavely/bundler_sfm. My version of BundlerSFM will though recognize the "ulavalSFM.txt" file and the new "matches.init.txt" file. Your images have to be in JPEG **only .jpg** ext. Use ext.sh to change the extensions and cjpg.py to find hidden PNG file to delete (both installed with ulavalSFM).  
+ulavalSFM is a free software manager to prepare and do structure from motion in a parallel way. It's in development. The structure from motion will be based on bundlerSFM : https://github.com/snavely/bundler_sfm. My version of BundlerSFM will though recognize the "ulavalSFM.txt" file and the new "matches.init.txt" file. Your images have to be in JPEG **only .jpg** ext. Use ext.sh to change the extensions and cjpg.py to find hidden PNG file to delete (both installed with ulavalSFM). You can use the script cleanSFM.py to clean the directory. It will change the extension and find hidden PNG files.
 
 The python package I use
 ------------------------
