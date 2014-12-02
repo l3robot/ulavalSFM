@@ -20,7 +20,9 @@ for i in b:
 		f = open(c, "rb")
 		image = f.read()
 		if image[0] == 0x89 and image[1] == 0x50:
-			print("Will transform " + i + " in PNG, because it's a PNG file...")
+			print(">> Will transform " + i + " in PNG, because it's a PNG file...")
 			name = i[0:-4] + ".png"
 			command = "mv " + a + i + " " + a + name
 			os.system(command)
+	else :
+		print(">> " + i + " is already marks as a png file")
