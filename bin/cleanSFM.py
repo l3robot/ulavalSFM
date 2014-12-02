@@ -13,7 +13,7 @@ b = os.listdir(a)
  
 for i in b:
 	ext = i[len(i)-3:len(i)]
-	if ext != "png" or ext != "PNG":
+	if ext != "png" and ext != "PNG":
 		c = a + i
 		f = open(c, "rb")
 		image = f.read()
