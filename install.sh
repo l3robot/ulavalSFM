@@ -125,8 +125,10 @@ else
 fi
 
 sed -i "1s;.*;#!$HOME/anaconda3/bin/python;" ../bin/bundler.py
+sed -i "1s;.*;#!$HOME/anaconda3/bin/python;" ../bin/cjpg.py
 chmod +x ../bin/bundler.py
 chmod +x ../bin/ext.sh
+chmod +x ../bin/cjpg.py
 
 cd ~
 
