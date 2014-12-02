@@ -14,7 +14,7 @@ if a[len(a)-1] != '/':
 b = os.listdir(a)
  
 for i in b:
-	ext = i[len(i)-3:len(i)-1]
+	ext = i[len(i)-3:len(i)]
 	if ext == "jpg":
 		c = a + i
 		f = open(c, "rb")
@@ -24,5 +24,5 @@ for i in b:
 			name = i[0:-4] + ".png"
 			command = "mv " + a + i + " " + a + name
 			os.system(command)
-	else :
+	else:
 		print(">> " + i + " is already marks as a png file")
