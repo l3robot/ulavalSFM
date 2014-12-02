@@ -47,3 +47,12 @@ while c :
     		c = 0
     	else:
     		print(">> yes/no only")
+    		
+b = os.listdir(a)
+count = 0
+for i in b:
+        ext = i[len(i)-3:len(i)]
+        if ext == "jpg" or ext == "JPG":
+                command = "mv " + i + " " + str(count) + ".jpg"
+                os.system(command)
+                count += 1
