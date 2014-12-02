@@ -2,10 +2,10 @@
 
 #Script to quickly change extension of file 
 
-       #USAGE# 
-       #######
+#USAGE# 
 # $1 = old extension
 # $2 = new extension
+# ext.sh <ext1> <ext2>
 
  
 LIST="$(ls | grep $1)"; 
