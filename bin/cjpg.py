@@ -15,7 +15,7 @@ b = os.listdir(a)
  
 for i in b:
 	ext = i[len(i)-3:len(i)]
-	if ext == "jpg":
+	if ext == "jpg" or ext == "JPG":
 		c = a + i
 		f = open(c, "rb")
 		image = f.read()
