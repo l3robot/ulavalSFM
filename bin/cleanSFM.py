@@ -1,8 +1,5 @@
-
-### micro-program to clean the directory before running ulavalSFM
-
 #!/usr/bin/python
-### micro-program to check if there is png files among the jpg
+### micro-program to clean the directory before running ulavalSFM
 
 #USAGE# 
 # cleanSFM.py
