@@ -27,11 +27,12 @@ for i in b:
 		
 		
 print("\n")
+choice = input(">> Would you like to delete all the png files ? (yes/no) : ")
 
 c = 1
 
 while c :
-	choice = input("Would you like to delete all the png files ? (yes/no) : ")
+	choice = input(">> yes/no\n>> Would you like to delete all the png files ? (yes/no) : ")
 	if choice == "yes" or choice == "YES":
 	    	b = os.listdir(a)
 	    	for i in b:
