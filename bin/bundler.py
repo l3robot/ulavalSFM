@@ -682,7 +682,9 @@ def run_bundler(images=[], verbose=False, parallel=True, force_rebuild=False,
                  run_bundle=True)
 
     else :
-         if verbose: print("[- Sift search and matching phase on cluster using " + str(int(nc/8)) + " core(s) -]")
+         if verbose and status == 0: print("[- Sift search, matching phase and BundlerSFM on cluster using " + str(int(nc/8)) + " core(s) -]")
+         if verbose and status == 1: print("[- Matching phase on cluster and BundlerSFM using " + str(int(nc/8)) + " core(s) -]")
+         if verbose and status > 1: print("[- BundlerSFM on cluster -]")
          pid = create_submit(nc, walltime, status)
          print("The PID is : " + str(pid))
          #check_process(str(pid))
