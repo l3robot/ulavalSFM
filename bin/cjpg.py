@@ -5,6 +5,7 @@
 # cjpg.py
 
 import os
+import imghdr
  
 a = input("Enter the directory name here : ")
 
@@ -14,15 +15,13 @@ if a[len(a)-1] != '/':
 b = os.listdir(a)
  
 for i in b:
-	ext = i[len(i)-3:len(i)]
-	if ext != "png" or ext != "PNG":
+	ext = imghdr.what(i)
+	if ext != "jpeg":
 		c = a + i
 		f = open(c, "rb")
 		image = f.read()
 		if image[0] == 0x89 and image[1] == 0x50:
-			print(">> Will transform " + i + " in PNG, because it's a PNG file...")
-			name = i[0:-4] + ".png"
+			print(">> Will transform " + i + " in its true format, because it's not a jpeg file...")
+			name = i[0:-4] + "." + ext
 			command = "mv " + a + i + " " + a + name
 			os.system(command)
-	else:
-		print(">> " + i + " is already marks as a png file")
