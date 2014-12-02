@@ -27,21 +27,21 @@ for i in b:
 		
 		
 print("\n")
-choice = input("Would you like to delete all the png files ? (yes/no) :")
+choice = input("Would you like to delete all the png files ? (yes/no) : ")
 
 c = 1
 
 while c :
-	if choice == "yes" or choice = "YES":
+	if choice == "yes" or choice == "YES":
 	    	b = os.listdir(a)
 	    	for i in b:
 	      		ext = i[len(i)-3:len(i)]
 	      		if ext == "png" or ext == "PNG":
-	        		print(">> Deleting " + i")
+	        		print(">> Deleting " + i)
 	        		command = "rm " + i
 	        		os.system(command)
 	    	print("-- Done --")
-	    	c = 0
-  	elif choice == "no" or choice == "NO":
+	    	c = 0 
+	elif choice == "no" or choice == "NO":
     		print("-- Done --")
     		c = 0
