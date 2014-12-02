@@ -1,6 +1,9 @@
 #!/usr/bin/python
 ### micro-program to check if there is png files among the jpg
 
+#USAGE# 
+# cjpg.py
+
 import os
  
 a = input("Enter the directory name here : ");
