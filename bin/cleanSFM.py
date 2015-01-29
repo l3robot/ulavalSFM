@@ -5,54 +5,42 @@
 # cleanSFM.py
 
 import os
- 
-os.system("ext.sh .JPG .jpg")
- 
-a = "./" 
-b = os.listdir(a)
- 
-for i in b:
-	ext = i[len(i)-3:len(i)]
-	if ext != "png" and ext != "PNG":
-		c = a + i
-		f = open(c, "rb")
-		image = f.read()
-		if image[0] == 0x89 and image[1] == 0x50:
-			print(">> Will transform " + i + " in PNG, because it's a PNG file...")
-			name = i[0:-4] + ".png"
-			command = "mv " + a + i + " " + a + name
-			os.system(command)
-	else:
-		print(">> " + i + " is already marks as a png file")
-		
-		
-print("\n")
+from os.path import join, splitext
 
-c = 1
+from cext import renameExtMishaps
 
-while c :
-	choice = input(">> Would you like to delete all the png files ? (yes/no) : ")
-	if choice == "yes" or choice == "YES":
-	    	b = os.listdir(a)
-	    	for i in b:
-	      		ext = i[len(i)-3:len(i)]
-	      		if ext == "png" or ext == "PNG":
-	        		print(">> Deleting " + i)
-	        		command = "rm " + i
-	        		os.system(command)
-	    	print("-- Done --")
-	    	c = 0 
-	elif choice == "no" or choice == "NO":
-    		print("-- Done --")
-    		c = 0
-    	else:
-    		print(">> yes/no only")
-    		
-b = os.listdir(a)
-count = 0
-for i in b:
-        ext = i[len(i)-3:len(i)]
-        if ext == "jpg" or ext == "JPG":
-                command = "mv " + i + " " + str(count) + ".jpg"
-                os.system(command)
-                count += 1
+
+renameExtMishaps(".")
+try:
+    os.makedirs("backup")
+except FileExistsError:
+    pass
+
+for idx, filename in enumerate(os.listdir(".")):
+    if not os.path.isfile(filename):
+        continue
+    basename, ext = splitext(filename)
+    ext = ext[1:]
+    target_filename = "{}.jpg".format(idx)
+
+    # Don't overwrite a file that would be named as the target
+    if os.path.isfile(target_filename):
+        ren_idx = 1
+        rep_base, rep_ext = splitext(target_filename)
+        replace_name = "{}_{}.{}".format(rep_base, ren_idx, rep_ext)
+        while os.path.isfile(replace_name):
+            ren_idx += 1
+            replace_name = "{}_{}.{}".format(rep_base, ren_idx, rep_ext)
+        os.rename(target_filename, replace_name)
+
+    # TODO: Compute resize factor if needed
+    # TODO: Various enhancements (contrast?)
+    # Converting to jpeg
+    if ext != "jpg":
+        print(">> Converting file {} to jpeg...".format(filename))
+        retval = os.system("convert {} {}".format(filename, target_filename))
+        if retval != 0:
+            print(">> Could not convert file {} to jpeg!".format(filename))
+        os.rename(filename, join("backup", filename))
+    else:
+        os.rename(filename, target_filename)
