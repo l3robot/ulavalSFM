@@ -14,6 +14,8 @@ def renameExtMishaps(path):
     """Renames every misnamed image extension in {path}.
     Will also put in lowercase the extensions."""
     for filename in os.listdir(path):
+        if not os.path.isfile(filename):
+            continue
         basename, end = splitext(filename)
         end = end[1:]
         ext = imghdr.what(filename)
