@@ -33,6 +33,9 @@ DEPENDENCIES
 
 * PIL 1.1.7. With Pillow for python 3.4 (comes with anaconda) : http://www.pythonware.com/products/pil/
 
+#### Used in pre-processing
+* ImageMagick 6.8.9 : http://www.imagemagick.org/script/binary-releases.php#unix
+
 INSTALL INSTRUCTIONS
 --------------------
 
