@@ -20,6 +20,7 @@ RAP:<Votre RAP colosse ici>;
 - module add libs/mkl/11.1
 - module add libs/opencv/2.4.9
 - module add libs/ceres-solver/1.9.0
+- module add libs/image_magick/6.8.9
 
 ###### Installation
 
