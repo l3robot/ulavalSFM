@@ -267,7 +267,6 @@ void writeMatchFile(const string &path, const vector<struct Matchespp> &containe
 */
 void match1Core(const util::Directory &dir, int geo)
 {
-	double the_time;
 	struct SFeatures img1;
 	struct SFeatures img2;
 

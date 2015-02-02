@@ -225,12 +225,13 @@ void fMatrixFilter(struct Constraints &container)
 {
 	struct Constraints new_container;
 	int num = container.NP;
-	int NM;
-	int NI;
-	Matchespp *t;
 	
 	for (int i = 0; i < num; i++)
 	{
+		int NM;
+		int NI;
+		Matchespp *t;
+
 		t = &container.matches[i];
 
 		NM = t->NM;
@@ -301,11 +302,12 @@ int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, 
 void transformInfo(struct Constraints &container)
 {
 	int num = container.NP;
-	Matchespp *t;
 	int j = 0;
 
 	for (int i = 0; i < num; i++)
 	{
+		Matchespp *t;
+
 		t = &container.matches[i];
 		transformInfo(container.features[t->idx[0]].keys, container.features[t->idx[1]].keys, *t);
 		cout << "TRANSFORM : [ " << t->idx[0] << ", " << t->idx[1] << " ] : " << t->NI << " inliers found out of " << t->NM << endl;
@@ -449,7 +451,6 @@ void writeConstraints(const string &path, const vector<struct Matchespp> &contai
 */
 void geometry1Core(const util::Directory &dir)
 {
-	double the_time;
 	struct Constraints container;
 
 	cout << "--> Loading Keypoints ..." << endl << endl;

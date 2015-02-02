@@ -131,9 +131,7 @@ void worker(const util::Directory &dir, int* recv, int geo)
 	int aim = recv[0];
 	int end = recv[1];
 
-	int numimages, netID, seek = 0, compute = 0, stop = 0;
-
-	numimages = dir.getNBImages();
+	int netID, seek = 0, compute = 0, stop = 0;
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
 
@@ -426,7 +424,6 @@ void secretary(const string &path, int numcore, int n, int bar, int geo)
 {
 	vector<float*> v_serialMatch;
 	vector<int> list;
-	float* serialMatch;
 
 	printf("GEO : %d\n", geo);
 
@@ -441,6 +438,8 @@ void secretary(const string &path, int numcore, int n, int bar, int geo)
 
 	while(end < numcore)
 	{
+		float* serialMatch;
+
 		serialMatch = recvFromWorker(list);
 		if (serialMatch)
 			v_serialMatch.push_back(serialMatch);

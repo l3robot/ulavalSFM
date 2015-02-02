@@ -89,7 +89,6 @@ void writeSiftFile(const string &file, const struct SFeatures &container)
 */
 void sift1Core(const util::Directory &dir)
 {
-	double the_time;
 	struct SFeatures container;
 	string file(dir.getPath());
 

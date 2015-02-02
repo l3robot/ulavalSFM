@@ -433,7 +433,6 @@ void showProgress(int i, int n, int w, int actualize)
 */
 int ffind(FILE* f, const string &sr, char* buffer)
 {
-	int c = 1;
 	char* pter = NULL;
 
 	while(fgets(buffer, 256, f))
