@@ -28,6 +28,7 @@
 *
 *	int idx[2] : images index
 *	int NM : number of matches
+*	int NI : number of inliers relative to transform
 *	int H[9] : transform matrix
 *	int ratio : pairwise score	
 *	std::vector<DMatch> matches : matches
@@ -36,6 +37,7 @@ struct Matchespp
 {
 	int idx[2];
 	int NM;
+    int NI;
 	cv::Mat H;
 	float ratio;
 
@@ -46,6 +48,7 @@ struct Matchespp
 		idx[0] = 0;
 		idx[1] = 0;
 		NM = 0;
+        NI = 0;
 		H = cv::Mat(3, 3, CV_32F);
 		ratio = 0.0;
 	}
@@ -116,12 +119,14 @@ struct Matchespp
 *	Description : Information on constaints
 *
 *	int NP : number of good pairs
+*   int NT : number of good transform pairs
 *	std::vector<DMatch> matches : all the matches
 *	std::vector<SFeatures> features : all the sift
 */
 struct Constraints
 {
 	int NP;
+    int NT;
 
 	std::vector<struct Matchespp> matches;
 	std::vector<struct SFeatures> features;
@@ -129,11 +134,13 @@ struct Constraints
 	Constraints()
 	{
 		NP = 0;
+        NT = 0;
 	}
 
 	void reset()
 	{
 		NP = 0;
+        NT = 0;
 		matches.clear();
 		features.clear();
 	}
@@ -141,6 +148,7 @@ struct Constraints
 	void assignMatches(const Constraints &new_container)
 	{
 		NP = new_container.NP;
+        NT = new_container.NT;
 		matches = new_container.matches;
 	}
 
