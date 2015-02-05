@@ -15,9 +15,9 @@ OPENCV=$(shell pkg-config --cflags opencv)
 
 all: main.o util.o directory.o dosift.o cDoSift.cpp cdomatchlib.o cDoMatch.cpp cDoAll.cpp doall.o domatch.o dogeometry.o cdomatchlib.o
 	$(CXX) main.o util.o dosift.o domatch.o dogeometry.o directory.o doall.o -gdwarf-2 --std=c++11 -o ulavalSFM -I../include/ -L../lib/ $(LIBS)
-	mpic++ cDoSift.cpp util.o directory.o dosift.o -gdwarf-2 --std=c++11 -o cDoSift -I../include/ $(LIBS) -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
-	mpic++ cDoMatch.cpp util.o directory.o dosift.o domatch.o dogeometry.o cdomatchlib.o -gdwarf-2 --std=c++11 -o cDoMatch -I../include/ $(LIBS) -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
-	mpic++ cDoAll.cpp directory.o util.o dosift.o domatch.o dogeometry.o cdomatchlib.o -gdwarf-2 --std=c++11 -o cDoAll -I../include/ $(LIBS) -L../lib/ -lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_nonfree -lopencv_calib3d -lopencv_flann
+	mpic++ cDoSift.cpp util.o directory.o dosift.o -gdwarf-2 --std=c++11 -o cDoSift -I../include/ $(LIBS) -L../lib/
+	mpic++ cDoMatch.cpp util.o directory.o dosift.o domatch.o dogeometry.o cdomatchlib.o -gdwarf-2 --std=c++11 -o cDoMatch -I../include/ $(LIBS) -L../lib/
+	mpic++ cDoAll.cpp directory.o util.o dosift.o domatch.o dogeometry.o cdomatchlib.o -gdwarf-2 --std=c++11 -o cDoAll -I../include/ $(LIBS) -L../lib/
 
 main.o: main.cpp util.h dosift.h domatch.h
 	$(CXX) -gdwarf-2 --std=c++11 -c main.cpp -o main.o -I../include/ $(OPENCV)
@@ -45,6 +45,7 @@ doall.o: doall.cpp doall.h util.h domatch.h dosift.h directory.h
 
 clean:
 	rm -rf *.o
+	rm -f ulavalSFM cDoSift cDoMatch cDoAll
 
 install:
 	cp ulavalSFM ../bin/
