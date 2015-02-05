@@ -17,8 +17,14 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
-#include <opencv2/nonfree/nonfree.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#if CV_VERSION_MAJOR == 2
+#include <opencv2/nonfree/nonfree.hpp>
+#include <opencv2/nonfree/features2d.hpp>
+#elif CV_VERSION_MAJOR == 3
+#include <opencv2/xfeatures2d.hpp>
+#include <opencv2/xfeatures2d/nonfree.hpp>
+#endif
 
 #include "util.h"
 #include "domatch.h"
@@ -28,6 +34,9 @@
 
 using namespace std;
 using namespace cv;
+#if CV_VERSION_MATJOR == 3
+using namespace xfeatures2d;
+#endif
 
 
 /* 
@@ -113,7 +122,11 @@ void readSiftFile(const string &file, SFeatures &container)
 */
 int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, int geo, float ratio)
 {
+    #if CV_VERSION_MAJOR == 3
+	FlannBasedMatcher matcher(makePtr<flann::IndexParams>(), makePtr<flann::SearchParams>(64));
+    #else
 	FlannBasedMatcher matcher(new flann::KDTreeIndexParams(16), new flann::SearchParams(64));
+    #endif
 	vector<vector<DMatch> > two_matches;
 
 	matcher.knnMatch(img2.des, img1.des, two_matches, 2);
