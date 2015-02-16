@@ -20,12 +20,17 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
-#include <opencv2/nonfree/nonfree.hpp>
-#include <opencv2/nonfree/features2d.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/flann/flann.hpp>
 #include <mpi.h>
+#if CV_VERSION_MAJOR == 2
+#include <opencv2/nonfree/nonfree.hpp>
+#include <opencv2/nonfree/features2d.hpp>
+#elif CV_VERSION_MAJOR == 3
+#include <opencv2/xfeatures2d.hpp>
+#include <opencv2/xfeatures2d/nonfree.hpp>
+#endif
 
 #include "directory.h"
 #include "util.h"
@@ -36,6 +41,9 @@
 
 using namespace std;
 using namespace cv;
+#if CV_VERSION_MAJOR == 3
+using namespace xfeatures2d;
+#endif
 
 
 
@@ -131,9 +139,7 @@ void worker(const util::Directory &dir, int* recv, int geo)
 	int aim = recv[0];
 	int end = recv[1];
 
-	int numimages, netID, seek = 0, compute = 0, stop = 0;
-
-	numimages = dir.getNBImages();
+	int netID, seek = 0, compute = 0, stop = 0;
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
 
@@ -426,7 +432,6 @@ void secretary(const string &path, int numcore, int n, int bar, int geo)
 {
 	vector<float*> v_serialMatch;
 	vector<int> list;
-	float* serialMatch;
 
 	printf("GEO : %d\n", geo);
 
@@ -441,6 +446,8 @@ void secretary(const string &path, int numcore, int n, int bar, int geo)
 
 	while(end < numcore)
 	{
+		float* serialMatch;
+
 		serialMatch = recvFromWorker(list);
 		if (serialMatch)
 			v_serialMatch.push_back(serialMatch);

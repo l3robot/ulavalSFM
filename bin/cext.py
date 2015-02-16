@@ -1,5 +1,5 @@
-#!/usr/bin/python
-#USAGE# 
+#!/usr/bin/env python
+#USAGE#
 # cext.py
 
 import os
@@ -19,7 +19,7 @@ def renameExtMishaps(path):
         basename, end = splitext(filename)
         end = end[1:]
         ext = imghdr.what(filename)
-        
+
         try:
             ext = ext.lower()
         except AttributeError:

@@ -18,8 +18,14 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
-#include <opencv2/nonfree/nonfree.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#if CV_VERSION_MAJOR == 2
+#include <opencv2/nonfree/nonfree.hpp>
+#include <opencv2/nonfree/features2d.hpp>
+#elif CV_VERSION_MAJOR == 3
+#include <opencv2/xfeatures2d.hpp>
+#include <opencv2/xfeatures2d/nonfree.hpp>
+#endif
 
 #include "util.h"
 #include "domatch.h"
@@ -29,6 +35,13 @@
 using namespace std;
 using namespace cv;
 
+/* CV_LOAD_IMAGE_GRAYSCALE is renamed to IMREAD_GRAYSCALE in OpenCV 3 */
+#if CV_VERSION_MAJOR == 3
+    using namespace xfeatures2d;
+
+    #define CV_LOAD_IMAGE_GRAYSCALE IMREAD_GRAYSCALE
+    #include <opencv2/calib3d/calib3d_c.h>
+#endif
 
 
 /* 
@@ -225,12 +238,13 @@ void fMatrixFilter(struct Constraints &container)
 {
 	struct Constraints new_container;
 	int num = container.NP;
-	int NM;
-	int NI;
-	Matchespp *t;
 	
 	for (int i = 0; i < num; i++)
 	{
+		int NM;
+		int NI;
+		Matchespp *t;
+
 		t = &container.matches[i];
 
 		NM = t->NM;
@@ -301,11 +315,12 @@ int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, 
 void transformInfo(struct Constraints &container)
 {
 	int num = container.NP;
-	Matchespp *t;
 	int j = 0;
 
 	for (int i = 0; i < num; i++)
 	{
+		Matchespp *t;
+
 		t = &container.matches[i];
 		transformInfo(container.features[t->idx[0]].keys, container.features[t->idx[1]].keys, *t);
 		cout << "TRANSFORM : [ " << t->idx[0] << ", " << t->idx[1] << " ] : " << t->NI << " inliers found out of " << t->NM << endl;
@@ -449,7 +464,6 @@ void writeConstraints(const string &path, const vector<struct Matchespp> &contai
 */
 void geometry1Core(const util::Directory &dir)
 {
-	double the_time;
 	struct Constraints container;
 
 	cout << "--> Loading Keypoints ..." << endl << endl;

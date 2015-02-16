@@ -37,7 +37,7 @@ struct Matchespp
 {
 	int idx[2];
 	int NM;
-	int NI;
+    int NI;
 	cv::Mat H;
 	float ratio;
 
@@ -48,6 +48,7 @@ struct Matchespp
 		idx[0] = 0;
 		idx[1] = 0;
 		NM = 0;
+        NI = 0;
 		H = cv::Mat(3, 3, CV_32F);
 		ratio = 0.0;
 	}
@@ -70,14 +71,13 @@ struct Matchespp
 		ratio = 0.0;
 	}
 
-	Matchespp(const Matchespp &new_matches)
+	Matchespp(const Matchespp &new_matches) : matches(new_matches.matches)
 	{
 		idx[0] = new_matches.idx[0];
 		idx[1] = new_matches.idx[1];
 		NM = new_matches.NM;
 		H = new_matches.H;
 		ratio = new_matches.ratio;
-		matches = new_matches.matches;
 	}
 
 	void assign(const Matchespp &new_matches)
@@ -92,7 +92,6 @@ struct Matchespp
 
 	void reset(bool clearmatches = true)
 	{
-		NI = 0;
 		H = cv::Mat(3, 3, CV_32F);
 		ratio = 0.0;
 		if(clearmatches){matches.clear(); NM = 0;}
@@ -119,15 +118,15 @@ struct Matchespp
 *	Struct : Constraints
 *	Description : Information on constaints
 *
-*	int NP : number of good pairs	
-*	int NT : number of good transform pairs
+*	int NP : number of good pairs
+*   int NT : number of good transform pairs
 *	std::vector<DMatch> matches : all the matches
 *	std::vector<SFeatures> features : all the sift
 */
 struct Constraints
 {
 	int NP;
-	int NT;
+    int NT;
 
 	std::vector<struct Matchespp> matches;
 	std::vector<struct SFeatures> features;
@@ -135,11 +134,13 @@ struct Constraints
 	Constraints()
 	{
 		NP = 0;
+        NT = 0;
 	}
 
 	void reset()
 	{
 		NP = 0;
+        NT = 0;
 		matches.clear();
 		features.clear();
 	}
@@ -147,6 +148,7 @@ struct Constraints
 	void assignMatches(const Constraints &new_container)
 	{
 		NP = new_container.NP;
+        NT = new_container.NT;
 		matches = new_container.matches;
 	}
 

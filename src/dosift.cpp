@@ -17,8 +17,13 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
-#include <opencv2/nonfree/nonfree.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#if CV_VERSION_MAJOR == 2
+#include <opencv2/nonfree/nonfree.hpp>
+#elif CV_VERSION_MAJOR == 3
+#include <opencv2/xfeatures2d.hpp>
+#include <opencv2/xfeatures2d/nonfree.hpp>
+#endif
 
 #include "directory.h"
 #include "dosift.h"
@@ -26,6 +31,15 @@
 
 using namespace std;
 using namespace cv;
+#if CV_VERSION_MAJOR == 3
+using namespace xfeatures2d;
+#endif
+
+
+/* CV_LOAD_IMAGE_GRAYSCALE is renamed to IMREAD_GRAYSCALE in OpenCV 3 */
+#if CV_VERSION_MAJOR == 3
+    #define CV_LOAD_IMAGE_GRAYSCALE IMREAD_GRAYSCALE
+#endif
 
 
 /* 
@@ -42,7 +56,7 @@ void doSift(const string &path, struct SFeatures &container)
 
 	img = imread(path.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
 
-	SiftFeatureDetector detector; 
+	SiftFeatureDetector detector;
 
    	detector.detect(img, keypoints);
 
@@ -89,7 +103,6 @@ void writeSiftFile(const string &file, const struct SFeatures &container)
 */
 void sift1Core(const util::Directory &dir)
 {
-	double the_time;
 	struct SFeatures container;
 	string file(dir.getPath());
 

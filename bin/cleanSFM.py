@@ -1,7 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ### micro-program to clean the directory before running ulavalSFM
 
-#USAGE# 
+#USAGE#
 # cleanSFM.py
 
 import os
