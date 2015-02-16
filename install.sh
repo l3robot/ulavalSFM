@@ -4,133 +4,81 @@
 # Author : Émile Robitaille @ LERobot
 # Description : Intall script if you don't have OpenCV. Linux version
 
-N="1"
-OUT="$PWD/out.txt"
+# Automatically abort on error
+set -e
 
+# Get the directory which holds the current file
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+OUT="$DIR/out.txt"
+N=`nproc`
+
+# Parse arguments and set defaults
 if [ $# -ne 1 ]; then
 	arg1="-nocolosse"
 else
 	arg1=$1
 fi
 
-echo "#Added by ulavalSFM 4.0 installer" >> $HOME/.bashrc
-echo "export LD_LIBRARY_PATH="$PWD/lib/:\$LD_LIBRARY_PATH"" >> $HOME/.bashrc
-echo "export PATH="$PWD/bin/:\$PATH"" >> $HOME/.bashrc
-export LD_LIBRARY_PATH="$PWD/lib/:$LD_LIBRARY_PATH"
-export PATH="$PWD/bin/:$PATH"
-echo "[ Adding library path in .bashrc file ... done ]"
+# Append exports to .bashrc file
+if ! grep -q ulavalSFM "$HOME/.bashrc"; then
+    echo "# Added by ulavalSFM 4.0 installer" >> $HOME/.bashrc
+    echo "export LD_LIBRARY_PATH="$DIR/lib/:\$LD_LIBRARY_PATH"" >> $HOME/.bashrc
+    echo "export PATH="$DIR/bin/:\$PATH"" >> $HOME/.bashrc
+    echo "export PKG_CONFIG_PATH="$DIR/lib/pkgconfig:$PKG_CONFIG_PATH"" >> $HOME/.bashrc
+    source $HOME/.bashrc
+    echo "[ Adding library path in .bashrc file ... done ]"
+fi
 
-cd lib/
+# Clone required dependencies
+cd dependencies/
+
+if [ $arg1 != "-colosse" ] && [ ! -d opencv ]; then
+    git clone --single-branch https://github.com/Itseez/opencv.git opencv
+    git clone https://github.com/Itseez/opencv_contrib.git
+fi
+if [ ! -d bundler_sfm ]; then
+    if [ $arg1 != "-colosse" ]; then
+        git clone https://github.com/LERobot/bundler_sfm
+    else
+        git clone https://github.com/lvsn/bundler_sfm
+    fi
+fi
+
+# Build the dependencies
 
 if [ $arg1 != "-colosse" ]; then
-#only 2.4.9 branch
-git clone -b 2.4.9.x-prep --single-branch https://github.com/Itseez/opencv.git opencv-2.4.9 >> $OUT 2>&1
-if [ $? -ne 0 ]; then
-	echo "[ ERROR : cloning OpenCV, check out.txt for more information ]"
-	return
-else
-	echo "[ Cloning OpenCV ... done ]"
+    cd opencv/
+    if [ ! -d build ]; then
+        mkdir build/
+        cd build/
+        cmake -DCMAKE_INSTALL_PREFIX="${DIR}" -DCMAKE_LIBRARY_PATH="${DIR}" -DCMAKE_INCLUDE_PATH="${DIR}/include/" -DOPENCV_EXTRA_MODULES_PATH=${DIR}/dependencies/opencv_contrib/modules -DBUILD_opencv_legacy=OFF ..
+        make -j $N
+        make install
+    fi
 fi
 
-else
-
-echo "[ON COLOSSE : Skipping OpenCV download]"
-
-fi
-
-#For colosse cluster users
-if [ $arg1 == "-colosse" ]; then
-	git clone https://github.com/lvsn/bundler_sfm >> $OUT 2>&1
-else
-	git clone https://github.com/LERobot/bundler_sfm >> $OUT 2>&1
-fi
-if [ $? -ne 0 ]; then
-	echo "[ ERROR : Cloning BundlerSFM, check out.txt for more information ]"
-	return
-else
-	echo "[ Cloning BundlerSFM ... done ]"
-fi
-
-if [ $arg1 != "-colosse" ]; then
-cd opencv-2.4.9/
-if [ -d build ]; then
-	echo "[ WARNING : build directory already exists]"
-else
-	mkdir build/
-	echo "[ Creation of build directory ... done]"
-fi
-
-cd build/
-cmake -D CMAKE_INSTALL_PREFIX="../../../" -D CMAKE_LIBRARY_PATH="../../" -D CMAKE_INCLUDE_PATH="../../../include/" .. >> out.txt 2>&1
-make -j $N >> $OUT 2>&1
-if [ $? -ne 0 ]; then
-	echo "[ ERROR : Building OpenCV, check out.txt for more information ]"
-	return
-else
-	echo "[ Building OpenCV ... done ]"
-fi
-make install >> $OUT 2>&1
-if [ $? -ne 0 ]; then
-	echo "[ ERROR : Installing OpenCV, check out.txt for more information ]"
-	return
-else
-	echo "[ Installing OpenCV ... done ]"
-fi
-
-else 
-
-echo "[ON COLOSSE : Skipping OpenCV installation]"
-
-fi
 
 if [ $arg1 == "-colosse" ]; then
 	cd bundler_sfm/
 else
-	cd ../../bundler_sfm/
+	cd ${DIR}/dependencies/bundler_sfm/
 fi
 
-make clean >> $OUT 2>&1
-make -j 2 >> $OUT 2>&1
-if [ $? -ne 0 ]; then
-	echo "[ ERROR : Building BundlerSFM, check out.txt for more information ]"
-	return
-else
-	echo "[ Building BundlerSFM ... done ]"
-fi
-rm -f bin/bundler.py
-mv bin/* ../../bin/ >> $OUT 2>&1
-mv lib/* ../ >> $OUT 2>&1
-if [ $? -ne 0 ]; then
-	echo "[ ERROR : Installing BundlerSFM, check out.txt for more information ]"
-	return
-else
-	echo "[ Installing BundlerSFM ... done ]"
+if [ ! -e bin/bundler ]; then
+    make -j $N
+    rm -f bin/bundler.py
+    mv bin/* ${DIR}/bin/
+    mv lib/* ${DIR}/lib/
 fi
 
-cd ../../src/
-make clean >> $OUT 2>&1
-make -j 2 >> $OUT 2>&1
-if [ $? -ne 0 ]; then
-	echo "[ ERROR : Building ulavalSFM, check out.txt for more information ]"
-	return
-else
-	echo "[ Building ulavalSFM ... done ]"
-fi
-make cinstall >> $OUT 2>&1
-if [ $? -ne 0 ]; then
-	echo "[ ERROR : Installing ulavalSFM, check out.txt for more information ]"
-	return
-else
-	echo "[ Installing ulavalSFM ... done ]"
-fi
+cd ${DIR}/src/
+make -j $N
+make cinstall
 
-sed -i "1s;.*;#!$HOME/anaconda3/bin/python;" ../bin/bundler.py
-sed -i "1s;.*;#!$HOME/anaconda3/bin/python;" ../bin/cext.py
-sed -i "1s;.*;#!$HOME/anaconda3/bin/python;" ../bin/cleanSFM.py
-chmod +x ../bin/bundler.py
-chmod +x ../bin/cext.py
-chmod +x ../bin/cleanSFM.py
+chmod +x ${DIR}/bin/bundler.py
+chmod +x ${DIR}/bin/cext.py
+chmod +x ${DIR}/bin/cleanSFM.py
 
-cd ~
+cd ${DIR}
 
 echo "[ YOU CAN RUN ULAVALSFM ]"
