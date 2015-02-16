@@ -5,7 +5,6 @@
 # Version : 1.0
 # Description : Makefile used to compile ulavalSFM.
 
-#CXX=g++
 LIBS=$(shell pkg-config --cflags --libs opencv)
 OPENCV=$(shell pkg-config --cflags opencv)
 
