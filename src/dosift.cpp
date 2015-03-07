@@ -26,21 +26,12 @@ int main(int argc, char* argv[])
 	//MPI initialization
 	MPI_Init(&argc, &argv);
 
-	//Number of cores and the ID of the core
-	int netSize;
-	int netID;
-
-	//request the numbre of cores and the ID of the core
-	MPI_Comm_size(MPI_COMM_WORLD, &netSize);
-	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
+	export char verbose = 0;
+	export char *siftPath = NULL;
 
 	//Check the number of arguments
 	if (argc < 2)
 		sUsage(argv[0]);
-
-	//Create a object to store the working directory information
-	util::Directory dir(argv[1]);
-	struct SFeatures container;
 
 	//Parse the facultative arguments
 	sParseArgs(argc, argv);
@@ -49,18 +40,30 @@ int main(int argc, char* argv[])
 	string img(argv[1]);
 	string key(siftPath);
 
+	//Create a object to store the working directory information
+	util::Directory dir(argv[1]);
+	struct SFeatures container;
+
+	//Number of cores and the ID of the core
+	int netSize;
+	int netID;
+
+	//request the numbre of cores and the ID of the core
+	MPI_Comm_size(MPI_COMM_WORLD, &netSize);
+	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
+
 	//Set the starting and ending index
 	int start, end;
 	distribution(netID, netSize, dir, DIST4SIFT, &start, &end);
 
-	//Take the initial time
-	if(netID == 0) {
-		double the_time = MPI_Wtime();
-	}
+	//Waiting all the cores
+	MPI_Barrier(MPI_COMM_WORLD);
 
 	//Brief reminder of what the program will do
-	if (netID == 0)
+	if (netID == 0) {
+		double the_time = MPI_Wtime();
 		printf("--> Sift searching begins on %d core(s) :\n", netSize);
+	}
 
 	//Main loop
 	for(int i = start; i < end; i++)

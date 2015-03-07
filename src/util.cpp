@@ -31,11 +31,14 @@ distribution(int id, int size, util::Directory &dir, DistType type, int *start, 
 {
 	int numimages = dir.getNBImages();
 
-	if (type == DIST4MATCHES)
+	if (type == DIST4MATCHES) {
+		id--;
+		size--;
 		numimages = numimages * (numimages - 1) / 2;
+	}
 
-	int distFactor = numimages / netSize;
-	int distError = numimages % netSize;
+	int distFactor = numimages / size;
+	int distError = numimages % size;
 
 	if (id < distError) {
 		*start = id * (distFactor + 1);

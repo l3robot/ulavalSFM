@@ -54,35 +54,22 @@ int main(int argc, char** argv)
 
 	if(netSize < 2)
 	{
-		if(netID == 0)
-		{
-			printf("[ERROR] At most 2 cores are needed\n");
-		}
+		printf("[ERROR] At most 2 cores are needed\n");
 		exit(1);
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	if(netID == 0)
-	{
+	if(netID == 0) {
 		the_time = MPI_Wtime();
-	}
-
-	MPI_Barrier(MPI_COMM_WORLD);
-
-	//set the starting and ending index
-	int start, end;
-	distribution(netID, netSize, );
-
-	if(netID == 0)
-	{
 		int n = dir.getNBImages() * (dir.getNBImages() - 1) / 2;
-		deleteDist(dist);
 		secretary(dir.getPath(), netSize, n, bar, geo);
 	}
-	else
-	{
-		worker(dir, recv, geo);
+	else {
+		//set the starting and ending index
+		int start, end;
+		distribution(netID, netSize, dir, DIST4MATCHES, &start, &end);
+		worker(dir, start, end, geo);
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);

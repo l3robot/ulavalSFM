@@ -218,80 +218,6 @@ int findIDX(int i, int j, const vector<struct Matchespp> &container, int* revers
 	return -1;
 }
 
-
-/*
-*	Function : writeMatchFile
-*	Description : write matches in a file
-*
-*	path : path of the working directory
-*	container : container with matches information
-*	n : numbre of images
-*	bar : print or not a progress bar
-*/
-void writeMatchFile(const string &path, const vector<struct Matchespp> &container, int n, int bar)
-{
-	string file(path);
-
-	file.append("matches.init.txt");
-
-	FILE* f = fopen(file.c_str(), "wb");
-
-	int ni = ( 1 + sqrt( 1 + 8 * n ) ) / 2;
-
-	for (int i = 0; i < ni; i++)
-	{
-		for (int j = 0; j < ni; j++)
-		{
-			int reverse;
-			int idx = findIDX(i, j, container, &reverse);
-
-			if (idx > 0 && !reverse)
-			{
-				struct Matchespp box(container[idx]);
-
-				fprintf(f, "%d %d\n", box.idx[0], box.idx[1]);
-				fprintf(f, "%d\n", box.NM);
-
-				for(int j = 0; j < box.NM; j++)
-					fprintf(f, "%d %d\n", box.matches[j].queryIdx, box.matches[j].trainIdx);
-			}
-			else if (idx > 0 && reverse)
-			{
-				struct Matchespp box(container[idx]);
-
-				fprintf(f, "%d %d\n", box.idx[1], box.idx[0]);
-				fprintf(f, "%d\n", box.NM);
-
-				for(int j = 0; j < box.NM; j++)
-					fprintf(f, "%d %d\n", box.matches[j].trainIdx, box.matches[j].queryIdx);
-			}
-
-			if (bar) showProgress(i * ni + j, ni * ni, 75, 1);
-
-		}
-	}
-
-	if (bar) showProgress(ni * ni, ni * ni, 75, 0);
-
-	fclose(f);
-}
-
-
-/*
-*	Function : boss
-*	Description : code for the boss
-*
-*	numcore : number of cores
-*	dir : directory information
-*/
-int* boss(int numcore, const util::Directory &dir)
-{
-	int* dis = createDist4Match(dir.getNBImages(), numcore);
-
-	return dis;
-}
-
-
 /*
 *	Function : serializeVector
 *	Description : to serialize a vector
@@ -364,11 +290,8 @@ void endComm(int sender)
 *	recv : relative information about distribution
 *	geo : if to do geometry or not
 */
-void worker(const util::Directory &dir, int* recv, int geo)
+void worker(const util::Directory &dir, int aim, int end, int geo)
 {
-	int aim = recv[0];
-	int end = recv[1];
-
 	int netID, seek = 0, compute = 0, stop = 0;
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
@@ -402,8 +325,6 @@ void worker(const util::Directory &dir, int* recv, int geo)
 				doMatch(keys1, keys2, container, geo);
 
 				serialMatch = serializeContainer(container);
-
-				//cout << "[CORE " << netID << "]: " << container.NM << " match(es) found between " << dir.getImage(j) << " and " << dir.getImage(i) << endl;
 
 				container.reset();
 

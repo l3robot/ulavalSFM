@@ -23,10 +23,6 @@
 #define F_DES 2
 #define F_ALL 3
 
-export char verbose = 0;
-export char *siftPath = NULL;
-
-
 /*
 *	Struct : SFeatures
 *	Description : Information on sift features
