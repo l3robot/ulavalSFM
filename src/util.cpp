@@ -27,95 +27,24 @@ using namespace std;
 ///////////////////////////////////////////////////////////////
 
 
-Distribution::Distribution(DistType p_type, const util::Directory &dir, int netSize)
+distribution(int id, int size, util::Directory dir, DistType type, int *start, int *end)
 {
 	int numimages = dir.getNBImages();
-	m_size = 2 * netSize * sizeof(int);
-	m_dist = (int*) malloc(m_size);
 
-	switch (p_type) {
+	if (type == DIST4MATCHES)
+		numimages = numimages * (numimages - 1) / 2;
 
-		case DIST4SIFT:
+	int distFactor = numimages / netSize;
+	int distError = numimages % netSize;
 
-			m_type = DIST4SIFT;
-
-			int distFactor = numimages / netSize;
-			int distError = numimages % netSize;
-
-			m_dist[0] = 0;
-
-			if (distError > 0)
-			{
-				m_dist[1] = DistFactor + 1;
-			}
-			else
-			{
-				m_dist[1] = distFactor;
-			}
-
-			for(int i = 2; i < 2 * netSize; i+=2)
-			{
-				m_dist[i] = m_dist[i - 1];
-
-				if (i / 2 < distError)
-				{
-					m_dist[i + 1] = m_dist[i] + distFactor + 1;
-				}
-				else
-				{
-					m_dist[i + 1] = m_dist[i] + distFactor;
-				}
-			}
-			break;
-
-		case DIST4MATCHES:
-
-			m_type = DIST4SIFT;
-
-			int numtask = numimages * (numimages - 1) / 2;
-
-			int distFactor = numtask / (netSize - 1);
-			int distError = numtask % (netSize - 1);
-
-			m_dist[0] = -1;
-			m_dist[1] = 0;
-
-			for (int i = 2; i < 2 * netSize; i+=2)
-			{
-				m_dist[i] = m_dist[i - 1];
-				if (i / 2 <= distError)
-				{
-					m_dist[i + 1] = m_dist[i] + distFactor + 1;
-				}
-				else
-				{
-					m_dist[i + 1] = m_dist[i] + distFactor;
-				}
-			}
-			break;
-
-		default:
-			printf("Error in distribution creation, type does not exist !! Force to quit !!\n");
-			exit(1);
-			break;
+	if (id < distError) {
+		*start = id * (distFactor + 1);
+		*end = (id + 1) * (distFactor + 1);
 	}
-}
-
-Distribution::Distribution(Distribution &dist)
-{
-	m_type = dist.m_type;
-	free(m_dist);
-
-	m_dist = malloc(dist.m_size);
-
-	for(int i = 0; i < dist.m_size; i++)
-		m_dist[i] = dist.m_dist[i];
-
-}
-
-Distribution::~Distribution()
-{
-	free(dist);
+	else {
+		*start = id * distFactor + distError
+		*end = *start + distFactor;
+	}
 }
 
 

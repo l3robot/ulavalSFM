@@ -1,6 +1,6 @@
 /*
 *	File : cDoSift.cpp
-*	Author : Émile Robitaille @ LERobot
+*	Author : �mile Robitaille @ LERobot
 *	Creation date : 2014, June 30th
 *	Version : 1.0
 *
@@ -26,9 +26,6 @@ int main(int argc, char* argv[])
 	//MPI initialization
 	MPI_Init(&argc, &argv);
 
-	//Table to receive images interval to compute for a core
-	int recv[2];
-
 	//Number of cores and the ID of the core
 	int netSize;
 	int netID;
@@ -52,22 +49,15 @@ int main(int argc, char* argv[])
 	string img(argv[1]);
 	string key(siftPath);
 
-	//Create the image distribution
-	if(netID == 0) {
-		Distribution dist(DIST4SIFT, dir, netSize);
-	}
+	//Set the starting and ending index
+	int start, end;
 
-	//Scatter the image indexes
-	MPI_Scatter(dist.m_dist, 2, MPI_INT, recv, 2, MPI_INT, 0, MPI_COMM_WORLD);
+	distribution(netID, netSize, dir, DIST4SIFT, &start, &end);
 
 	//Take the initial time
 	if(netID == 0) {
 		double the_time = MPI_Wtime();
 	}
-
-	//Set the starting and ending index
-	int start = recv[0];
-	int end = recv[1];
 
 	//Brief reminder of what the program will do
 	if (netID == 0)
@@ -82,22 +72,17 @@ int main(int argc, char* argv[])
 		doSift(img, container);
 
 		while (key[key.size() - 1] != '.')
-		{
 			key.pop_back();
-		}
 
 		key.append("key");
 
 		writeSiftFile(key, container);
 
 		while (img[img.size() - 1] != '/')
-		{
 			img.pop_back();
-		}
+
 		while (key[key.size() - 1] != '/')
-		{
 			key.pop_back();
-		}
 
 		//Verbose mode
 		if (netID == 0 && verbose)

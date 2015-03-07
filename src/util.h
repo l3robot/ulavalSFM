@@ -19,40 +19,7 @@ typedef enum {
   DIST4MATCHES
 } DistType;
 
-/*
-*	Class : Distribution
-*	Description : Class used to create distributions patterns
-*
-*	Methods :
-*
-*		Distribution(const util::Directory &dir, int netSize, DistType m_type) : Default constructor
-*   Distributipn(const Distribution &p_dist) : Copy constructor
-*   ~Distribution(); Default Destructor
-*
-*	Attributes :
-*
-*   DistType m_type : distribution type
-*   int size : size of the distribution table
-*		int* m_dist : distribution pattern
-*
-*/
-
-class Distribution
-{
-
-public:
-
-  Distribution(const util::Directory &dir, int netSize, DistType m_type);
-  Distributipn(const Distribution &p_dist);
-  Distribution()
-
-private:
-
-	DistType m_type;
-	int m_size;
-	int *m_dist;
-
-};
+distribution(int ID, int size, util::Directory &dir, int *start, int *end);
 
 //other util functions
 void showProgress(int i, int n, int w, int actualize);
