@@ -21,82 +21,102 @@
 using namespace std;
 using namespace util;
 
-
-
 int main(int argc, char* argv[])
 {
+	//MPI initialization
 	MPI_Init(&argc, &argv);
 
+	//Table to receive images interval to compute for a core
 	int recv[2];
 
+	//Number of cores and the ID of the core
 	int netSize;
 	int netID;
 
+	//request the numbre of cores and the ID of the core
 	MPI_Comm_size(MPI_COMM_WORLD, &netSize);
 	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
 
+	//Check the number of arguments
+	if (argc < 2)
+		sUsage(argv[0]);
+
+	//Create a object to store the working directory information
 	util::Directory dir(argv[1]);
 	struct SFeatures container;
-	string file(argv[1]);
 
-	if(netID == 0)
-	{
+	//Parse the facultative arguments
+	sParseArgs(argc, argv);
+
+	//Create the strings for working directory and sift file storage directory
+	string img(argv[1]);
+	string key(siftPath);
+
+	//Create the image distribution
+	if(netID == 0) {
 		Distribution dist(DIST4SIFT, dir, netSize);
 	}
 
+	//Scatter the image indexes
 	MPI_Scatter(dist.m_dist, 2, MPI_INT, recv, 2, MPI_INT, 0, MPI_COMM_WORLD);
 
-	// SIFT
-
-	if(netID == 0)
-	{
+	//Take the initial time
+	if(netID == 0) {
 		double the_time = MPI_Wtime();
 	}
 
-	MPI_Barrier(MPI_COMM_WORLD);
-
+	//Set the starting and ending index
 	int start = recv[0];
 	int end = recv[1];
 
-	if (netID == 0 && verbose)
+	//Brief reminder of what the program will do
+	if (netID == 0)
 		printf("--> Sift searching begins on %d core(s) :\n", netSize);
 
+	//Main loop
 	for(int i = start; i < end; i++)
 	{
-		file.append(dir.getImage(i));
+		img.append(dir.getImage(i));
+		key.append(dir.getImage(i));
 
-		doSift(file, container);
+		doSift(img, container);
 
-		//cout << "[CORE " << netID << "]: " << container.keys.size() << " sift point(s) found in " << dir.getImage(i) << endl;
-
-		while (file[file.size() - 1] != '.')
+		while (key[key.size() - 1] != '.')
 		{
-			file.pop_back();
+			key.pop_back();
 		}
 
-		file.append("key");
+		key.append("key");
 
-		writeSiftFile(file, container);
+		writeSiftFile(key, container);
 
-		while (file[file.size() - 1] != '/')
+		while (img[img.size() - 1] != '/')
 		{
-			file.pop_back();
+			img.pop_back();
+		}
+		while (key[key.size() - 1] != '/')
+		{
+			key.pop_back();
 		}
 
+		//Verbose mode
 		if (netID == 0 && verbose)
 			showProgress(i, end, 75, 1);
 	}
 
+	//Verbose mode
 	if (netID == 0 && verbose)
 		showProgress(end, end, 75, 0);
 
+	//Waiting all the cores
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	if(netID == 0)
-	{
+	//Print the time it needs to compute all the images
+	if(netID == 0) {
 		printf("The sift search takes approximately %0.3f second(s)\n", MPI_Wtime() - the_time);
 	}
 
+	//Terminate MPI
 	MPI_Finalize();
 
 	return 0;
