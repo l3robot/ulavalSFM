@@ -3,7 +3,7 @@
 *	Author : Émile Robitaille @ LERobot
 *	Creation date : 07/03/2014
 *	Version : 1.0
-*	
+*
 *	Description : Functions relative to match
 */
 
@@ -17,17 +17,19 @@
 #include <opencv2/features2d/features2d.hpp>
 
 #include "dosift.h"
+#include "domatch.h"
 #include "directory.h"
+#include "dogeometry.h"
 
 #define MATCHFILE "matches.init.txt"
 #define BOSS 0
 #define SECRETARY 0
 
-/* 
+/*
 *	Struct : Matches
 *	Description : Information on matches
 *
-*	int NM : number of matches	
+*	int NM : number of matches
 *	std::vector<DMatch> matches : matches
 */
 struct Matches
@@ -58,16 +60,14 @@ void match1Core(const util::Directory &dir, int geo = 1);
 void matchMCore(const std::string &path, int numcore, int geo);
 void matchMCCore(const std::string &path, int numcore, int seconds);
 
+int* boss(int numcore, const util::Directory &dir);
+float* serializeContainer(const struct Matchespp &container);
+void endComm(int sender);
+void worker(const util::Directory &dir, int* recv, int geo = 1);
+void writeSerialMatch(const std::string &path, const std::vector<float*> &container, int n, int bar);
+float* searchIDX(int i, int j, const std::vector<float*> &container, int* reverse);
+void writeSerialMatchespp(const std::string &path, const std::vector<float*> &container, int n, int bar);
+float* recvFromWorker(std::vector<int> &list);
+void secretary(const std::string &path, int numcore, int n, int bar, int geo = 1);
+
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
