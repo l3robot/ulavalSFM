@@ -27,7 +27,7 @@ using namespace std;
 ///////////////////////////////////////////////////////////////
 
 
-distribution(int id, int size, util::Directory dir, DistType type, int *start, int *end)
+distribution(int id, int size, util::Directory &dir, DistType type, int *start, int *end)
 {
 	int numimages = dir.getNBImages();
 

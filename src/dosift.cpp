@@ -51,7 +51,6 @@ int main(int argc, char* argv[])
 
 	//Set the starting and ending index
 	int start, end;
-
 	distribution(netID, netSize, dir, DIST4SIFT, &start, &end);
 
 	//Take the initial time
