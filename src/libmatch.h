@@ -1,7 +1,7 @@
 /*
-*	File : domatch.h
+*	File : libmatch.h
 *	Author : Émile Robitaille @ LERobot
-*	Creation date : 07/03/2014
+*	Creation date : 2015, March 7th
 *	Version : 1.0
 *
 *	Description : Functions relative to match
@@ -16,10 +16,10 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/features2d/features2d.hpp>
 
-#include "dosift.h"
-#include "domatch.h"
+#include "libsift.h"
+#include "libmatch.h"
 #include "directory.h"
-#include "dogeometry.h"
+#include "libgeometry.h"
 
 #define MATCHFILE "matches.init.txt"
 #define BOSS 0

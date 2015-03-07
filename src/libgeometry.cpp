@@ -1,9 +1,9 @@
 /*
-*	File : dogeometry.cpp
+*	File : libgeometry.cpp
 *	Author : Émile Robitaille @ LERobot
-*	Creation date : 07/08/2014
+*	Creation date : 2015, March 7th
 *	Version : 1.0
-*	
+*
 *	Description : Functions relative to geometry
 */
 
@@ -28,8 +28,8 @@
 #endif
 
 #include "util.h"
-#include "domatch.h"
-#include "dogeometry.h"
+#include "libmatch.h"
+#include "libgeometry.h"
 #include "directory.h"
 
 using namespace std;
@@ -44,10 +44,10 @@ using namespace cv;
 #endif
 
 
-/* 
+/*
 *	Function : readMatchFile
 *	Description : Read the match file, adjust the coordinates and fill a SFeatures object
-*	
+*
 *	file : path of the .key file
 *	container : container for sift keypoints and their descriptor
 */
@@ -100,18 +100,18 @@ void readAndAdjustSiftFile(const string &path, const string &img, const string &
 		for(int j = 0; j < 128; j++)
 		{
 			fscanf(f, "%f", &pter[j]);
-		} 
+		}
 	}
 
 	container.des = descriptor;
 
-	fclose(f);	
+	fclose(f);
 }
 
-/* 
+/*
 *	Function : readKeys
 *	Description : Load the keys in a Constraints object
-*	
+*
 *	dir : directory information
 *	container : container for constraints information
 */
@@ -131,10 +131,10 @@ void readKeys(const util::Directory &dir, struct Constraints &container)
 }
 
 
-/* 
+/*
 *	Function : readMatchFile
 *	Description : Read the match file and fill the constraints object
-*	
+*
 *	container : container for constraints information
 */
 void readMatchFile(const string &path, struct Constraints &container)
@@ -163,8 +163,8 @@ void readMatchFile(const string &path, struct Constraints &container)
 
 		sscanf(buffer, "%d %d", &box.idx[0], &box.idx[1]);
 		fscanf(f, "%d\n", &NM);
-		box.NM = NM; 
-		
+		box.NM = NM;
+
 		for(int i = 0; i < NM; i++)
 		{
 			int query;
@@ -184,10 +184,10 @@ void readMatchFile(const string &path, struct Constraints &container)
 }
 
 
-/* 
+/*
 *	2 Functions : pruneDoubleMatch
 *	Description : Eliminate the double matches, keep the first only. If a pair have less than 20 matches, the pair is eliminated.
-*	
+*
 *	container : container for constraints information
 */
 void pruneDoubleMatch(struct Constraints &container)
@@ -227,10 +227,10 @@ void pruneDoubleMatch(struct Matchespp &new_box, const struct Matchespp &box)
 	}
 }
 
-/* 
+/*
 *	2 Functions : fMatrixFilter
 *	Description : Estimate FMatrix with RANSAC and keep inliers only
-*	
+*
 *	file : path of the .sift file
 *	container : container for sift keypoints and their descriptor
 */
@@ -238,7 +238,7 @@ void fMatrixFilter(struct Constraints &container)
 {
 	struct Constraints new_container;
 	int num = container.NP;
-	
+
 	for (int i = 0; i < num; i++)
 	{
 		int NM;
@@ -275,7 +275,7 @@ int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, 
 	int NI = 0;
 
 	if(!treshold) printf("\nPoint : \n");
-	 
+
 	for(int i = 0; i < nummatch; i++)
 	{
 		pts1.push_back(Point2f(keys1[list[i].queryIdx].pt.x, keys1[list[i].queryIdx].pt.y));
@@ -301,15 +301,15 @@ int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, 
 	}
 
 	list = new_list;
-	
+
 	return NI;
 }
 
 
-/* 
+/*
 *	2 Functions : transformInfo
 *	Description : Find Transform, compute inliers and its ratio
-*	
+*
 *	container : container for sift keypoints and their descriptor
 */
 void transformInfo(struct Constraints &container)
@@ -325,7 +325,7 @@ void transformInfo(struct Constraints &container)
 		transformInfo(container.features[t->idx[0]].keys, container.features[t->idx[1]].keys, *t);
 		cout << "TRANSFORM : [ " << t->idx[0] << ", " << t->idx[1] << " ] : " << t->NI << " inliers found out of " << t->NM << endl;
 
-		if(t->NI < 10) 
+		if(t->NI < 10)
 		{
 			cout << "TRANSFORM : [ " << t->idx[0] << ", " << t->idx[1] << " ] : " <<  "Too few matches, considered like if there were no matches" << endl;
 			t->reset(false);
@@ -345,7 +345,7 @@ void transformInfo(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2,
 	vector<Point2f> pts1, pts2;
 
 	Mat mask;
-	 
+
 	for(int i = 0; i < nummatch; i++)
 	{
 		pts1.push_back(Point2f(keys1[list.matches[i].queryIdx].pt.x, keys1[list.matches[i].queryIdx].pt.y));
@@ -367,11 +367,11 @@ void transformInfo(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2,
 	list.ratio = (float) list.NI / (float) list.NM;
 }
 
-/* 
+/*
 *	Function : writeConstraints
 *	Description : write constraints information in a file for the modified bundlerSFM
 *
-*	path : path of the working directory	
+*	path : path of the working directory
 *	container : information on matches
 *	n : number of images
 *	bar : print the progress bar or not
@@ -415,8 +415,8 @@ void writeConstraints(const string &path, const vector<struct Matchespp> &contai
 
 			        const double *M = box.H.ptr<double>();
 
-			        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", M[0], M[1], M[2], 
-			        											M[3], M[4], M[5], 
+			        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", M[0], M[1], M[2],
+			        											M[3], M[4], M[5],
 			        											M[6], M[7], M[8]);
 				}
 			}
@@ -439,8 +439,8 @@ void writeConstraints(const string &path, const vector<struct Matchespp> &contai
 
 			        const double *M = box.H.ptr<double>();
 
-			        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", M[0], M[3], M[6], 
-			        											M[1], M[4], M[7], 
+			        fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", M[0], M[3], M[6],
+			        											M[1], M[4], M[7],
 			        											M[2], M[5], M[8]);
 				}
 			}
@@ -456,10 +456,10 @@ void writeConstraints(const string &path, const vector<struct Matchespp> &contai
 	fclose(f2);
 }
 
-/* 
+/*
 *	Function : geometry1Core
 *	Description : compute geometry on 1 core
-*	
+*
 *	dir : directory information
 */
 void geometry1Core(const util::Directory &dir)
@@ -486,10 +486,10 @@ void geometry1Core(const util::Directory &dir)
 	cout << endl;
 }
 
-/* 
+/*
 *	Function : geometryMCore
 *	Description : start to compute geometry with OpenMPI on the given number of cores
-*	
+*
 *	path : working directory
 *	numcore : number of cores
 */
@@ -504,10 +504,10 @@ void geometryMCore(const string &path, int numcore)
 	system(command.c_str());
 }
 
-/* 
+/*
 *	Function : SiftCMCore
 *	Description : start to compute geometry with OpenMPI on the given number of cores and on the supercomputer
-*	
+*
 *	path : working directory
 *	numcore : number of cores
 */
@@ -523,31 +523,3 @@ void geometryMCCore(const string &path, int numcore)
 
 	cout << "You'll be warned by email when the process will terminate" << endl << endl;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,9 +1,9 @@
 /*
-*	File : dogeometry.h
+*	File : libgeometry.h
 *	Author : Émile Robitaille @ LERobot
-*	Creation date : 07/08/2014
+*	Creation date : 2015, March 7th
 *	Version : 1.0
-*	
+*
 *	Description : Functions relative to geometry
 */
 
@@ -16,13 +16,13 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/features2d/features2d.hpp>
 
-#include "dosift.h"
+#include "libsift.h"
 #include "directory.h"
 
 #define GOEMETRYFILE "constraints.txt"
 
 
-/* 
+/*
 *	Struct : Matchespp
 *	Description : More information on matches
 *
@@ -30,7 +30,7 @@
 *	int NM : number of matches
 *	int NI : number of inliers relative to transform
 *	int H[9] : transform matrix
-*	int ratio : pairwise score	
+*	int ratio : pairwise score
 *	std::vector<DMatch> matches : matches
 */
 struct Matchespp
@@ -114,7 +114,7 @@ struct Matchespp
 };
 
 
-/* 
+/*
 *	Struct : Constraints
 *	Description : Information on constaints
 *

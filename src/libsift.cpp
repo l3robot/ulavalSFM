@@ -1,7 +1,7 @@
 /*
-*	File : dosift.cpp
+*	File : libsift.cpp
 *	Author : Émile Robitaille @ LERobot
-*	Creation date : 2014, June 27th
+*	Creation date : 2015, March 7th
 *	Version : 1.0
 *
 *	Description : Functions relative to sift

@@ -1,7 +1,7 @@
 /*
-*	File : domatch.cpp
+*	File : libmatch.cpp
 *	Author : Émile Robitaille @ LERobot
-*	Creation date : 07/03/2014
+*	Creation date : 2015, March 7th
 *	Version : 1.0
 *
 *	Description : Functions relative to match
@@ -33,10 +33,9 @@
 
 #include "directory.h"
 #include "util.h"
-#include "dosift.h"
-#include "domatch.h"
-#include "dogeometry.h"
-#include "cDoMatchLib.h"
+#include "libsift.h"
+#include "libmatch.h"
+#include "libgeometry.h"
 
 using namespace std;
 using namespace cv;

@@ -1,10 +1,10 @@
 /*
-*	File : cDoMatch.cpp
+*	File : domatch.cpp
 *	Author : Émile Robitaille @ LERobot
-*	Creation date : 07/08/2014
+*	Creation date : 2014, July 8th
 *	Version : 1.0
-*	
-*	Description : Program to make match in parallel
+*
+*	Description : Program to match sift points in parallel
 */
 
 #include <stdio.h>
@@ -20,7 +20,7 @@
 
 #include "directory.h"
 #include "util.h"
-#include "cDoMatchLib.h"
+#include "libmatch.h"
 
 using namespace std;
 using namespace cv;
@@ -101,15 +101,3 @@ int main(int argc, char** argv)
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
