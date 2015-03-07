@@ -3,7 +3,7 @@
 *	Author : Émile Robitaille @ LERobot
 *	Creation date : 2014, June 30th
 *	Version : 1.0
-*	
+*
 *	Description : Program to find sift point on a image dataset in parallel
 */
 
@@ -27,9 +27,7 @@ int main(int argc, char* argv[])
 {
 	MPI_Init(&argc, &argv);
 
-	int* dist = NULL;
 	int recv[2];
-	double the_time;
 
 	int netSize;
 	int netID;
@@ -43,17 +41,16 @@ int main(int argc, char* argv[])
 
 	if(netID == 0)
 	{
-		dist = createDist(dir, netSize);
+		Distribution dist(DIST4SIFT, dir, netSize);
 	}
 
-	MPI_Scatter(dist, 2, MPI_INT, recv, 2, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Scatter(dist.m_dist, 2, MPI_INT, recv, 2, MPI_INT, 0, MPI_COMM_WORLD);
 
 	// SIFT
 
 	if(netID == 0)
 	{
-		deleteDist(dist);
-		the_time = MPI_Wtime();
+		double the_time = MPI_Wtime();
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
@@ -61,7 +58,7 @@ int main(int argc, char* argv[])
 	int start = recv[0];
 	int end = recv[1];
 
-	if (netID == 0)
+	if (netID == 0 && verbose)
 		printf("--> Sift searching begins on %d core(s) :\n", netSize);
 
 	for(int i = start; i < end; i++)
@@ -86,32 +83,21 @@ int main(int argc, char* argv[])
 			file.pop_back();
 		}
 
-		if (netID == 0)
+		if (netID == 0 && verbose)
 			showProgress(i, end, 75, 1);
-	} 
+	}
 
-	if (netID == 0)
+	if (netID == 0 && verbose)
 		showProgress(end, end, 75, 0);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	if(netID == 0)
 	{
-		printf("The program takes approximately %f second(s)\n", MPI_Wtime() - the_time);
+		printf("The sift search takes approximately %0.3f second(s)\n", MPI_Wtime() - the_time);
 	}
 
 	MPI_Finalize();
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-

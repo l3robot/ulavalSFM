@@ -3,7 +3,7 @@
 *	Author : Émile Robitaille @ LERobot
 *	Creation date : 2014, June 27th
 *	Version : 1.0
-*	
+*
 *	Description : Bunch of util functions
 */
 
@@ -27,136 +27,95 @@ using namespace std;
 ///////////////////////////////////////////////////////////////
 
 
-/* 
-*	Function : createDist
-*	Description : create a distribution for the mpi workers
-*
-*	dir : working directory
-*	netSize : size of network
-*/
-int* createDist(const util::Directory &dir, int netSize)
+Distribution::Distribution(DistType p_type, const util::Directory &dir, int netSize)
 {
-	int* dist = (int*) malloc(2 * netSize * sizeof(int));
+	int numimages = dir.getNBImages();
+	m_size = 2 * netSize * sizeof(int);
+	m_dist = (int*) malloc(m_size);
 
-	int factor = dir.getNBImages() / netSize;
-	int error = dir.getNBImages() % netSize;
+	switch (p_type) {
 
-	dist[0] = 0;
+		case DIST4SIFT:
 
-	if (error > 0)
-	{
-		dist[1] = factor + 1;
+			m_type = DIST4SIFT;
+
+			int distFactor = numimages / netSize;
+			int distError = numimages % netSize;
+
+			m_dist[0] = 0;
+
+			if (distError > 0)
+			{
+				m_dist[1] = DistFactor + 1;
+			}
+			else
+			{
+				m_dist[1] = distFactor;
+			}
+
+			for(int i = 2; i < 2 * netSize; i+=2)
+			{
+				m_dist[i] = m_dist[i - 1];
+
+				if (i / 2 < distError)
+				{
+					m_dist[i + 1] = m_dist[i] + distFactor + 1;
+				}
+				else
+				{
+					m_dist[i + 1] = m_dist[i] + distFactor;
+				}
+			}
+			break;
+
+		case DIST4MATCHES:
+
+			m_type = DIST4SIFT;
+
+			int numtask = numimages * (numimages - 1) / 2;
+
+			int distFactor = numtask / (netSize - 1);
+			int distError = numtask % (netSize - 1);
+
+			m_dist[0] = -1;
+			m_dist[1] = 0;
+
+			for (int i = 2; i < 2 * netSize; i+=2)
+			{
+				m_dist[i] = m_dist[i - 1];
+				if (i / 2 <= distError)
+				{
+					m_dist[i + 1] = m_dist[i] + distFactor + 1;
+				}
+				else
+				{
+					m_dist[i + 1] = m_dist[i] + distFactor;
+				}
+			}
+			break;
+
+		default:
+			printf("Error in distribution creation, type does not exist !! Force to quit !!\n");
+			exit(1);
+			break;
 	}
-	else
-	{
-		dist[1] = factor;
-	}
-
-	for(int i = 2; i < 2 * netSize; i+=2)
-	{
-		dist[i] = dist[i - 1];
-		
-		if (i / 2 < error)
-		{
-			dist[i + 1] = dist[i] + factor + 1;
-		}
-		else
-		{
-			dist[i + 1] = dist[i] + factor;
-		}
-	}
-
-	return dist;
 }
 
+Distribution::Distribution(Distribution &dist)
+{
+	m_type = dist.m_type;
+	free(m_dist);
 
-/* 
-*	Function : deleteDist
-*	Description : delete a distribution
-*
-*	dist : the distribution to delete
-*/
-void deleteDist(int* dist)
+	m_dist = malloc(dist.m_size);
+
+	for(int i = 0; i < dist.m_size; i++)
+		m_dist[i] = dist.m_dist[i];
+
+}
+
+Distribution::~Distribution()
 {
 	free(dist);
-}
-
-/* 
-*	Function : createDist4Match
-*	Description : create a distribution for the mpi workers
-*
-*	numimages : number of images
-*	netSize : size of network
-*/
-int* createDist4Match(int numimages, int numcore)
-{
-	int numtask = numimages * (numimages - 1) / 2;
-
-	int* dist = (int*) malloc(2 * numcore * sizeof(int));
-
-	int distFactor = numtask / (numcore - 1); 
-	int distError = numtask % (numcore - 1);
-
-	dist[0] = -1;
-	dist[1] = 0;
-
-	for (int i = 2; i < 2 * numcore; i+=2)
-	{
-		dist[i] = dist[i - 1];
-		if (i / 2 <= distError)
-		{
-			dist[i + 1] = dist[i] + distFactor + 1;
-		}
-		else
-		{
-			dist[i + 1] = dist[i] + distFactor;
-		}
-	}
-
-	return dist;
-}
-
-
-/* 
-*	Function : createDist4Geometry
-*	Description : create a distribution for the mpi workers
-*
-*	NP : number of pairs
-*	netSize : size of network
-*/
-int* createDist4Geometry(int NP, int netSize)
-{
-	int* dist = (int*) malloc(2 * netSize * sizeof(int));
-
-	int factor = NP / (netSize - 1);
-	int error = NP % (netSize - 1);
-
-	dist[2] = 0;
-
-	if (error > 0)
-	{
-		dist[3] = factor + 1;
-	}
-	else
-	{
-		dist[3] = factor;
-	}
-
-	for(int i = 4; i < 2 * netSize; i+=2)
-	{
-		dist[i] = dist[i - 1];
-		
-		if (i / 2 < error)
-		{
-			dist[i + 1] = dist[i] + factor + 1;
-		}
-		else
-		{
-			dist[i + 1] = dist[i] + factor;
-		}
-	}
-
-	return dist;
 }
 
 
@@ -167,7 +126,7 @@ int* createDist4Geometry(int NP, int netSize)
 
 
 
-/* 
+/*
 *	Function : showProgress
 *	Description : Print a progress bar to show progression
 *
@@ -195,7 +154,7 @@ void showProgress(int i, int n, int w, int actualize)
 }
 
 
-/* 
+/*
 *	Function : ffind
 *	Description : Find a option in an option file and store its value in buffers
 *
@@ -224,136 +183,3 @@ int ffind(FILE* f, const string &sr, char* buffer)
 
 	return 0;
 }
-
-/* 
-*	Function : createSubmit
-*	Description : Create the submit file for the supercomputer
-*
-*	path : working directory path
-*	numcore : number of cores
-*	seconds : walltime
-*/
-void createSubmit(const string &path, int numcore, int seconds, int option)
-{
-	system("mkdir ulavalSub");
-
-	char buffer[256];
-
-	strcpy(buffer, getenv("HOME"));
-
-	string ulavalsfm(buffer);
-	ulavalsfm.append("/.ulavalsfm");
-
-	FILE* fr = fopen(ulavalsfm.c_str(), "r");
-
-	if (!fr)
-	{
-		cout << "[ERROR] The file \"~/.ulavalsfm\" does not exist" << endl;
-		cout << "[ERROR] Create a the file with the caracteristics you want" << endl;
-		cout << "[ERROR] Use the README for more information" << endl;
-		cout << "[ERROR] Program is forced to quit" << endl;
-		exit(1);
-	}
-
-	FILE* fw = fopen("ulavalSub/submit.sh", "w");
-
-	if (!fw)
-	{
-		cout << "[ERROR] The file \"ulavalSubmit/submit.sh\" cannot be opened" << endl;
-		cout << "[ERROR] Program is forced to quit" << endl;
-		exit(1);
-	}
-
-	if(!ffind(fr, "RAP", buffer))
-	{
-		cout << "[ERROR] You have not precised a RAP number in \"~/.ulavalsfm\"" << endl;
-		cout << "[ERROR] Add the line : \"RAP:<RAP number>;\"" << endl;
-		cout << "[ERROR] Program is forced to quit" << endl;
-		exit(1);
-	}
-
-	string RAP(buffer);
-
-	fclose(fr);
-
-	fprintf(fw, "%s\n", "# Shell used by ulavalsfm to launch matches phase -- ulavalsfm");
-	fprintf(fw, "%s\n", "#PBS -S /bin/bash");
-	fprintf(fw, "%s\n", "#PBS -N ulavalsfm_matches # Nom de la tâche");
-	fprintf(fw, "%s%s%s\n", "#PBS -A ", RAP.c_str(), " # Identifiant Rap; ID");
-	fprintf(fw, "%s%d%s\n", "#PBS -l nodes=", numcore/8, ":ppn=8 # Nombre de noeuds et nombre de processus par noeud");
-	fprintf(fw, "%s%d%s\n", "#PBS -l walltime=", seconds, " # Durée en secondes");
-	fprintf(fw, "%s\n", "#PBS -o ./ulavalSub/out.txt #sortie");
-	fprintf(fw, "\n");
-	fprintf(fw, "%s%s%s\n", "cd \"", path.c_str(), "\"");
-	fprintf(fw, "\n");
-	fprintf(fw, "%s\n", "module load compilers/gcc/4.8.0");
-	fprintf(fw, "%s\n", "module load mpi/openmpi/1.6.4_gcc");
-	fprintf(fw, "\n");
-	if (option == 0)
-		fprintf(fw, "%s\n", "mpiexec cDoSift . 0");
-	else if (option == 1)
-		fprintf(fw, "%s\n", "mpiexec cDoMatch . 0");
-	else if (option == 2)
-		fprintf(fw, "%s\n", "mpiexec cDoAll . 0");
-
-	fclose(fw);
-}
-
-
-
-///////////////////////////////////////////////////////////////
-////                  BUNDLER FUNCTIONS                    ////
-///////////////////////////////////////////////////////////////
-
-
-void createOptions(const string &path)
-{
-	string file(path);
-
-	file.append("options.txt");
-
-	FILE* f = fopen(file.c_str(), "w");
-
-	fprintf(f, "--output_all bundle_\n");
-	fprintf(f, "--constrain_focal\n");
-	fprintf(f, "--estimate_distortion\n");
-	fprintf(f, "--variable_focal_length\n");
-	fprintf(f, "--output bundle.out\n");
-	fprintf(f, "--output_dir bundle\n");
-	fprintf(f, "--output_all bundle_\n");
-	fprintf(f, "--use_focal_estimate\n");
-	fprintf(f, "--match_table matches.init.txt\n");
-	fprintf(f, "--run_bundle\n");
-	fprintf(f, "--constrain_focal_weight 0.0001\n");
-
-	fclose(f);
-}
-
-void Bundler(const string &path)
-{
-	createOptions(path);
-
-	chdir(path.c_str());
-
-	system("mkdir bundle");
-
-	string command("bundler ");
-	command.append("images.txt ");
-	command.append("--options_file ");
-	command.append("options.txt");
-
-	system(command.c_str());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
