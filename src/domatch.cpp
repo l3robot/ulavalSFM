@@ -30,8 +30,6 @@ int main(int argc, char** argv)
 {
 	MPI_Init(&argc, &argv);
 
-	int* dist;
-	int recv[2];
 	int bar = 1;
 	int geo = 1;
 
@@ -72,12 +70,9 @@ int main(int argc, char** argv)
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	if(netID == 0)
-	{
-		dist = boss(netSize, dir);
-	}
-
-	MPI_Scatter(dist, 2, MPI_INT, recv, 2, MPI_INT, 0, MPI_COMM_WORLD);
+	//set the starting and ending index
+	int start, end;
+	distribution(netID, netSize, );
 
 	if(netID == 0)
 	{
