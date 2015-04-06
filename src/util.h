@@ -19,7 +19,7 @@ typedef enum {
   DIST4MATCHES
 } DistType;
 
-distribution(int id, int size, util::Directory &dir, DistType type, int *start, int *end);
+void distribution(int id, int size, util::Directory &dir, DistType type, int *start, int *end);
 
 //other util functions
 void showProgress(int i, int n, int w, int actualize);

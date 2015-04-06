@@ -3,7 +3,7 @@
 *	Author : Émile Robitaille @ LERobot
 *	Creation date : 2014, June 27th
 *	Version : 1.0
-*	
+*
 *	Description : directory class
 */
 
@@ -17,7 +17,6 @@
 
 #include "directory.h"
 #include "util.h"
-#include "dosift.h"
 
 using namespace std;
 
@@ -58,7 +57,7 @@ Directory::Directory(char* p_path)
 	}
 
 	closedir(dir);
-	
+
 	createIMGlist();
 }
 
@@ -202,9 +201,3 @@ void Directory::printInfo() const
 	cout << "Number of match file(s) : " << m_matches.size() << endl << endl;
 }
 }; //namespace util
-
-
-
-
-
-

@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <math.h>
 #include <string.h>
 #include <iostream>
@@ -26,23 +27,28 @@ int main(int argc, char* argv[])
 	//MPI initialization
 	MPI_Init(&argc, &argv);
 
-	export char verbose = 0;
-	export char *siftPath = NULL;
+	//For execution time calculation
+	double the_time;
 
 	//Check the number of arguments
 	if (argc < 2)
 		sUsage(argv[0]);
 
-	//Parse the facultative arguments
-	sParseArgs(argc, argv);
+	//Create a object to store the working directory information
+	util::Directory dir(argv[argc-1]);
+	struct SFeatures container;
 
 	//Create the strings for working directory and sift file storage directory
-	string img(argv[1]);
-	string key(siftPath);
+	string img(argv[argc-1]);
+	string key;
 
-	//Create a object to store the working directory information
-	util::Directory dir(argv[1]);
-	struct SFeatures container;
+	struct sArgs args;
+
+	//Parse the facultative arguments
+	sParseArgs(argc, argv, &args);
+
+	key.assign(args.siftPath);
+	int verbose = args.verbose;
 
 	//Number of cores and the ID of the core
 	int netSize;
@@ -56,14 +62,40 @@ int main(int argc, char* argv[])
 	int start, end;
 	distribution(netID, netSize, dir, DIST4SIFT, &start, &end);
 
-	//Waiting all the cores
+	//Print the distribution information, MPI_Send/MPI_Recv are more portable
+	//Than MPI_Barrier for printing. Hence it can be always fully synchronised
+	if(netID == 0 && verbose) {
+		MPI_Status status;
+		int buffer[3];
+
+		printf(" --> Here's the distribution :\n");
+
+		printf("	Core 0 will compute images %5d to %5d\n", start, end);
+
+		for(int i = 1; i < netSize; i++) {
+			MPI_Recv(&buffer, 3, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+			printf("	Core %d will compute images %5d to %5d\n", buffer[0], buffer[1], buffer[2]);
+		}
+	}
+	else if(verbose) {
+		int buffer[3];
+		buffer[0] = netID;
+		buffer[1] = start;
+		buffer[2] = end;
+		MPI_Send(&buffer, 3, MPI_INT, 0, 0, MPI_COMM_WORLD);
+	}
+
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	//Brief reminder of what the program will do
-	if (netID == 0) {
-		double the_time = MPI_Wtime();
-		printf("--> Sift searching begins on %d core(s) :\n", netSize);
+	if (netID == 0 && verbose) {
+		the_time = MPI_Wtime();
+		printf(" --> Sift searching begins on %d core(s) :\n", netSize);
 	}
+
+	//Verbose mode
+	if (netID == 0 && verbose)
+		showProgress(0, end, 75, 1);
 
 	//Main loop
 	for(int i = start; i < end; i++)
@@ -99,8 +131,12 @@ int main(int argc, char* argv[])
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	//Print the time it needs to compute all the images
-	if(netID == 0) {
-		printf("The sift search takes approximately %0.3f second(s)\n", MPI_Wtime() - the_time);
+	if(netID == 0 && verbose) {
+		double time_r = MPI_Wtime() - the_time;
+		int h = int(time_r/3600);
+		int m = int(time_r/60) - h*60;
+		double s = time_r - h*3600 - m*60;
+		printf(" --> The sift search takes %dh %dm %0.3fs\n", h, m, s);
 	}
 
 	//Terminate MPI

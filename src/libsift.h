@@ -12,7 +12,11 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
+#if CV_VERSION_MAJOR == 2
 #include <opencv2/features2d/features2d.hpp>
+#elif CV_VERSION_MAJOR == 3
+#include <opencv2/xfeatures2d.hpp>
+#endif
 #include <vector>
 #include <string>
 
@@ -22,6 +26,7 @@
 #define F_KEYS 1
 #define F_DES 2
 #define F_ALL 3
+
 
 /*
 *	Struct : SFeatures
@@ -51,6 +56,26 @@ struct SFeatures
 
 };
 
+struct sArgs
+{
+	int verbose;
+	char *siftPath;
+
+	sArgs()
+	{
+		verbose = 0;
+		siftPath = NULL;
+	}
+
+	void print()
+ 	{
+		printf("Mode verbose : %d || Dossier sift : %s\n", verbose, siftPath);
+	}
+
+};
+
+void sParseArgs(int argc, char *argv[], struct sArgs *args);
+void sUsage(char *progName);
 
 void doSift(const std::string &path, struct SFeatures &container);
 void writeSiftFile(const std::string &file, const struct SFeatures &container);

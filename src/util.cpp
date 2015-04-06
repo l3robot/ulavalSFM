@@ -27,7 +27,7 @@ using namespace std;
 ///////////////////////////////////////////////////////////////
 
 
-distribution(int id, int size, util::Directory &dir, DistType type, int *start, int *end)
+void distribution(int id, int size, util::Directory &dir, DistType type, int *start, int *end)
 {
 	int numimages = dir.getNBImages();
 
@@ -45,7 +45,7 @@ distribution(int id, int size, util::Directory &dir, DistType type, int *start, 
 		*end = (id + 1) * (distFactor + 1);
 	}
 	else {
-		*start = id * distFactor + distError
+		*start = id * distFactor + distError;
 		*end = *start + distFactor;
 	}
 }

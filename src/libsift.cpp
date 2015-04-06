@@ -18,8 +18,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
-#include <opencv2/features2d/features2d.hpp>
 #if CV_VERSION_MAJOR == 2
+#include <opencv2/features2d/features2d.hpp>
 #include <opencv2/nonfree/nonfree.hpp>
 #elif CV_VERSION_MAJOR == 3
 #include <opencv2/xfeatures2d.hpp>
@@ -43,6 +43,7 @@ using namespace xfeatures2d;
 #endif
 
 
+
 /*
 *	Function : sParseArgs
 *	Description : Parse the arguments for the sift search program
@@ -50,32 +51,34 @@ using namespace xfeatures2d;
 *	argc : argc main argument
 *	argv : argv main argument
 */
-void sParseArgs(int argc, char *argv[])
+void sParseArgs(int argc, char *argv[], struct sArgs *args)
 {
   char c;
 
-  extern char *optarg;
-
-  while (c = getopt(argc, argv, "vo:") != -1)
+  while ((c = getopt(argc, argv, "vo:")) != -1)
   {
     switch(c)
     {
-      case("v"):
-        verbose = 1;
+      case 'v':
+        args->verbose = 1;
         break;
 
-      case("o"):
-        siftPath = optarg;
+      case 'o':
+        args->siftPath = optarg;
         break;
 
-      case("?"):
+      case '?' :
         sUsage(argv[0]);
         break;
+
+      default:
+        printf("Error while parsing -%c, read usage below\n", c);
+        sUsage(argv[0]);
     }
   }
 
-  if (siftPath == NULL)
-    siftPath = argv[1];
+  if (args->siftPath == NULL)
+    args->siftPath = argv[argc-1];
 }
 
 /*
@@ -87,9 +90,11 @@ void sParseArgs(int argc, char *argv[])
 */
 void sUsage(char *progName)
 {
-  printf(" usage: %s [workingDirectory] [-v] [-o siftPath]\n\n", progName);
-  printf(" -v verbose mode, print a progress bar\n");
-  printf(" -o [siftPath] set the sift files repository\n");
+  printf("This is ulsift (ulavalSFM sift). Use it to find sift points on a dataset.\n");
+  printf("Louis-Émile Robitaille @ L3Robot\n");
+  printf("usage: mpirun -n [numberOfCores] %s [-v] [-o siftPath] [workingDirectory]\n", progName);
+  printf("      -v verbose mode, print a progress bar\n");
+  printf("      -o [siftPath] set the sift files repository\n");
   exit(1);
 }
 
@@ -107,16 +112,28 @@ void doSift(const string &path, struct SFeatures &container)
 
 	img = imread(path.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
 
+  #if CV_VERSION_MAJOR == 2
+
 	SiftFeatureDetector detector;
 
-   	detector.detect(img, keypoints);
+  detector.detect(img, keypoints);
 
-   	SiftDescriptorExtractor extractor;
+  SiftDescriptorExtractor extractor;
 
-    extractor.compute(img, keypoints, des);
+  extractor.compute(img, keypoints, des);
 
-    container.des = des;
-    container.keys = keypoints;
+  #elif CV_VERSION_MAJOR == 3
+
+  Ptr<SIFT> ptrSIFT = SIFT::create();
+
+  ptrSIFT->detect(img, keypoints);
+
+  ptrSIFT->compute(img, keypoints, des);
+
+  #endif
+
+  container.des = des;
+  container.keys = keypoints;
 }
 
 /*
