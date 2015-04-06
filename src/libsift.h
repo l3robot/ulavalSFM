@@ -59,17 +59,11 @@ struct SFeatures
 struct sArgs
 {
 	int verbose;
-	char *siftPath;
+	std::string workingDir;
+	std::string siftDir;
 
-	sArgs()
-	{
+	sArgs() {
 		verbose = 0;
-		siftPath = NULL;
-	}
-
-	void print()
- 	{
-		printf("Mode verbose : %d || Dossier sift : %s\n", verbose, siftPath);
 	}
 
 };

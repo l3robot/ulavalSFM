@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <math.h>
 #include <string.h>
 #include <iostream>
@@ -53,7 +54,21 @@ using namespace xfeatures2d;
 */
 void sParseArgs(int argc, char *argv[], struct sArgs *args)
 {
+  //Check the number of arguments
+	if (argc < 2)
+		sUsage(argv[0]);
+
   char c;
+
+  string Dir(argv[argc-1]);
+  string siftDir;
+
+	if (Dir[Dir.size()-1] != '/')
+		Dir.append("/");
+
+  args->workingDir.assign(Dir);
+
+  Dir.append("ulsift/");
 
   while ((c = getopt(argc, argv, "vo:")) != -1)
   {
@@ -64,7 +79,21 @@ void sParseArgs(int argc, char *argv[], struct sArgs *args)
         break;
 
       case 'o':
-        args->siftPath = optarg;
+        siftDir.assign(optarg);
+
+        if (siftDir[siftDir.size()-1] != '/')
+      		siftDir.append("/");
+
+        if (mkdir(siftDir.c_str(), 0700) < 0) {
+          if(errno != EEXIST) {
+            printf(" <-- Error while creating directory %s\n", siftDir.c_str());
+            printf(" <-- While use %s instead\n", Dir.c_str());
+          }
+          else
+            args->siftDir.assign(siftDir);
+        }
+        else
+          args->siftDir.assign(siftDir);
         break;
 
       case '?' :
@@ -72,13 +101,23 @@ void sParseArgs(int argc, char *argv[], struct sArgs *args)
         break;
 
       default:
-        printf("Error while parsing -%c, read usage below\n", c);
+        printf(" <-- Error while parsing -%c, read usage below\n", c);
         sUsage(argv[0]);
     }
   }
 
-  if (args->siftPath == NULL)
-    args->siftPath = argv[argc-1];
+  if (args->siftDir.empty())
+    if (mkdir(Dir.c_str(), 0700) < 0) {
+      if(errno != EEXIST) {
+        printf(" <-- Force to quit, Reason :\n");
+        printf(" <-- Error while creating directory %s\n", Dir.c_str());
+        exit(1);
+      }
+      else
+        args->siftDir.assign(Dir);
+    }
+    else
+      args->siftDir.assign(Dir);
 }
 
 /*

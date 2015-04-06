@@ -30,24 +30,20 @@ int main(int argc, char* argv[])
 	//For execution time calculation
 	double the_time;
 
-	//Check the number of arguments
-	if (argc < 2)
-		sUsage(argv[0]);
+	//Parse the facultative arguments
+	struct sArgs args;
+
+	sParseArgs(argc, argv, &args);
 
 	//Create a object to store the working directory information
-	util::Directory dir(argv[argc-1]);
+	util::Directory dir(args.workingDir.c_str());
 	struct SFeatures container;
 
 	//Create the strings for working directory and sift file storage directory
-	string img(argv[argc-1]);
-	string key;
+	string img(args.workingDir);
+	string key(args.siftDir);
 
-	struct sArgs args;
-
-	//Parse the facultative arguments
-	sParseArgs(argc, argv, &args);
-
-	key.assign(args.siftPath);
+	//Set verbose mode
 	int verbose = args.verbose;
 
 	//Number of cores and the ID of the core

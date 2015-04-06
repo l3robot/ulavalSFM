@@ -3,7 +3,7 @@
 *	Author : Émile Robitaille @ LERobot
 *	Creation date : 2014, June 27th
 *	Version : 1.0
-*	
+*
 *	Description : directory class
 */
 
@@ -17,14 +17,14 @@
 #define IMGLIST "images.txt"
 
 
-/* 
+/*
 *	Class : Directory
 *	Description : Class used to store directory info
-*	
+*
 *	Methods :
 *
 *		Directory() : Default constructor
-*		Directory(char* p_path) : Constructor who assign a directory directly  
+*		Directory(char* p_path) : Constructor who assign a directory directly
 *		void assign(char* p_path) : assign a directory
 *		void update() : update the directory info
 *		void createIMGlist() : list images in IMGFILE
@@ -37,7 +37,7 @@
 *		string getSift(int i) const : get the .key file path name
 *		string getMatch(int i) const : get the .match file path name
 *		void printInfo() const : print a string with the attributes value
-*		
+*
 *	Attributes :
 *
 *		int m_compress : indicate if the key files are compress or not
@@ -54,9 +54,9 @@ class Directory
 public:
 
 	Directory();
-	Directory(char* p_path);
+	Directory(const char* p_path);
 
-	void assign(char* p_path);
+	void assign(const char* p_path);
 	void update();
 	void createIMGlist();
 	int getNBImages() const;

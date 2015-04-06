@@ -25,7 +25,7 @@ namespace util
 Directory::Directory()
 {}
 
-Directory::Directory(char* p_path)
+Directory::Directory(const char* p_path)
 {
 	m_path.assign(p_path);
 
@@ -61,7 +61,7 @@ Directory::Directory(char* p_path)
 	createIMGlist();
 }
 
-void Directory::assign(char* p_path)
+void Directory::assign(const char* p_path)
 {
 	m_path.assign(p_path);
 
