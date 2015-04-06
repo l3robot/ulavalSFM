@@ -65,7 +65,6 @@ struct sArgs
 	sArgs() {
 		verbose = 0;
 	}
-
 };
 
 void sParseArgs(int argc, char *argv[], struct sArgs *args);

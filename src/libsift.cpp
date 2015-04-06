@@ -51,6 +51,7 @@ using namespace xfeatures2d;
 *
 *	argc : argc main argument
 *	argv : argv main argument
+*	args : a structure with option information
 */
 void sParseArgs(int argc, char *argv[], struct sArgs *args)
 {
@@ -106,7 +107,7 @@ void sParseArgs(int argc, char *argv[], struct sArgs *args)
     }
   }
 
-  if (args->siftDir.empty())
+  if (args->siftDir.empty()) {
     if (mkdir(Dir.c_str(), 0700) < 0) {
       if(errno != EEXIST) {
         printf(" <-- Force to quit, Reason :\n");
@@ -118,6 +119,7 @@ void sParseArgs(int argc, char *argv[], struct sArgs *args)
     }
     else
       args->siftDir.assign(Dir);
+  }
 }
 
 /*
@@ -131,7 +133,7 @@ void sUsage(char *progName)
 {
   printf("This is ulsift (ulavalSFM sift). Use it to find sift points on a dataset.\n");
   printf("Louis-Émile Robitaille @ L3Robot\n");
-  printf("usage: mpirun -n [numberOfCores] %s [-v] [-o siftPath] [workingDirectory]\n", progName);
+  printf("usage: mpirun -n [numberOfCores] %s [-v] [-o Path] [workingDirectory]\n", progName);
   printf("      -v verbose mode, print a progress bar\n");
   printf("      -o [siftPath] set the sift files repository\n");
   exit(1);

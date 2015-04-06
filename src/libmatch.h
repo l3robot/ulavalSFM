@@ -51,6 +51,24 @@ struct Matches
 
 };
 
+struct sArgs
+{
+	int verbose;
+	int geometry;
+	std::string workingDir;
+	std::string siftDir;
+	std::string matchFile;
+
+	sArgs() {
+		verbose = 0;
+		geometry = 0;
+	}
+
+};
+
+void sParseArgs(int argc, char *argv[], struct sArgs *args);
+void sUsage(char *progName);
+
 void listDir(const util::Directory &dir, std::vector<std::string> &list);
 void readSiftFile(const std::string &file, struct SFeatures &container);
 int doMatch(const struct SFeatures &img1, const struct SFeatures &img2, struct Matchespp &container, int geo = 1, float ratio = 0.6);

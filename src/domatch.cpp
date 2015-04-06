@@ -26,34 +26,40 @@ using namespace std;
 using namespace cv;
 
 
-int main(int argc, char** argv)
+int main(int argc, char* argv[])
 {
+	//MPI initialization
 	MPI_Init(&argc, &argv);
 
-	int bar = 1;
-	int geo = 1;
-
-	//quick parsing of bar printing or not and geometric
-	if(argc > 2)
-	{
-		if(argv[2][0] == '0')
-			bar = 0;
-		if(argv[3][0] == '0')
-			geo = 0;
-	}
-
+	//For execution time calculation
 	double the_time;
 
+	//Parse the facultative arguments
+	struct sArgs args;
+
+	sParseArgs(argc, argv, &args);
+
+	//Create a object to store the working directory information
+	util::Directory dir(args.workingDir.c_str());
+	struct SFeatures container;
+
+	//Create the strings for working directory and sift file storage directory
+	string img(args.workingDir);
+	string key(args.siftDir);
+
+	//Set verbose mode and geometry mode
+	int verbose = args.verbose;
+	int geo = args.geometry;
+
+	//Number of cores and the ID of the core
 	int netSize;
 	int netID;
 
+	//request the number of cores and the ID of the core
 	MPI_Comm_size(MPI_COMM_WORLD, &netSize);
 	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
 
-	util::Directory dir(argv[1]);
-
-	if(netSize < 2)
-	{
+	if(netSize < 2) {
 		printf("[ERROR] At most 2 cores are needed\n");
 		exit(1);
 	}
@@ -63,20 +69,23 @@ int main(int argc, char** argv)
 	if(netID == 0) {
 		the_time = MPI_Wtime();
 		int n = dir.getNBImages() * (dir.getNBImages() - 1) / 2;
-		secretary(dir.getPath(), netSize, n, bar, geo);
+		secretary(dir.getPath(), netSize, n, verbose, geo);
 	}
 	else {
 		//set the starting and ending index
 		int start, end;
-		distribution(netID, netSize, dir, DIST4MATCHES, &start, &end);
+		distribution(netID, netSize, dir, DIST4SIFT, &start, &end);
 		worker(dir, start, end, geo);
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	if(netID == 0)
-	{
-		printf("The program takes approximately %f second(s)\n", MPI_Wtime() - the_time);
+	if(netID == 0 && verbose) {
+		double time_r = MPI_Wtime() - the_time;
+		int h = int(time_r/3600);
+		int m = int(time_r/60) - h*60;
+		double s = time_r - h*3600 - m*60;
+		printf(" --> The sift search takes %dh %dm %0.3fs\n", h, m, s);
 	}
 
 	MPI_Finalize();

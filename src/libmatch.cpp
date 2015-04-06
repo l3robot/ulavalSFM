@@ -45,6 +45,89 @@ using namespace xfeatures2d;
 
 
 /*
+*	Function : sParseArgs
+*	Description : Parse the arguments for the matching sift program
+*
+*	argc : argc main argument
+*	argv : argv main argument
+*	args : a structure with option information
+*/
+void sParseArgs(int argc, char *argv[], struct sArgs *args)
+{
+  //Check the number of arguments
+	if (argc < 2)
+		sUsage(argv[0]);
+
+  char c;
+
+  string Dir(argv[argc-1]);
+	string File(argv[argc-1]);
+
+	if (Dir[Dir.size()-1] != '/')
+		Dir.append("/");
+
+	if (File[File.size()-1] != '/')
+		File.append("/");
+
+  args->workingDir.assign(Dir);
+
+  Dir.append("ulsift/");
+
+  while ((c = getopt(argc, argv, "vgs:o:")) != -1)
+  {
+    switch(c)
+    {
+      case 'v':
+        args->verbose = 1;
+        break;
+
+			case 'g':
+	      args->verbose = 1;
+	      break;
+
+      case 's':
+        args->siftDir.assign(optarg);
+        break;
+
+			case 'o':
+	      args->matchFile.assign(optarg);
+	      break;
+
+      case '?' :
+        sUsage(argv[0]);
+        break;
+
+      default:
+        printf(" <-- Error while parsing -%c, read usage below\n", c);
+        sUsage(argv[0]);
+    }
+  }
+
+  if (args->siftDir.empty())
+    args->siftDir.assign();
+}
+
+/*
+*	Function : sUsage
+*	Description : Show usage for the matching sift program
+*
+* progName : name of the program
+*
+*/
+void sUsage(char *progName)
+{
+  printf("This is ulmatch (ulavalSFM match). Use it to match the sift points you found.\n");
+  printf("Louis-Émile Robitaille @ L3Robot\n");
+  printf("usage: mpirun -n [numberOfCores] %s [-vg] [-s Path] [-o Path] [workingDirectory]\n", progName);
+  printf("      -v verbose mode, print a progress bar\n");
+	printf("      -g geometry mode, do some geometric computations\n");
+  printf("      -s [siftPath] set the sift directory path\n");
+	printf("      -o [matchFilePath] set the match file path\n");
+  exit(1);
+}
+
+
+/*
 *	Function : listDir
 *	Description : to make a list of .key file path
 *

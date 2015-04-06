@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 	int netSize;
 	int netID;
 
-	//request the numbre of cores and the ID of the core
+	//request the number of cores and the ID of the core
 	MPI_Comm_size(MPI_COMM_WORLD, &netSize);
 	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
 
