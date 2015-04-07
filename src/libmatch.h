@@ -51,7 +51,7 @@ struct Matches
 
 };
 
-struct sArgs
+struct mArgs
 {
 	int verbose;
 	int geometry;

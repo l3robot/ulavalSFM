@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 	double the_time;
 
 	//Parse the facultative arguments
-	struct sArgs args;
+	struct mArgs args;
 
 	sParseArgs(argc, argv, &args);
 
@@ -64,6 +64,33 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 
+	//make the distribution
+	if (netID > 0) {
+		int start, end;
+		distribution(netID, netSize, dir, DIST4SIFT, &start, &end);
+	}
+
+	//Print the distribution information, MPI_Send/MPI_Recv are more portable
+	//Than MPI_Barrier for printing. Hence it can be always fully synchronised
+	if(netID == 0 && verbose) {
+		MPI_Status status;
+		int buffer[3];
+
+		printf(" --> Here's the distribution :\n");
+
+		for(int i = 1; i < netSize; i++) {
+			MPI_Recv(&buffer, 3, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+			printf("	Core %d will compute images %5d to %5d\n", buffer[0], buffer[1], buffer[2]);
+		}
+	}
+	else if(verbose) {
+		int buffer[3];
+		buffer[0] = netID;
+		buffer[1] = start;
+		buffer[2] = end;
+		MPI_Send(&buffer, 3, MPI_INT, 0, 0, MPI_COMM_WORLD);
+	}
+
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	if(netID == 0) {
@@ -71,12 +98,8 @@ int main(int argc, char* argv[])
 		int n = dir.getNBImages() * (dir.getNBImages() - 1) / 2;
 		secretary(dir.getPath(), netSize, n, verbose, geo);
 	}
-	else {
-		//set the starting and ending index
-		int start, end;
-		distribution(netID, netSize, dir, DIST4SIFT, &start, &end);
+	else
 		worker(dir, start, end, geo);
-	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
