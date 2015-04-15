@@ -357,6 +357,7 @@ void write2File(int netID, string matchFile, const Matchespp &container, int geo
 void worker(const util::Directory &dir, int aim, int end, struct mArgs args, int netID, int netSize)
 {
 	int seek = 0, compute = 0, stop = 0, control = 0;
+	int total = end - aim;
 
 	MPI_Status status;
 
@@ -367,6 +368,9 @@ void worker(const util::Directory &dir, int aim, int end, struct mArgs args, int
 	struct SFeatures keys1, keys2;
 
 	vector<Matchespp> master;
+
+	if (netID == 0 && args.verbose)
+		showProgress(0, total, 75, 1);
 
 	for(int i = 0; !stop; i++)
 	{
@@ -389,12 +393,18 @@ void worker(const util::Directory &dir, int aim, int end, struct mArgs args, int
 				doMatch(keys1, keys2, container, args.geometry);
 
 				master.push_back(Matchespp(container));
+
+				if (netID == 0 && args.verbose)
+					showProgress(seek-aim, total, 75, 1);
 			}
 
 			seek++;
 			if(seek == end){compute=0;stop=1;}
 		}
 	}
+
+	if (netID == 0 && args.verbose)
+		showProgress(total, total, 75, 1);
 
 	if (netID != 0)
 		MPI_Recv(&control, 1, MPI_INT, netID-1, 1, MPI_COMM_WORLD, &status);

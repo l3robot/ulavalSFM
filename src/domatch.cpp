@@ -45,7 +45,6 @@ int main(int argc, char* argv[])
 
 	//Set verbose mode and geometry mode
 	int verbose = args.verbose;
-	int geo = args.geometry;
 
 	//Number of cores and the ID of the core
 	int netSize;
@@ -89,8 +88,10 @@ int main(int argc, char* argv[])
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	if(netID == 0)
+	if (netID == 0 && verbose) {
 		the_time = MPI_Wtime();
+		printf(" --> Matching begins on %d core(s) :\n", netSize);
+	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
@@ -103,7 +104,7 @@ int main(int argc, char* argv[])
 		int h = int(time_r/3600);
 		int m = int(time_r/60) - h*60;
 		double s = time_r - h*3600 - m*60;
-		printf(" --> The sift search takes %dh %dm %0.3fs\n", h, m, s);
+		printf(" --> The match takes %dh %dm %0.3fs\n", h, m, s);
 	}
 
 	MPI_Finalize();
