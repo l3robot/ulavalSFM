@@ -19,11 +19,8 @@
 #include "libsift.h"
 #include "directory.h"
 
-void pruneDoubleMatch(struct Constraints &container);
 void pruneDoubleMatch(struct Matchespp &new_box, const struct Matchespp &box);
-void fMatrixFilter(struct Constraints &container);
 int fMatrixFilter(const std::vector<cv::KeyPoint> &keys1, const std::vector<cv::KeyPoint> &keys2, std::vector<cv::DMatch> &list, float treshold = 3.0);
-void transformInfo(struct Constraints &container);
 void transformInfo(const std::vector<cv::KeyPoint> &keys1, const std::vector<cv::KeyPoint> &keys2, struct Matchespp &list, float treshold = 6.0);
 
 

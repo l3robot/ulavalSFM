@@ -134,8 +134,8 @@ void sUsage(char *progName)
   printf("This is ulsift (ulavalSFM sift). Use it to find sift points on a dataset.\n");
   printf("Louis-Émile Robitaille @ L3Robot\n");
   printf("usage: mpirun -n [numberOfCores] %s [-v] [-o Path] [workingDirectory]\n", progName);
-  printf("      -v verbose mode, print a progress bar\n");
-  printf("      -o [siftPath] set the sift files repository\n");
+  printf("      -v verbose mode, print a progress bar (default false)\n");
+  printf("      -o [siftPath] set the sift files repository (default ulsift/)\n");
   exit(1);
 }
 

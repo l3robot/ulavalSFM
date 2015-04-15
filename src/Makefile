@@ -28,14 +28,15 @@ libsift.o: libsift.cpp libsift.h
 	$(CXX) $(OPTS) -c libsift.cpp -o libsift.o -I../include/ $(OPENCV)
 
 libmatch.o: libmatch.cpp libmatch.h
-	$(CXX) $(OPTS) -c libmatch.cpp -o libsift.o -I../include/ $(OPENCV)
+	mpic++ $(OPTS) -c libmatch.cpp -o libmatch.o -I../include/ $(OPENCV)
 
 libgeometry.o: libgeometry.cpp libgeometry.h
-	$(CXX) $(OPTS) -c libgeometry.cpp -o libsift.o -I../include/ $(OPENCV)
+	$(CXX) $(OPTS) -c libgeometry.cpp -o libgeometry.o -I../include/ $(OPENCV)
 
 clean:
 	rm -rf *.o
 	rm -f ulsift
+	rm -f ulmatch
 
 install:
 	chmod +x ulsift

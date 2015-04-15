@@ -37,15 +37,11 @@ int main(int argc, char* argv[])
 	//Parse the facultative arguments
 	struct mArgs args;
 
-	sParseArgs(argc, argv, &args);
+	mParseArgs(argc, argv, &args);
 
 	//Create a object to store the working directory information
 	util::Directory dir(args.workingDir.c_str());
 	struct SFeatures container;
-
-	//Create the strings for working directory and sift file storage directory
-	string img(args.workingDir);
-	string key(args.siftDir);
 
 	//Set verbose mode and geometry mode
 	int verbose = args.verbose;
@@ -64,11 +60,9 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 
-	//make the distribution
-	if (netID > 0) {
-		int start, end;
-		distribution(netID, netSize, dir, DIST4SIFT, &start, &end);
-	}
+	//Set the starting and ending index
+	int start, end;
+	distribution(netID, netSize, dir, DIST4MATCHES, &start, &end);
 
 	//Print the distribution information, MPI_Send/MPI_Recv are more portable
 	//Than MPI_Barrier for printing. Hence it can be always fully synchronised
@@ -78,9 +72,11 @@ int main(int argc, char* argv[])
 
 		printf(" --> Here's the distribution :\n");
 
+		printf("	Core 0 will compute images %5d to %5d\n", start, end);
+
 		for(int i = 1; i < netSize; i++) {
 			MPI_Recv(&buffer, 3, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
-			printf("	Core %d will compute images %5d to %5d\n", buffer[0], buffer[1], buffer[2]);
+			printf("	Core %d will compute pairs %5d to %5d\n", buffer[0], buffer[1], buffer[2]);
 		}
 	}
 	else if(verbose) {
@@ -98,7 +94,7 @@ int main(int argc, char* argv[])
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	worker(dir, start, end, netID, netSize);
+	worker(dir, start, end, args, netID, netSize);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 

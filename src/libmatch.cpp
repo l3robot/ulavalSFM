@@ -16,14 +16,13 @@
 #include <dirent.h>
 #include <time.h>
 #include <unistd.h>
-#include <queue>
+#include <mpi.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/flann/flann.hpp>
-#include <mpi.h>
 #if CV_VERSION_MAJOR == 2
 #include <opencv2/nonfree/nonfree.hpp>
 #include <opencv2/nonfree/features2d.hpp>
@@ -61,11 +60,11 @@ using namespace xfeatures2d;
 *	argv : argv main argument
 *	args : a structure with option information
 */
-void sParseArgs(int argc, char *argv[], struct sArgs *args)
+void mParseArgs(int argc, char *argv[], struct mArgs *args)
 {
   //Check the number of arguments
 	if (argc < 2)
-		sUsage(argv[0]);
+		mUsage(argv[0]);
 
   char c;
 
@@ -104,12 +103,12 @@ void sParseArgs(int argc, char *argv[], struct sArgs *args)
 	      break;
 
       case '?' :
-        sUsage(argv[0]);
+        mUsage(argv[0]);
         break;
 
       default:
         printf(" <-- Error while parsing -%c, read usage below\n", c);
-        sUsage(argv[0]);
+        mUsage(argv[0]);
     }
   }
 
@@ -126,15 +125,15 @@ void sParseArgs(int argc, char *argv[], struct sArgs *args)
 * progName : name of the program
 *
 */
-void sUsage(char *progName)
+void mUsage(char *progName)
 {
   printf("This is ulmatch (ulavalSFM match). Use it to match the sift points you found.\n");
   printf("Louis-Émile Robitaille @ L3Robot\n");
   printf("usage: mpirun -n [numberOfCores] %s [-vg] [-s Path] [-o Path] [workingDirectory]\n", progName);
-  printf("      -v verbose mode, print a progress bar\n");
-	printf("      -g geometry mode, do some geometric computations\n");
-  printf("      -s [siftPath] set the sift directory path\n");
-	printf("      -o [matchFilePath] set the match file path\n");
+  printf("      -v verbose mode, print a progress bar (default false)\n");
+	printf("      -g geometry mode, do some geometric computations (default false)\n");
+  printf("      -s [siftPath] set the sift directory path (default ulsift/)\n");
+	printf("      -o [matchFilePath] set the match file path (default matches.init.txt)\n");
   exit(1);
 }
 
@@ -302,10 +301,19 @@ int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, 
 }
 
 
-
+/*
+*	Function : write2File
+*	Description : write match information between 2 images in a file
+*
+*	netID : ID of the core
+*	matchFile : where to right the information
+*	container : matches information
+*	geo : if to do geometry or not
+*
+*/
 void write2File(int netID, string matchFile, const Matchespp &container, int geo)
 {
-	FILE* f1, f2;
+	FILE *f1, *f2;
 
 	if (netID == 0)
 		f1 = fopen(matchFile.c_str(), "wb");
@@ -316,7 +324,7 @@ void write2File(int netID, string matchFile, const Matchespp &container, int geo
 		if (geo)
 			f2 = fopen(GEOFILE, "ab");
 
-	fprintf(f1, "%d %d\n", container.idx[0], container.idx[1];
+	fprintf(f1, "%d %d\n", container.idx[0], container.idx[1]);
 	fprintf(f1, "%d\n", container.NM);
 
 	for(int i = 0; i < container.NM; i++)
@@ -324,7 +332,7 @@ void write2File(int netID, string matchFile, const Matchespp &container, int geo
 
 	if(container.NI > 0 && geo)
 	{
-		fprintf(f2, "%d %d\n", container.idx[0], container.idx[1];
+		fprintf(f2, "%d %d\n", container.idx[0], container.idx[1]);
 
 		fprintf(f2, "%d\n", container.NI);
 		fprintf(f2, "%f\n", container.ratio);
@@ -364,23 +372,23 @@ void worker(const util::Directory &dir, int aim, int end, struct mArgs args, int
 	{
 		if(compute)
 		{
-			readAndAdjustSiftFile(dir.getPath(), dir.getImage(i), list[i], keys1);
+			readSiftFile(dir.getPath(), dir.getImage(i), list[i], keys1);
 		}
 
 		for (int j = 0; j < i; j++)
 		{
 
-			if(seek == aim){readAndAdjustSiftFile(dir.getPath(), dir.getImage(i), list[i], keys1);compute=1;}
+			if(seek == aim){readSiftFile(dir.getPath(), dir.getImage(i), list[i], keys1);compute=1;}
 
 			if(compute)
 			{
 				struct Matchespp container(j, i);
 
-				readAndAdjustSiftFile(dir.getPath(), dir.getImage(j), list[j], keys2);
+				readSiftFile(dir.getPath(), dir.getImage(j), list[j], keys2);
 
-				doMatch(keys1, keys2, container, geo);
+				doMatch(keys1, keys2, container, args.geometry);
 
-				master.append(struct Matchespp(container));
+				master.push_back(Matchespp(container));
 			}
 
 			seek++;
@@ -392,8 +400,8 @@ void worker(const util::Directory &dir, int aim, int end, struct mArgs args, int
 		MPI_Recv(&control, 1, MPI_INT, netID-1, 1, MPI_COMM_WORLD, &status);
 
 	for (int i = 0; i < master.size(); i++)
-		write2File(netID, args.matchFile, master[i], args.geo);
+		write2File(netID, args.matchFile, master[i], args.geometry);
 
-	if (netID < netSize)
-		MPI_Send(&control, 1, MPI_INT, netID+1, 1, MPI_COMM_WORLD, &status);
+	if (netID < netSize)
+		MPI_Send(&control, 1, MPI_INT, netID+1, 1, MPI_COMM_WORLD);
 }

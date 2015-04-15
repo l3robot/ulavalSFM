@@ -122,21 +122,21 @@ struct mArgs
 	std::string siftDir;
 	std::string matchFile;
 
-	sArgs() {
+	mArgs() {
 		verbose = 0;
 		geometry = 0;
 	}
 
 };
 
-void sParseArgs(int argc, char *argv[], struct sArgs *args);
-void sUsage(char *progName);
+void mParseArgs(int argc, char *argv[], struct mArgs *args);
+void mUsage(char *progName);
 
 void listDir(const util::Directory &dir, std::vector<std::string> &list);
-void readSiftFile(const std::string &path, const std::string &img, const std::string &file, struct SFeatures &container)
+void readSiftFile(const std::string &path, const std::string &img, const std::string &file, struct SFeatures &container);
 int doMatch(const struct SFeatures &img1, const struct SFeatures &img2, struct Matchespp &container, int geo = 1, float ratio = 0.6);
 
-void write2File(int netID, string matchFile, const Matchespp &container, int geo);
+void write2File(int netID, std::string matchFile, const Matchespp &container, int geo);
 void worker(const util::Directory &dir, int aim, int end, struct mArgs args, int netID, int netSize);
 
 #endif

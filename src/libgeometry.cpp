@@ -45,33 +45,10 @@ using namespace cv;
 
 
 /*
-*	2 Functions : pruneDoubleMatch
+*	Function : pruneDoubleMatch
 *	Description : Eliminate the double matches, keep the first only. If a pair have less than 20 matches, the pair is eliminated.
 *
-*	container : container for constraints information
 */
-void pruneDoubleMatch(struct Constraints &container)
-{
-	struct Constraints new_container;
-
-	for(int i = 0; i < container.NP; i++)
-	{
-		if (container.matches[i].NM < 20)
-			cout << "DOUBLE : [ " << container.matches[i].idx[0] << ", " << container.matches[i].idx[1] << " ] : " <<  "Too few matches, considered like if there were no matches" << endl;
-		else
-		{
-			struct Matchespp new_box(container.matches[i].idx);
-			pruneDoubleMatch(new_box, container.matches[i]);
-			cout << "DOUBLE : [ " << container.matches[i].idx[0] << ", " << container.matches[i].idx[1] << " ] : " <<  new_box.NM << " kept out of " << container.matches[i].NM << endl;
-			if (new_box.NM < 20)
-				cout << "DOUBLE : [ " << container.matches[i].idx[0] << ", " << container.matches[i].idx[1] << " ] : " <<  "Too few matches, considered like if there were no matches" << endl;
-			else {new_container.matches.push_back(new_box); new_container.NP++;}
-		}
-	}
-
-	container.assignMatches(new_container);
-}
-
 void pruneDoubleMatch(struct Matchespp &new_box, const struct Matchespp &box)
 {
 	int NM = box.NM;
@@ -88,38 +65,10 @@ void pruneDoubleMatch(struct Matchespp &new_box, const struct Matchespp &box)
 }
 
 /*
-*	2 Functions : fMatrixFilter
+*	Function : fMatrixFilter
 *	Description : Estimate FMatrix with RANSAC and keep inliers only
 *
-*	file : path of the .sift file
-*	container : container for sift keypoints and their descriptor
 */
-void fMatrixFilter(struct Constraints &container)
-{
-	struct Constraints new_container;
-	int num = container.NP;
-
-	for (int i = 0; i < num; i++)
-	{
-		int NM;
-		int NI;
-		Matchespp *t;
-
-		t = &container.matches[i];
-
-		NM = t->NM;
-		NI = fMatrixFilter(container.features[t->idx[0]].keys, container.features[t->idx[1]].keys, t->matches);
-		t->NM = NI;
-		cout << "FMATRIX : [ " << t->idx[0] << ", " << t->idx[1] << " ] : " <<  NI << " inliers found out of " << NM << endl;
-
-		if(NI < 16) cout << "FMATRIX : [ " << t->idx[0] << ", " << t->idx[1] << " ] : " <<  "Too few matches, considered like if there were no matches" << endl;
-		else{new_container.matches.push_back(*t); new_container.NP++;}
-	}
-
-	container.assignMatches(new_container);
-}
-
-//return : number of inliers
 int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, vector<DMatch> &list, float treshold)
 {
 	Mat fMatrix;
@@ -167,37 +116,10 @@ int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, 
 
 
 /*
-*	2 Functions : transformInfo
+*	Function : transformInfo
 *	Description : Find Transform, compute inliers and its ratio
 *
-*	container : container for sift keypoints and their descriptor
 */
-void transformInfo(struct Constraints &container)
-{
-	int num = container.NP;
-	int j = 0;
-
-	for (int i = 0; i < num; i++)
-	{
-		Matchespp *t;
-
-		t = &container.matches[i];
-		transformInfo(container.features[t->idx[0]].keys, container.features[t->idx[1]].keys, *t);
-		cout << "TRANSFORM : [ " << t->idx[0] << ", " << t->idx[1] << " ] : " << t->NI << " inliers found out of " << t->NM << endl;
-
-		if(t->NI < 10)
-		{
-			cout << "TRANSFORM : [ " << t->idx[0] << ", " << t->idx[1] << " ] : " <<  "Too few matches, considered like if there were no matches" << endl;
-			t->reset(false);
-			j++;
-		}
-	}
-
-	container.NT = num - j;
-
-	cout << "Good Transform Pairs : " << container.NT << endl;
-}
-
 void transformInfo(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, struct Matchespp &list, float treshold)
 {
 	int nummatch = list.matches.size();
