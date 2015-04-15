@@ -93,13 +93,12 @@ int main(int argc, char* argv[])
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	if(netID == 0) {
+	if(netID == 0)
 		the_time = MPI_Wtime();
-		int n = dir.getNBImages() * (dir.getNBImages() - 1) / 2;
-		secretary(dir.getPath(), netSize, n, verbose, geo);
-	}
-	else
-		worker(dir, start, end, geo);
+
+	MPI_Barrier(MPI_COMM_WORLD);
+
+	worker(dir, start, end, netID, netSize);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 

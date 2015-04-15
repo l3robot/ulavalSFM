@@ -44,6 +44,14 @@ using namespace cv;
 using namespace xfeatures2d;
 #endif
 
+/* CV_LOAD_IMAGE_GRAYSCALE is renamed to IMREAD_GRAYSCALE in OpenCV 3 */
+#if CV_VERSION_MAJOR == 3
+    using namespace xfeatures2d;
+
+    #define CV_LOAD_IMAGE_GRAYSCALE IMREAD_GRAYSCALE
+    #include <opencv2/calib3d/calib3d_c.h>
+#endif
+
 
 /*
 *	Function : sParseArgs
@@ -138,9 +146,9 @@ void sUsage(char *progName)
 *	dir : directory information
 *	list : vector of path which will be created
 */
-void listDir(const util::Directory &dir, vector<string> &list)
+void listDir(const util::Directory &dir, const string siftDir,vector<string> &list)
 {
-	string path(dir.getPath());
+	string path(siftDir);
 
 	int numimages = dir.getNBImages();
 
@@ -152,6 +160,71 @@ void listDir(const util::Directory &dir, vector<string> &list)
 		list.push_back(path);
 		while(path[path.size() - 1] != '/') path.pop_back();
 	}
+}
+
+
+/*
+*	Function : readSiftFile
+*	Description : Read the sift file, adjust the coordinates and fill a SFeatures object
+*
+*	file : path of the .key file
+*	container : container for sift keypoints and their descriptor
+*/
+void readSiftFile(const string &path, const string &img, const string &file, struct SFeatures &container)
+{
+	Mat buffer;
+
+	container.keys.clear();
+
+	string true_img = path;
+	true_img.append(img);
+
+	buffer = imread(true_img.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
+
+	float height = (float) buffer.rows;
+	float width = (float) buffer.cols;
+
+	FILE* f = fopen(file.c_str(), "r");
+
+	if(!f)
+	{
+		cout << "[ERROR] The file " << file << " does not exist" << endl;
+		cout << "[ERROR] Maybe you haven't found sift point yet" << endl;
+		cout << "[ERROR] Program is forced to quit" << endl;
+		exit(1);
+	}
+
+	float garbage, *pter;
+
+	fscanf(f, "%d %f", &container.NF, &garbage);
+
+	Mat descriptor(container.NF, 128, CV_32F);
+	KeyPoint key;
+
+	for(int i = 0; i < container.NF; i++)
+	{
+		fscanf(f, "%f %f %f %f", &key.pt.y, &key.pt.x, &garbage, &garbage);
+
+		//reverse y axis
+		key.pt.y = height - key.pt.y - 1.0;
+
+		//put the image center at (0, 0)
+		key.pt.x -= 0.5 * (width - 1);
+        key.pt.y -= 0.5 * (height - 1);
+
+		container.keys.push_back(key);
+
+		pter = descriptor.ptr<float>(i);
+
+		for(int j = 0; j < 128; j++)
+		{
+			fscanf(f, "%f", &pter[j]);
+		}
+	}
+
+	container.des = descriptor;
+
+	fclose(f);
 }
 
 
@@ -229,52 +302,40 @@ int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, 
 }
 
 
-/*
-*	Function : serializeVector
-*	Description : to serialize a vector
-*
-*	sender : vector to serialize
-*	img1 : images 1 index
-*	img2 : images 2 index
-*/
-void serializeContainer(const struct Matchespp &container, float *mBuffer, int mS, float *gBuffer, int gS)
+
+void write2File(int netID, string matchFile, const Matchespp &container, int geo)
 {
-	float* serialTab;
+	FILE* f1, f2;
 
-	int s = 4 + container.NM * 2;
+	if (netID == 0)
+		f1 = fopen(matchFile.c_str(), "wb");
+		if (geo)
+			f2 = fopen(GEOFILE, "wb");
+	else
+		f1 = fopen(matchFile.c_str(), "ab");
+		if (geo)
+			f2 = fopen(GEOFILE, "ab");
 
-	serialTab = (float*) malloc(s * sizeof(float));
+	fprintf(f1, "%d %d\n", container.idx[0], container.idx[1];
+	fprintf(f1, "%d\n", container.NM);
 
-	mBuffer[0] = (float) s;
-	mBuffer[1] = (float) container.idx[0];
-	mBuffer[2] = (float) container.idx[1];
-	mBuffer[3] = (float) container.NM;
+	for(int i = 0; i < container.NM; i++)
+		fprintf(f1, "%d %d\n", container.matches[i].queryIdx, container.matches[i].trainIdx);
 
-	for(int i = 0; i < container.NM * 2; i+=2)
+	if(container.NI > 0 && geo)
 	{
-		int idx = i + 4;
-		int idx2 = i/2;
-		mBuffer[idx] = (float) container.matches[idx2].queryIdx;
-		mBuffer[idx+1] = (float) container.matches[idx2].trainIdx;
+		fprintf(f2, "%d %d\n", container.idx[0], container.idx[1];
+
+		fprintf(f2, "%d\n", container.NI);
+		fprintf(f2, "%f\n", container.ratio);
+
+		const double* M = container.H.ptr<double>();
+
+		fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", (float) M[0], (float) M[1],
+		(float) M[2], (float) M[3], (float) M[4], (float) M[5],
+		(float) M[6], (float) M[7], (float) M[8]);
 	}
-
-	gBuffer[0] = (float) container.NI;
-
-	const double* M = container.H.ptr<double>();
-
-	gBuffer[1] = (float) M[0];
-	gBuffer[2] = (float) M[1];
-	gBuffer[3] = (float) M[2];
-	gBuffer[4] = (float) M[3];
-	gBuffer[5] = (float) M[4];
-	gBuffer[6] = (float) M[5];
-	gBuffer[7] = (float) M[6];
-	gBuffer[8] = (float) M[7];
-	gBuffer[9] = (float) M[8];
-
-	gBuffer[10] = container.ratio;
 }
-
 
 
 /*
@@ -285,21 +346,19 @@ void serializeContainer(const struct Matchespp &container, float *mBuffer, int m
 *	recv : relative information about distribution
 *	geo : if to do geometry or not
 */
-void worker(const util::Directory &dir, int aim, int end, int geo, MPI_File file)
+void worker(const util::Directory &dir, int aim, int end, struct mArgs args, int netID, int netSize)
 {
-	int netID, seek = 0, compute = 0, stop = 0;
+	int seek = 0, compute = 0, stop = 0, control = 0;
 
-	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
+	MPI_Status status;
 
 	vector<string> list;
 
-	listDir(dir, list);
+	listDir(dir, args.siftDir, list);
 
 	struct SFeatures keys1, keys2;
 
-	float* serialMatch;
-
-	queue<float*> master;
+	vector<Matchespp> master;
 
 	for(int i = 0; !stop; i++)
 	{
@@ -321,15 +380,7 @@ void worker(const util::Directory &dir, int aim, int end, int geo, MPI_File file
 
 				doMatch(keys1, keys2, container, geo);
 
-				float *mbuffer, *gbuffer;
-
-				serialMatch = serializeContainer(container, mbuffer, gbuffer); // CHANGER, pas d'allocation dans une fonction!!
-
-				container.reset();
-
-				write2File(file, master, buffer);
-
-				free(gbuffer)
+				master.append(struct Matchespp(container));
 			}
 
 			seek++;
@@ -337,9 +388,12 @@ void worker(const util::Directory &dir, int aim, int end, int geo, MPI_File file
 		}
 	}
 
-	while (!master.empty())
-		write2File(file, master, NULL);
-}
+	if (netID != 0)
+		MPI_Recv(&control, 1, MPI_INT, netID-1, 1, MPI_COMM_WORLD, &status);
 
-void write2File(MPI_File file, queue<float*> master, float* buffer)
-{}
+	for (int i = 0; i < master.size(); i++)
+		write2File(netID, args.matchFile, master[i], args.geo);
+
+	if (netID < netSize)
+		MPI_Send(&control, 1, MPI_INT, netID+1, 1, MPI_COMM_WORLD, &status);
+}
