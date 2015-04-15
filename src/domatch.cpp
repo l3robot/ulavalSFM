@@ -54,11 +54,6 @@ int main(int argc, char* argv[])
 	MPI_Comm_size(MPI_COMM_WORLD, &netSize);
 	MPI_Comm_rank(MPI_COMM_WORLD, &netID);
 
-	if(netSize < 2) {
-		printf("[ERROR] At most 2 cores are needed\n");
-		exit(1);
-	}
-
 	//Set the starting and ending index
 	int start, end;
 	distribution(netID, netSize, dir, DIST4MATCHES, &start, &end);
