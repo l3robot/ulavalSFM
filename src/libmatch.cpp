@@ -285,28 +285,19 @@ int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, 
 	{
 		int NI = fMatrixFilter(img2.keys, img1.keys, container.matches);
 
-		//cout << "FMATRIX : [ " << container.idx[0] << ", " << container.idx[1] << " ] : " << NI << " inliers found out of " << container.NM << endl;
-
 		if (NI >= 16) container.NM = NI;
 		else container.reset();
 	}
 	////////////////
 
-	if (geo)
+	if (geo && container.NM > 0)
 	{
 		//Transform info
-		if (container.NM > 0)
-		{
-			transformInfo(img2.keys, img1.keys, container);
+		transformInfo(img2.keys, img1.keys, container);
 
-			//cout << "TRANSFORM : [ " << container.idx[0] << ", " << container.idx[1] << " ] : " << container.NI << " inliers found out of " << container.NM << endl;
+		if (container.NI < 10){ container.reset(false); return 0;}
 
-			if (container.NI < 10){ container.reset(false); return 0;}
-
-			return 1;
-		}
-		////////////////
-
+		return 1;
 	}
 
 	return 0;

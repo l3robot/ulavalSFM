@@ -89,14 +89,9 @@ int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, 
 	{
 		pts1.push_back(Point2f(keys1[list[i].queryIdx].pt.x, keys1[list[i].queryIdx].pt.y));
 		pts2.push_back(Point2f(keys2[list[i].trainIdx].pt.x, keys2[list[i].trainIdx].pt.y));
-
-		//if(!treshold) printf("(%f, %f) ; (%f, %f)\n", pts1[i].x, pts1[i].y, pts2[i].x, pts2[i].y);
-		//printf("(%f, %f) ; (%f, %f)\n", pts1[i].x, pts1[i].y, pts2[i].x, pts2[i].y);
 	}
 
 	if(!treshold) printf("\n");
-
-	//cout << fMatrix << endl;
 
 	fMatrix = findFundamentalMat(pts1, pts2, FM_RANSAC, 3.0, 0.99, mask);
 
@@ -138,7 +133,8 @@ void transformInfo(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2,
 
 	list.NI = 0;
 
-	for (int i = 0; i < nummatch; i++)
+  //Sometimes, the algorithm doesn't find a matrix, so it is important to test it
+	for (int i = 0; i < nummatch && !list.H.empty(); i++)
 	{
 		if(mask.at<uchar>(i))
 		{

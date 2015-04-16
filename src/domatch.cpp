@@ -82,12 +82,12 @@ int main(int argc, char* argv[])
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	if (netID == 0 && verbose) {
+	if (netID == 0) {
 		the_time = MPI_Wtime();
 		printf(" --> Matching ");
 		if (args.geometry)
 			printf("and geometry computing ");
-		printf("begin(s) on %d core(s) :\n", netID);
+		printf("begin(s) on %d core(s) :\n", netSize);
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	if(netID == 0 && verbose) {
+	if(netID == 0) {
 		double time_r = MPI_Wtime() - the_time;
 		int h = int(time_r/3600);
 		int m = int(time_r/60) - h*60;

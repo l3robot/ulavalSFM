@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	//Brief reminder of what the program will do
-	if (netID == 0 && verbose) {
+	if (netID == 0) {
 		the_time = MPI_Wtime();
 		printf(" --> Sift searching begins on %d core(s) :\n", netSize);
 	}
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	//Print the time it needs to compute all the images
-	if(netID == 0 && verbose) {
+	if(netID == 0) {
 		double time_r = MPI_Wtime() - the_time;
 		int h = int(time_r/3600);
 		int m = int(time_r/60) - h*60;
