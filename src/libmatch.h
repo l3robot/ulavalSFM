@@ -21,8 +21,6 @@
 #include "directory.h"
 #include "libgeometry.h"
 
-#define GEOFILE "ulavalSFM.txt"
-
 /*
 *	Struct : Matchespp
 *	Description : More information on matches
@@ -49,7 +47,7 @@ struct Matchespp
 		idx[0] = 0;
 		idx[1] = 0;
 		NM = 0;
-        NI = 0;
+    NI = 0;
 		H = cv::Mat(3, 3, CV_32F);
 		ratio = 0.0;
 	}
@@ -59,6 +57,7 @@ struct Matchespp
 		idx[0] = new_idx[0];
 		idx[1] = new_idx[1];
 		NM = 0;
+		NI = 0;
 		H = cv::Mat(3, 3, CV_32F);
 		ratio = 0.0;
 	}
@@ -68,6 +67,7 @@ struct Matchespp
 		idx[0] = i;
 		idx[1] = j;
 		NM = 0;
+		NI = 0;
 		H = cv::Mat(3, 3, CV_32F);
 		ratio = 0.0;
 	}
@@ -77,6 +77,7 @@ struct Matchespp
 		idx[0] = new_matches.idx[0];
 		idx[1] = new_matches.idx[1];
 		NM = new_matches.NM;
+		NI = new_matches.NI;
 		H = new_matches.H;
 		ratio = new_matches.ratio;
 	}
@@ -86,6 +87,7 @@ struct Matchespp
 		idx[0] = new_matches.idx[0];
 		idx[1] = new_matches.idx[1];
 		NM = new_matches.NM;
+		NI = new_matches.NI;
 		H = new_matches.H;
 		ratio = new_matches.ratio;
 		matches = new_matches.matches;
@@ -121,6 +123,7 @@ struct mArgs
 	std::string workingDir;
 	std::string siftDir;
 	std::string matchFile;
+	std::string geoFile;
 
 	mArgs() {
 		verbose = 0;
@@ -136,7 +139,7 @@ void listDir(const util::Directory &dir, std::vector<std::string> &list);
 void readSiftFile(const std::string &path, const std::string &img, const std::string &file, struct SFeatures &container);
 int doMatch(const struct SFeatures &img1, const struct SFeatures &img2, struct Matchespp &container, int geo = 1, float ratio = 0.6);
 
-void write2File(int netID, std::string matchFile, const Matchespp &container, int geo);
+void write2File(int netID, std::string matchFile, std::string geoFile, const std::vector<struct Matchespp> &master, int geo);
 void worker(const util::Directory &dir, int aim, int end, struct mArgs args, int netID, int netSize);
 
 #endif

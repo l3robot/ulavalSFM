@@ -66,11 +66,11 @@ int main(int argc, char* argv[])
 
 		printf(" --> Here's the distribution :\n");
 
-		printf("	Core 0 will compute images %5d to %5d\n", start, end);
+		printf("	Core 0 will compute images %5d to %5d\n", start, end-1);
 
 		for(int i = 1; i < netSize; i++) {
 			MPI_Recv(&buffer, 3, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
-			printf("	Core %d will compute images %5d to %5d\n", buffer[0], buffer[1], buffer[2]);
+			printf("	Core %d will compute images %5d to %5d\n", buffer[0], buffer[1], buffer[2]-1);
 		}
 	}
 	else if(verbose) {

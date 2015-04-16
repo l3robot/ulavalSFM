@@ -70,6 +70,7 @@ void mParseArgs(int argc, char *argv[], struct mArgs *args)
 
   string Dir(argv[argc-1]);
 	string File(argv[argc-1]);
+	string gFile(argv[argc-1]);
 
 	if (Dir[Dir.size()-1] != '/')
 		Dir.append("/");
@@ -77,12 +78,16 @@ void mParseArgs(int argc, char *argv[], struct mArgs *args)
 	if (File[File.size()-1] != '/')
 		File.append("/");
 
+	if (gFile[gFile.size()-1] != '/')
+		gFile.append("/");
+
   args->workingDir.assign(Dir);
 
   Dir.append("ulsift/");
 	File.append("matches.init.txt");
+	gFile.append("ulavalSFM.txt");
 
-  while ((c = getopt(argc, argv, "vgs:o:")) != -1)
+  while ((c = getopt(argc, argv, "vgs:o:f:")) != -1)
   {
     switch(c)
     {
@@ -91,7 +96,7 @@ void mParseArgs(int argc, char *argv[], struct mArgs *args)
         break;
 
 			case 'g':
-	      args->verbose = 1;
+	      args->geometry = 1;
 	      break;
 
       case 's':
@@ -101,6 +106,10 @@ void mParseArgs(int argc, char *argv[], struct mArgs *args)
 			case 'o':
 	      args->matchFile.assign(optarg);
 	      break;
+
+			case 'f':
+		    args->geoFile.assign(optarg);
+		    break;
 
       case '?' :
         mUsage(argv[0]);
@@ -116,6 +125,8 @@ void mParseArgs(int argc, char *argv[], struct mArgs *args)
     args->siftDir.assign(Dir);
 	if (args->matchFile.empty())
 		args->matchFile.assign(File);
+	if (args->geoFile.empty())
+		args->geoFile.assign(gFile);
 }
 
 /*
@@ -129,11 +140,12 @@ void mUsage(char *progName)
 {
   printf("This is ulmatch (ulavalSFM match). Use it to match the sift points you found.\n");
   printf("Louis-Émile Robitaille @ L3Robot\n");
-  printf("usage: mpirun -n [numberOfCores] %s [-vg] [-s Path] [-o Path] [workingDirectory]\n", progName);
+  printf("usage: mpirun -n [numberOfCores] %s [-vg] [-s Path] [-o Path] [-f Path] [workingDirectory]\n", progName);
   printf("      -v verbose mode, print a progress bar (default false)\n");
 	printf("      -g geometry mode, do some geometric computations (default false)\n");
   printf("      -s [siftPath] set the sift directory path (default ulsift/)\n");
 	printf("      -o [matchFilePath] set the match file path (default matches.init.txt)\n");
+	printf("      -f [geoFilePath] set the geometric file path (default ulavalSFM.txt)\n");
   exit(1);
 }
 
@@ -242,7 +254,7 @@ void readSiftFile(const string &path, const string &img, const string &file, str
 int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, int geo, float ratio)
 {
     #if CV_VERSION_MAJOR == 3
-	FlannBasedMatcher matcher(makePtr<flann::IndexParams>(), makePtr<flann::SearchParams>(64));
+	FlannBasedMatcher matcher(makePtr<flann::KDTreeIndexParams>(), makePtr<flann::SearchParams>(64));
     #else
 	FlannBasedMatcher matcher(new flann::KDTreeIndexParams(16), new flann::SearchParams(64));
     #endif
@@ -311,38 +323,47 @@ int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, 
 *	geo : if to do geometry or not
 *
 */
-void write2File(int netID, string matchFile, const Matchespp &container, int geo)
+void write2File(int netID, string matchFile, string geoFile, const vector<struct Matchespp> &master, int geo)
 {
 	FILE *f1, *f2;
 
-	if (netID == 0)
+	if (netID == 0) {
 		f1 = fopen(matchFile.c_str(), "wb");
 		if (geo)
-			f2 = fopen(GEOFILE, "wb");
-	else
+			f2 = fopen(geoFile.c_str(), "wb");
+	}
+	else {
 		f1 = fopen(matchFile.c_str(), "ab");
 		if (geo)
-			f2 = fopen(GEOFILE, "ab");
-
-	fprintf(f1, "%d %d\n", container.idx[0], container.idx[1]);
-	fprintf(f1, "%d\n", container.NM);
-
-	for(int i = 0; i < container.NM; i++)
-		fprintf(f1, "%d %d\n", container.matches[i].queryIdx, container.matches[i].trainIdx);
-
-	if(container.NI > 0 && geo)
-	{
-		fprintf(f2, "%d %d\n", container.idx[0], container.idx[1]);
-
-		fprintf(f2, "%d\n", container.NI);
-		fprintf(f2, "%f\n", container.ratio);
-
-		const double* M = container.H.ptr<double>();
-
-		fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", (float) M[0], (float) M[1],
-		(float) M[2], (float) M[3], (float) M[4], (float) M[5],
-		(float) M[6], (float) M[7], (float) M[8]);
+			f2 = fopen(geoFile.c_str(), "ab");
 	}
+
+	for (int i = 0; i < master.size(); i++) {
+		fprintf(f1, "%d %d\n", master[i].idx[0], master[i].idx[1]);
+		fprintf(f1, "%d\n", master[i].NM);
+
+		for(int j = 0; j < master[i].NM; j++)
+			fprintf(f1, "%d %d\n", master[i].matches[j].queryIdx, master[i].matches[j].trainIdx);
+
+		if(master[i].NI > 0 && geo)
+		{
+			fprintf(f2, "%d %d\n", master[i].idx[0], master[i].idx[1]);
+
+			fprintf(f2, "%d\n", master[i].NI);
+			fprintf(f2, "%f\n", master[i].ratio);
+
+			const double* M = master[i].H.ptr<double>();
+
+			fprintf(f2, "%f %f %f %f %f %f %f %f %f\n", (float) M[0], (float) M[1],
+			(float) M[2], (float) M[3], (float) M[4], (float) M[5],
+			(float) M[6], (float) M[7], (float) M[8]);
+		}
+	}
+
+	fclose(f1);
+
+	if (geo)
+		fclose(f2);
 }
 
 
@@ -392,7 +413,7 @@ void worker(const util::Directory &dir, int aim, int end, struct mArgs args, int
 
 				doMatch(keys1, keys2, container, args.geometry);
 
-				master.push_back(Matchespp(container));
+				master.push_back(container);
 
 				if (netID == 0 && args.verbose)
 					showProgress(seek-aim, total, 75, 1);
@@ -404,14 +425,13 @@ void worker(const util::Directory &dir, int aim, int end, struct mArgs args, int
 	}
 
 	if (netID == 0 && args.verbose)
-		showProgress(total, total, 75, 1);
+		showProgress(total, total, 75, 0);
 
-	if (netID != 0)
+	if (netID > 0)
 		MPI_Recv(&control, 1, MPI_INT, netID-1, 1, MPI_COMM_WORLD, &status);
 
-	for (int i = 0; i < master.size(); i++)
-		write2File(netID, args.matchFile, master[i], args.geometry);
+	write2File(netID, args.matchFile, args.geoFile, master, args.geometry);
 
-	if (netID < netSize)
+	if (netID < netSize-1)
 		MPI_Send(&control, 1, MPI_INT, netID+1, 1, MPI_COMM_WORLD);
 }
