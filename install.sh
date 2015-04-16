@@ -35,7 +35,7 @@ fi
 # Clone required dependencies
 cd dependencies/
 
-if [ $arg1 != "-colosse" ] && [ ! -d opencv ]; then
+if [ $arg1 == "-colosse" ] && [ ! -d opencv ]; then
     git clone --single-branch https://github.com/Itseez/opencv.git opencv
     git clone https://github.com/Itseez/opencv_contrib.git
 fi
@@ -49,7 +49,7 @@ fi
 
 # Build the dependencies
 
-if [ $arg1 != "-colosse" ]; then
+if [ $arg1 == "-colosse" ]; then
     cd opencv/
     if [ ! -d build ]; then
         mkdir build/
@@ -68,7 +68,7 @@ else
 fi
 
 if [ ! -e bin/bundler ]; then
-    make -j $N
+    make
     rm -f bin/bundler.py
     mv bin/* ${DIR}/bin/
     mv lib/* ${DIR}/lib/
