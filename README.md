@@ -17,11 +17,11 @@ Here's what you have to install before running anything. All the specified versi
 * git 1.8.2.1 http://git-scm.com
 * g++ 4.8.0 : https://gcc.gnu.org or
 
-### Used to build openCV libraries
+##### Used to build openCV libraries
 
 * cmake 2.8.10.2 : http://www.cmake.org
 
-### Used to build BundlerSFM, CMVS, PMVS2
+##### Used to build BundlerSFM, CMVS, PMVS2
 
 This <a href=http://adinutzyc21.blogspot.ca/2013/02/installing-bundler-on-linux-tutorial.html>link</a> helps to find all this dependencies
 
@@ -37,12 +37,12 @@ This <a href=http://adinutzyc21.blogspot.ca/2013/02/installing-bundler-on-linux-
 * ceres-solver 1.9.0 : http://ceres-solver.org
 * <a href=http://www.netlib.org/clapack/>download</a> f2c.h and clapack.h, put it in a folder named clapack
 
-### Used to build ulavalSFM softwares
+##### Used to build ulavalSFM softwares
 
 * OpenMPI 1.6.5 : http://www.open-mpi.org
 * OpenCV 3.0 : https://github.com/Itseez/opencv
 
-### Used by scripts
+##### Used by scripts
 
 * python interpreter 3.4.3
 * PIL 1.1.7. Pillow for python 3.4 : http://www.pythonware.com/products/pil/
