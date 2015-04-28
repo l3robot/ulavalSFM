@@ -68,8 +68,8 @@ else
 fi
 
 if [ ! -e bin/bundler ]; then
-    make
-    rm -f bin/bundler.py
+    make -j $N
+    rm -f bin/bundler.py #To remove where it will have a python gloo
     mv bin/* ${DIR}/bin/
     mv lib/* ${DIR}/lib/
 fi

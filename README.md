@@ -1,107 +1,56 @@
 ulavalSFM
 =========
 
-Version : 4.0
-
-Author : Émile Robitaille @ LERobot
+Author : Émile Robitaille @ <a href=https://github.com/L3Robot>LERobot</a>
+Major contribution : Yannick Hold @ <a href=https://github.com/soravux>soravux</a>
 
 What is ulavalSFM ?
 -------------------
 
-ulavalSFM is a free software manager to prepare and do structure from motion in a parallel way. It's in development. The structure from motion will be based on bundlerSFM : https://github.com/snavely/bundler_sfm. My version of BundlerSFM will though recognize the "ulavalSFM.txt" file and the new "matches.init.txt" file. Your images have to be in JPEG **only .jpg** ext. Use ext.sh to change the extensions and cjpg.py to find hidden PNG file to delete (both installed with ulavalSFM). If your images come from internet, I strongly suggest you to use the script cleanSFM.py to clean the directory. It will change the extension, names and find hidden PNG files.
+ulavalSFM is a set of linux scripts and softwares to prepare structure from motion in parallel. It consists of three parts, pre-computation on images, Lowe's sift points search and matching of those points. You'll find explanations below to install dependencies, ulavalSFM and how to run it. A ultra-script will helps you install all the dependencies. Another will helps you run all softwares in one command. The extern softwares used to make a complete reconstruction are <a href=https://github.com/snavely/bundler_sfm>BundlerSFM</a>, <a href=http://www.di.ens.fr/cmvs/>CMVS</a>, <a href=http://www.di.ens.fr/pmvs/>PMVS2</a>.
 
-The python package I use
-------------------------
+Dependencies
+------------
 
-Because it's pretty simple to install on a cluster and reliable, I use anaconda python 3.4 package http://continuum.io/downloads#34 (make sure it is python 3.4). Be sure that your python bin path is $HOME/anaconda3/bin/ and it should work on your cluster.
+Here's what you have to install before running anything. All the specified versions are tested ones, it should work with others. If no version are given, use the last release :
 
-Python script usage (multithreading)
-------------------------------------
+* git 1.8.2.1 http://git-scm.com
+* g++ 4.8.0 : https://gcc.gnu.org or
 
-```Bash
-cd <your_image_dir>
-bundler.py --no-parallel --verbose --number-cores <number_cores_u_want>
-```
+#### Used to build openCV libraries
 
-You can change some bundlerSFM options if you want. Refer to BundlerSFM repo : https://github.com/snavely/bundler_sfm.
+* cmake 2.8.10.2 : http://www.cmake.org
 
-Python script usage (multicores)
---------------------------------
+#### Used to build BundlerSFM, CMVS, PMVS2
 
-Tested on CentOS6 with a Lustre file system. Change the code to make it work on your cluster should not be too difficult. Basically, you'll have to change the dispatcher call and the submit file construction in bundler.py.
+this <a href=http://adinutzyc21.blogspot.ca/2013/02/installing-bundler-on-linux-tutorial.html>link</a> helps to find all this dependencies
 
-```Bash
-cd <your_image_dir>
-bundler.py --no-parallel --verbose --number-cores <number_cores_u_want> --cluster --walltime <walltime_u_want>
-```
-You can change some bundlerSFM options if you want. Refer to BundlerSFM repo : https://github.com/snavely/bundler_sfm.
+* lapack 3.2.1 : http://www.netlib.org/lapack/
+* blas : http://www.netlib.org/blas/
+* cblas : http://www.netlib.org/blas/
+* minpack : http://www.netlib.org/minpack/
+* f2c : http://www.netlib.org/f2c/
+* libjpeg : http://libjpeg.sourceforge.net/
+* libzip : http://www.nih.at/libzip/
+* imagemagik : http://www.imagemagick.org/
+* gfortran : https://gcc.gnu.org/wiki/GFortran
+* ceres-solver 1.9.0 : http://ceres-solver.org
+* <a href=http://www.netlib.org/clapack/>download</a> f2c.h and clapack.h, put it in a folder named clapack
 
-ulavalSFM Manager Usage
------------------------
+#### Used to build ulavalSFM softwares
 
-#### Displayed on terminal
+* OpenMPI 1.6.5 : http://www.open-mpi.org
+* OpenCV 3.0 : https://github.com/Itseez/opencv
 
-* -h  ---      : Print this menu
-* -v  ---      : Print the software version
-* -l [dir]     : Print information about the directory
-* -n [1-*]     : Specify the number of core(s) wanted (default 1, means no mpi)
-* -s [dir]     : To find sift features of the directory images
-* -m [dir]     : To match sift features of the directory images
+#### Used by scripts
 
-Don't use these options for now, a simplier python script will follow to do all the algorithms :
+* python interpreter 3.4.3
+* PIL 1.1.7. Pillow for python 3.4 : http://www.pythonware.com/products/pil/
 
-* -c [0-1]     : On cluster or not. If 1, a script .sh file will be generated (default 0)
-* -b [dir]     : To run bundler on the given directory
-* -a [dir]     : Do something alike to "-s dir", "-m dir" and then "-b dir"
+Because it's pretty simple to install and reliable, I strongly recommend anaconda python 3.4 package http://continuum.io/downloads#34 (make sure it is python 3.4). Be sure that your python bin path is $HOME/anaconda3/bin/ and it should work on any clusters.
 
-#### More details :
-
--l [dir] : Will give the directory name, number of images, .key files and .mat files.
-
--c [0-1] : The software will use Torque msub to submit the .sh file. Not implemented yet. You will have the possibility to change the dispatcher in a configuration file.
-
--n [1-*] : It uses OpenMPI to launch the extern program cDoSift on multiple cores.
-
--s [dir] : Will do sift detection using OpenCV 2.4.9 implementation and write the features in a Lowe's binairy format.
-
--m [dir] : Will do match using OpenCV 2.4.9. It uses knn search to find the two best matches and uses a ratio test of 0.6 to eliminate most of bad maches. It will then pruned the double matches, pruned the outliers with a fundamental matrix found using RANSAC and compute geometric constraints needed by bundlerSFM to begin the structure from motion with a homographic matrix found using RANSAC as well. I use OpenCV to compute the matrix and the inliers.
-
--b [dir] : Run bundlerSFM with the options found in options.txt, automatically generated by the manager.
-
-Notes
------
-
-#### Sift format
-
-The four numbers before the descriptor in Lowe's sift file format are : 
-
-| X coordinate | Y coordinate | scale | angle |
-
-Note that OpenCV does not give scale so I used size instead to make the format compatible with program like Changchang Wu's visualSFM which natively use the Lowe's format. This will not influence my program because we do not use scale in structure from motion, but keep it in mind if you want to use my sifts for other purposes. 
-
-#### Parallel design
-
-For now, I used a parallel design based on a relation between root, workers and secretary. It is built using MPI.
-
-###### Sift parallel design
-
-There is a root which compute a distribution of all the image. Thanks to the distribution, the root gives a start point and a end point relative to a common loop to each worker (It becomes a worker too). Each worker find sift points and then write it in a \<name\>.key file.
-
-###### Matches parallel design
-
-There is a root which compute a distribution of all the pairs. Thanks to the distribution, the root gives a start point and a end point relative to a common double loop. The root then becomes a secretary. Since only one file will be written, it is easier and, I think, more efficient to handle one writter than handle the synchronisation needed with multi-writter. When a worker finishes a pair, it serializes the information and sends it to the secretary. The secretary quickly push back the information in a c++ vector. I do so, because the secretary have to be always free to receive information. The opposite would block some of the workers. When all the pairs are computed, the secretary write down the information in the file : "matches.init.txt". The design have a limit of images because at a certain point, the secretary could run out of memory. In the worst case, if we consider that each pairs have 8 Kb (~ 2000 matches) and the maximum RAM of the root is 3 Gb, then, it is possible to match a maximum of approximately 850 images. But, because certain pairs are discarted or because pairs usually have a lot less than 2000 matches it is possible to have much more pairs.
-
-Questions ? / Comments ? 
+Questions ? / Comments ?
 ------------------------
 
 Don't hesitate, send me an email
 emile.courriel@gmail.com
-
-
-
-
-
-
-
-
-

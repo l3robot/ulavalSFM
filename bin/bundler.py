@@ -1,19 +1,19 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # #### BEGIN LICENSE BLOCK ####
 #
 # bundler.py - Python convenience module for running Bundler.
 # Copyright (C) 2013 Isaac Lenton (aka ilent2)
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -22,7 +22,7 @@
 
 # Modified version -- by Émile Robitaille L3Robot
 # À FAIRE
-# Faire une création de liste, seulement liée au matching pour l'instant, léger problème 
+# Faire une création de liste, seulement liée au matching pour l'instant, léger problème
 # Modifier le code des sifts et des matchs pour qu'il puisse prendre une liste en paramètre
 # Améliorer le temps d'attente avant de partir BundlerSFM !! Rajouter progression
 # Essayer de deviner le temps de walltime avec une fonction en faisant plein de tests
@@ -84,7 +84,7 @@ CCD_WIDTHS = {
      "Canon Canon DIGITAL IXUS II"               : 5.27,   # 1/2.7"
      "Canon Canon EOS 10D"                       : 22.7,
      "Canon Canon EOS-1D Mark II"                : 28.7,
-     "Canon Canon EOS-1Ds Mark II"               : 35.95,   
+     "Canon Canon EOS-1Ds Mark II"               : 35.95,
      "Canon Canon EOS  20D"                      : 22.5,
      "Canon Canon EOS 20D"                       : 22.5,
      "Canon Canon EOS 300D DIGITAL"              : 22.66,
@@ -179,13 +179,13 @@ CCD_WIDTHS = {
      "EASTMAN KODAK COMPANY KODAK Z740 ZOOM DIGITAL CAMERA"   : 5.76, # 1/2.5"
      "EASTMAN KODAK COMPANY KODAK Z740 ZOOM DIGITAL CAMERA"   : 5.76, # 1/2.5"?
      "FUJIFILM FinePix2600Zoom"                  : 5.27,   # 1/2.7"
-     "FUJIFILM FinePix40i"                       : 7.600,  # 1/1.7" 
+     "FUJIFILM FinePix40i"                       : 7.600,  # 1/1.7"
      "FUJIFILM FinePix A310"                     : 5.27,   # 1/2.7"
      "FUJIFILM FinePix A330"                     : 5.27,   # 1/2.7"
      "FUJIFILM FinePix A600"                     : 7.600,  # 1/1.7"
-     "FUJIFILM FinePix E500"                     : 5.76,   # 1/2.5" 
+     "FUJIFILM FinePix E500"                     : 5.76,   # 1/2.5"
      "FUJIFILM FinePix E510"                     : 5.76,   # 1/2.5"
-     "FUJIFILM FinePix E550"                     : 7.600,  # 1/1.7" 
+     "FUJIFILM FinePix E550"                     : 7.600,  # 1/1.7"
      "FUJIFILM FinePix E900"                     : 7.78,   # 1/1.6"
      "FUJIFILM FinePix F10"                      : 7.600, # 1/1.7"
      "FUJIFILM FinePix F30"                      : 7.600,  # 1/1.7"
@@ -213,7 +213,7 @@ CCD_WIDTHS = {
      "Minolta Co., Ltd. DiMAGE F100"             : 7.176,  # 1/2.7"
      "Minolta Co., Ltd. DiMAGE Xi"               : 5.27,   # 1/2.7"
      "Minolta Co., Ltd. DiMAGE Xt"               : 5.27,   # 1/2.7"
-     "Minolta Co., Ltd. DiMAGE Z1"               : 5.27, # 1/2.7" 
+     "Minolta Co., Ltd. DiMAGE Z1"               : 5.27, # 1/2.7"
      "NIKON COOLPIX L3"                          : 5.76,   # 1/2.5"
      "NIKON COOLPIX P2"                          : 7.176,  # 1/1.8"
      "NIKON COOLPIX S4"                          : 5.76,   # 1/2.5"
@@ -262,7 +262,7 @@ CCD_WIDTHS = {
      "OLYMPUS CORPORATION C750UZ"                : 5.27,   # 1/2.7"
      "OLYMPUS CORPORATION C765UZ"                : 5.76,   # 1//2.5"
      "OLYMPUS CORPORATION C8080WZ"               : 8.80,   # 2/3"
-     "OLYMPUS CORPORATION X250,D560Z,C350Z"      : 5.76, # 1/2.5" 
+     "OLYMPUS CORPORATION X250,D560Z,C350Z"      : 5.76, # 1/2.5"
      "OLYMPUS CORPORATION     X-3,C-60Z"         : 7.176, # 1.8"
      "OLYMPUS CORPORATION X400,D580Z,C460Z"      : 5.27,  # 1/2.7"
      "OLYMPUS IMAGING CORP.   E-500"             : 17.3,  # 4/3?
@@ -270,15 +270,15 @@ CCD_WIDTHS = {
      "OLYMPUS IMAGING CORP. SP310"               : 7.176, # 1/1.8"
      "OLYMPUS IMAGING CORP.   SP510UZ"           : 5.75,   # 1/2.5"
      "OLYMPUS IMAGING CORP.   SP550UZ"           : 5.76, # 1/2.5"
-     "OLYMPUS IMAGING CORP.   uD600,S600"        : 5.75, # 1/2.5" 
-     "OLYMPUS_IMAGING_CORP.   X450,D535Z,C370Z"  : 5.27, # 1/2.7" 
-     "OLYMPUS IMAGING CORP. X550,D545Z,C480Z"    : 5.76, # 1/2.5" 
+     "OLYMPUS IMAGING CORP.   uD600,S600"        : 5.75, # 1/2.5"
+     "OLYMPUS_IMAGING_CORP.   X450,D535Z,C370Z"  : 5.27, # 1/2.7"
+     "OLYMPUS IMAGING CORP. X550,D545Z,C480Z"    : 5.76, # 1/2.5"
      "OLYMPUS OPTICAL CO.,LTD C2040Z"            : 6.40,  # 1/2"
      "OLYMPUS OPTICAL CO.,LTD C211Z"             : 5.27,   # 1/2.7"
      "OLYMPUS OPTICAL CO.,LTD C2Z,D520Z,C220Z"   : 4.54, # 1/3.2"
      "OLYMPUS OPTICAL CO.,LTD C3000Z"            : 7.176, # 1/1.8"
      "OLYMPUS OPTICAL CO.,LTD C300Z,D550Z"       : 5.4,
-     "OLYMPUS OPTICAL CO.,LTD C4100Z,C4000Z"     : 7.176,  # 1/1.8" 
+     "OLYMPUS OPTICAL CO.,LTD C4100Z,C4000Z"     : 7.176,  # 1/1.8"
      "OLYMPUS OPTICAL CO.,LTD C750UZ"            : 5.27,  # 1/2.7"
      "OLYMPUS OPTICAL CO.,LTD X-2,C-50Z"         : 7.176, # 1/1.8"
      "OLYMPUS SP550UZ"                           : 5.76,  # 1/2.5"
@@ -306,12 +306,12 @@ CCD_WIDTHS = {
      "PENTAX Corporation PENTAX Optio 550"       : 7.176, # 1/1.8"
      "PENTAX Corporation PENTAX Optio E10"       : 5.76, # 1/2.5"
      "PENTAX Corporation PENTAX Optio S40"       : 5.76, # 1/2.5"
-     "PENTAX Corporation  PENTAX Optio S4"       : 5.76, # 1/2.5" 
+     "PENTAX Corporation  PENTAX Optio S4"       : 5.76, # 1/2.5"
      "PENTAX Corporation PENTAX Optio S50"       : 5.76, # 1/2.5"
-     "PENTAX Corporation  PENTAX Optio S5i"      : 5.76, # 1/2.5" 
-     "PENTAX Corporation  PENTAX Optio S5z"      : 5.76, # 1/2.5" 
-     "PENTAX Corporation  PENTAX Optio SV"       : 5.76, # 1/2.5" 
-     "PENTAX Corporation PENTAX Optio WP"        : 5.75, # 1/2.5" 
+     "PENTAX Corporation  PENTAX Optio S5i"      : 5.76, # 1/2.5"
+     "PENTAX Corporation  PENTAX Optio S5z"      : 5.76, # 1/2.5"
+     "PENTAX Corporation  PENTAX Optio SV"       : 5.76, # 1/2.5"
+     "PENTAX Corporation PENTAX Optio WP"        : 5.75, # 1/2.5"
      "RICOH CaplioG3 modelM"                     : 5.27,   # 1/2.7"
      "RICOH       Caplio GX"                     : 7.176,  # 1/1.8"
      "RICOH       Caplio R30"                    : 5.75,   # 1/2.5"
@@ -503,7 +503,7 @@ def sift_images(images, cores, verbose=False, force_rebuild=False):
     env = dict(os.environ)
 
     todo = []
-    
+
     for i in images:
         key_filename = i.rsplit('.', 1)[0] + ".key"
         if not force_rebuild and os.path.isfile(key_filename + ".gz") or os.path.isfile(key_filename):
@@ -533,9 +533,9 @@ def match_images(cores, verbose=False, force_rebuild=False):
 
     if verbose:
         print("It needs a matches research")
-        
+
     subprocess.call(["mpirun", "-n", str(cores), "../cDoMatch", "./"], shell=False, env=env)
-   
+
 
 def bundler(image_list=None, options_file=None, shell=False, *args, **kwargs):
     """Run bundler, parsing arguments from args and kwargs through.
@@ -666,7 +666,7 @@ def run_bundler(images=[], verbose=False, parallel=True, force_rebuild=False,
          # Run Bundler
          if verbose:
              print("[- Running Bundler -]")
-             
+
          bundler(image_list=images,
                  options_file="options.txt",
                  verbose=verbose,
@@ -731,4 +731,3 @@ if __name__ == '__main__':
             walltime=args.walltime,
             status=args.status,
         )
-

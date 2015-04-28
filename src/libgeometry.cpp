@@ -83,15 +83,11 @@ int fMatrixFilter(const vector<KeyPoint> &keys1, const vector<KeyPoint> &keys2, 
 
 	int NI = 0;
 
-	if(!treshold) printf("\nPoint : \n");
-
 	for(int i = 0; i < nummatch; i++)
 	{
 		pts1.push_back(Point2f(keys1[list[i].queryIdx].pt.x, keys1[list[i].queryIdx].pt.y));
 		pts2.push_back(Point2f(keys2[list[i].trainIdx].pt.x, keys2[list[i].trainIdx].pt.y));
 	}
-
-	if(!treshold) printf("\n");
 
 	fMatrix = findFundamentalMat(pts1, pts2, FM_RANSAC, 3.0, 0.99, mask);
 
