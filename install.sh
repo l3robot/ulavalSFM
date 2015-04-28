@@ -5,6 +5,8 @@
 # Major contribution : Yannick Hold @ Soravux
 # Description : Intall script if you don't have OpenCV. Linux version
 
+# -colosse option is for a specific supercomputer, ignore it and do not use it except you are working on it.
+
 # Automatically abort on error
 set -e
 
