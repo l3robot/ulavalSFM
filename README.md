@@ -45,7 +45,7 @@ This <a href=http://adinutzyc21.blogspot.ca/2013/02/installing-bundler-on-linux-
 #### Used by scripts
 
 * Python 3.4.3 : https://www.python.org/
-* PIL 1.1.7. Pillow for python 3.4 : http://www.pythonware.com/products/pil/
+* Pillow 2.4.0 : http://www.pythonware.com/products/pil/
 
 Because it's pretty simple to install and reliable, I strongly recommend anaconda python 3.4 package http://continuum.io/downloads#34 (make sure it is python 3.4). Be sure that your python bin path is $HOME/anaconda3/bin/ and it should work on any clusters.
 
@@ -58,6 +58,64 @@ git clone https://github.com/lvsn/ulavalSFM
 cd <ulavalSFM>/
 bash install.sh
 ```
+
+#### This script will :
+
+- Adds the new library path to your local LD\_LIBRARY\_PATH
+- Adds the new executable paths to your local PATH
+- Adds their associated export commands in your home .bashrc
+- Clones BundlerSFM, CMVS and PMVS2 to the dependencies/ repository
+- Builds BundlerSFM, CMVS and PMVS2
+- Moves all their associated libraries in the lib/ repository
+- Moves all their associated binaries to the bin/ repository
+- Builds ulavalSFM and install it in bin/ repository
+
+Run it
+------
+
+#### The easy way
+
+```Bash
+cd "in_your_dataset_repo"
+ulavalSFM.py
+```
+
+#### The hard way
+
+Use all the softs separately. It is more flexible though. You can change some options.
+
+Pre-Computation
+---------------
+
+Complete the computation when it's done.
+
+Lowe's sift points search
+-------------------------
+
+#### What's a sift point?
+
+On a given image, a Scale-invariant feature transform (sift) is a point of interest with characteristics that will be mostly identical in another image that consists of the geometric transformation of the first.
+
+You can learn more on Lowe's sift points on this <a href=http://www.scholarpedia.org/article/Scale_Invariant_Feature_Transform>website</a> and on its wikipedia <a href=http://fr.wikipedia.org/wiki/Scale-invariant_feature_transform>page</a>. Here's the <a href=http://www.cs.ubc.ca/~lowe/keypoints/>website</a> of the Lowe's keypoints detector.
+
+#### How do I detect the sift points in my code?
+
+With openCV 3.0, it's pretty easy to detect sift point. In fact, it takes me three lines of code. I create the detector with this line :
+
+```c
+Ptr<SIFT> ptrSIFT = SIFT::create();
+```
+
+and I detect those points thanks to those lines :
+
+```c
+ptrSIFT->detect(img, keypoints);
+
+ptrSIFT->compute(img, keypoints, des);
+```
+
+#### What's parallel?
+
 
 Questions ? / Comments ?
 ------------------------
