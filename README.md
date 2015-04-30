@@ -149,17 +149,17 @@ Each working core are used to write in the files, since there's a file output fo
 
 There's one file for each computed images. The format is the Lowe's format, that is:  
 
-**Header :**
+**File Header :**
 
 *2 int*</br>
-[Number of points] [Descriptor size]\n
+[ Number of points ] [ Descriptor size ]\n
 
 **First point :**
 
-*4 float*</br>
-[y coordinate] [x coordinate] [scale] [angle (rad)]\n
+*4 float for point header*</br>
+[ y coordinate ] [ x coordinate ] [ scale ] [ angle in rad ]\n
 
-*128 int with this disposition*</br>
+*128 int with this disposition for descriptor*</br>
 [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
 [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
 [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
@@ -169,15 +169,33 @@ There's one file for each computed images. The format is the Lowe's format, that
 [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
 [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n
 
-**Second point :***
+**Second point :**
 
-...
+*Same format than first point*
 
-Note that I use size instead of scale in my files, because openCV does not give scale.
+**etc...**
+
+Note that I use size instead of scale in my files, because openCV does not give scale. It does not change anything for structure from motion, but it might change something if you use my sift points files for something else.
 
 #### Usage
 
+**What's printed on the screen :**
 
+```Bash
+This is ulsift (ulavalSFM sift). Use it to find sift points on a dataset.
+Louis-Émile Robitaille @ L3Robot
+usage: mpirun -n [numberOfCores] %s [-v] [-o Path] [workingDirectory]
+      -v verbose mode, print a progress bar (default false)
+      -o [siftPath] set the sift files repository (default ulsift/)
+```
+
+**More explanations :**
+
+* -v toggle the verbose mode, so it will basically print information about the work distribution and a progress bar.
+* -o You can choose another destination than ulsift/ for your sift points files
+
+Matching phase
+--------------
 
 Questions ? / Comments ?
 ------------------------
