@@ -1,8 +1,8 @@
 ulavalSFM
 =========
 
-Author : Émile Robitaille @ <a href=https://github.com/L3Robot>LERobot</a>
-Major contribution : Yannick Hold @ <a href=https://github.com/soravux>soravux</a>
+###### Author : Émile Robitaille @ <a href=https://github.com/L3Robot>LERobot</a>
+###### Major contribution : Yannick Hold @ <a href=https://github.com/soravux>soravux</a>
 
 What is ulavalSFM ?
 -------------------
@@ -23,7 +23,7 @@ Here's what you have to install before running anything. All the specified versi
 
 #### Used to build BundlerSFM, CMVS, PMVS2
 
-This <a href=http://adinutzyc21.blogspot.ca/2013/02/installing-bundler-on-linux-tutorial.html>link</a> helps to find all this dependencies
+This <a href=http://adinutzyc21.blogspot.ca/2013/02/installing-bundler-on-linux-tutorial.html>link</a> helps me to find all this dependencies
 
 * lapack 3.2.1 : http://www.netlib.org/lapack/
 * blas : http://www.netlib.org/blas/
@@ -35,7 +35,8 @@ This <a href=http://adinutzyc21.blogspot.ca/2013/02/installing-bundler-on-linux-
 * imagemagik : http://www.imagemagick.org/
 * gfortran : https://gcc.gnu.org/wiki/GFortran
 * ceres-solver 1.9.0 : http://ceres-solver.org
-* <a href=http://www.netlib.org/clapack/>download</a> f2c.h and clapack.h, put it in a folder named clapack
+* download Graclus <a href=http://www.cs.utexas.edu/users/dml/Software/graclus.html>here</a> version 1.2, put it in a folder named graclus
+* download f2c.h and clapack.h <a href=http://www.netlib.org/clapack/>here</a>, put it in a folder named clapack
 
 #### Used to build ulavalSFM softwares
 
@@ -100,13 +101,13 @@ You can learn more on Lowe's sift points on this <a href=http://www.scholarpedia
 
 #### How do I detect the sift points in my code?
 
-With openCV 3.0, it's pretty easy to detect sift point. In fact, it takes me three lines of code. I create the detector with this line :
+With openCV 3.0, it's pretty easy to detect sift point on an image. In fact, it takes me three lines of code. I create the detector with this <a href=google.com>line</a> :
 
 ```c
 Ptr<SIFT> ptrSIFT = SIFT::create();
 ```
 
-and I detect those points thanks to those lines :
+and I detect those points thanks to those <a href=google.com>lines</a> :
 
 ```c
 ptrSIFT->detect(img, keypoints);
@@ -115,6 +116,65 @@ ptrSIFT->compute(img, keypoints, des);
 ```
 
 #### What's parallel?
+
+I had to isolate a part of the algorithm and distribute it to the worker cores. I choose to distribute the detection of sift point, because it's already an independent task. Each core begin to compute its starting index and ending index in preparation to execute a single loop, where an index represents an image to compute. Here's the algorithm I use to compute find the right index :
+
+```c
+/*
+ id => id of the core
+ size => number of cores
+ dir => working directory infos
+ start => starting index
+ ending => ending index
+*/
+
+int numimages = dir.getNBImages();
+
+int distFactor = numimages / size;
+int distError = numimages % size;
+
+if (id < distError)
+	*start = id * (distFactor + 1);
+	*end = (id + 1) * (distFactor + 1);
+
+else
+	*start = id * distFactor + distError;
+	*end = *start + distFactor;
+
+```
+
+Each working core are used to write in the files, since there's a file output for each image describing its sift points.
+
+#### What's the format of output files?
+
+There's one file for each computed images. The format is the Lowe's format, that is:  
+
+Header :
+
+2 int
+[Number of points] [Descriptor size]\n
+
+First point :
+
+4 float
+[y coordinate] [x coordinate] [scale] [angle (rad)]\n
+
+128 int with this disposition
+[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n
+[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n
+[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n
+[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n
+[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n
+[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n
+[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n
+[] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n
+
+Second point : ...
+
+Note that I use size instead of scale in my files, because openCV does not give scale.
+
+#### Usage
+
 
 
 Questions ? / Comments ?

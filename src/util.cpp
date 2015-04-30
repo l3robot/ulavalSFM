@@ -82,7 +82,7 @@ void showProgress(int i, int n, int w, int actualize)
 		printf("]\n");
 }
 
-
+// This function could be useful in a later vesion. For instance, for an option file.
 /*
 *	Function : ffind
 *	Description : Find a option in an option file and store its value in buffers

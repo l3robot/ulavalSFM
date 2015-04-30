@@ -272,16 +272,17 @@ int doMatch(const SFeatures &img1, const SFeatures &img2, Matchespp &container, 
 	}
 
 	//Prune double matches
+  if (geo) {
 	struct Matchespp new_container(container.idx);
 
 	pruneDoubleMatch(new_container, container);
 
 	if (new_container.NM >= 20) container.assign(new_container);
-	else container.reset();
+	else container.reset();}
 	///////////////////////
 
 	//FMatrix filter
-	if (container.NM > 0)
+	if (geo && container.NM > 0)
 	{
 		int NI = fMatrixFilter(img2.keys, img1.keys, container.matches);
 
