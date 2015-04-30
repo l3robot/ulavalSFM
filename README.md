@@ -149,27 +149,29 @@ Each working core are used to write in the files, since there's a file output fo
 
 There's one file for each computed images. The format is the Lowe's format, that is:  
 
-Header :
+**Header :**
 
-2 int</br>
+*2 int*</br>
 [Number of points] [Descriptor size]\n
 
-First point :</br>
+**First point :**
 
-4 float</br>
+*4 float*</br>
 [y coordinate] [x coordinate] [scale] [angle (rad)]\n
 
-128 int with this disposition</br>
-[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n</br>
-[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n</br>
-[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n</br>
-[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n</br>
-[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n</br>
-[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n</br>
-[] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n</br>
-[] [] [] [] [] [] [] [] [] [] [] [] [] [] []\n
+*128 int with this disposition*</br>
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n</br>
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]\n
 
-Second point : ...
+**Second point :***
+
+...
 
 Note that I use size instead of scale in my files, because openCV does not give scale.
 
