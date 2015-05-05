@@ -101,6 +101,8 @@ void mParseArgs(int argc, char *argv[], struct mArgs *args)
 
       case 's':
         args->siftDir.assign(optarg);
+        if (args->siftDir[args->siftDir.size-1] != '/')
+          args->siftDir.append('/');
         break;
 
 			case 'o':

@@ -117,7 +117,7 @@ ptrSIFT->compute(img, keypoints, des);
 
 #### What's parallel?
 
-I had to isolate a part of the algorithm and distribute it to the worker cores. I choose to distribute the detection of sift point, because it's already an independent task. Each core begin to compute its starting index and ending index in preparation to execute a single loop, where an index represents an image to compute. Here's the algorithm I use to compute find the right index :
+I had to isolate a part of the algorithm and distribute it to the worker cores. I choose to distribute the detection of sift points, because it's already an independent task. Each core begin to compute its starting index and ending index in preparation to execute a single loop, where an index represents an image to compute. Here's the algorithm I use to compute the right indexes :
 
 ```c
 /*
@@ -196,6 +196,8 @@ usage: mpirun -n [numberOfCores] %s [-v] [-o Path] [workingDirectory]
 
 Matching phase
 --------------
+
+
 
 Questions ? / Comments ?
 ------------------------
