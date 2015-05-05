@@ -1,6 +1,8 @@
 Utilisateurs de Colosse, supercalculateur de l'Université Laval
 --------------------------------------------------------------------------------------
 
+À METTREÀ JOUR
+
 #### Voilà quelques précisions pour installer ulavalSFM sur colosse :
 
 ###### Divers
