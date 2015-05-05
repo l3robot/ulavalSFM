@@ -267,7 +267,7 @@ else
 
 ```
 
-When each core computes its start a double loop. The distribution tells it where to start and where to stop. To eliminate the communication during computation, the writing is done only at the end. Each core waits its turn to write in the file containing all the match. Core 0 begins and then send a message to the next core that he just freed the file. It goes like this until last core write in the file.
+When each core computes its distribution, it starts a double loop. The distribution tells it where to start and where to stop. To eliminate the communication during computation, the writing is done only at the end. Each core waits its turn to write in the file containing all the match. Core 0 begins and then send a message to the next core that he just freed the file. It goes like this until last core write in the file.
 
 #### What's the format of output files?
 
