@@ -71,8 +71,8 @@ bash install.sh
 - Adds the new library path to your local LD\_LIBRARY\_PATH
 - Adds the new executable paths to your local PATH
 - Adds their associated export commands in your home .bashrc
-- Clones BundlerSFM, CMVS and PMVS2 to the dependencies/ repository
-- Builds BundlerSFM, CMVS and PMVS2
+- Clones BundlerSFM~~, CMVS and PMVS2 to the dependencies/ repository~~
+- Builds BundlerSFM~~, CMVS and PMVS2~~
 - Moves all their associated libraries in the lib/ repository
 - Moves all their associated binaries to the bin/ repository
 - Builds ulavalSFM and install it in bin/ repository
@@ -80,7 +80,7 @@ bash install.sh
 Run it
 ------
 
-#### The easy way
+#### ~~The easy way~~
 
 ```Bash
 cd "in_your_dataset_repo"
