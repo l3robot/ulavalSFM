@@ -43,8 +43,6 @@ using namespace xfeatures2d;
     #define CV_LOAD_IMAGE_GRAYSCALE IMREAD_GRAYSCALE
 #endif
 
-
-
 /*
 *	Function : sParseArgs
 *	Description : Parse the arguments for the sift search program
@@ -69,6 +67,9 @@ void sParseArgs(int argc, char *argv[], struct sArgs *args)
 
   args->workingDir.assign(Dir);
 
+  args->testFile.assign(Dir);
+  args->testFile.append("ulsift.out");
+
   Dir.append("ulsift/");
 
   while ((c = getopt(argc, argv, "vo:")) != -1)
@@ -78,7 +79,7 @@ void sParseArgs(int argc, char *argv[], struct sArgs *args)
       case 'v':
         args->verbose = 1;
         break;
-
+        
       case 'o':
         siftDir.assign(optarg);
 

@@ -25,7 +25,6 @@
 using namespace std;
 using namespace cv;
 
-
 int main(int argc, char* argv[])
 {
 	//MPI initialization
@@ -38,6 +37,8 @@ int main(int argc, char* argv[])
 	struct mArgs args;
 
 	mParseArgs(argc, argv, &args);
+
+	FILE* output = fopen(args.testFile.c_str(), "w");
 
 	//Create a object to store the working directory information
 	util::Directory dir(args.workingDir.c_str());
@@ -85,9 +86,13 @@ int main(int argc, char* argv[])
 	if (netID == 0) {
 		the_time = MPI_Wtime();
 		printf(" --> Matching ");
-		if (args.geometry)
+		fprintf(output, " --> Matching ");
+		if (args.geometry) {
 			printf("and geometry computing ");
+			fprintf(output, "and geometry computing ");
+		}
 		printf("begin(s) on %d core(s) :\n", netSize);
+		fprintf(output, "begin(s) on %d core(s) :\n", netSize);
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
@@ -102,7 +107,10 @@ int main(int argc, char* argv[])
 		int m = int(time_r/60) - h*60;
 		double s = time_r - h*3600 - m*60;
 		printf(" --> The match takes %dh %dm %0.3fs\n", h, m, s);
+		fprintf(output, " --> The match takes %dh %dm %0.3fs\n", h, m, s);
 	}
+
+	fclose(output);
 
 	MPI_Finalize();
 

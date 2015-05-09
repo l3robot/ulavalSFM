@@ -121,6 +121,7 @@ struct mArgs
 	int verbose;
 	int geometry;
 	std::string workingDir;
+	std::string testFile;
 	std::string siftDir;
 	std::string matchFile;
 	std::string geoFile;

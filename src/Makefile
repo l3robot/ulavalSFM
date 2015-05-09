@@ -46,13 +46,7 @@ install:
 	cp ulmatch ../bin/
 	cp ulmatch /usr/local/bin/
 
-cinstall:
-	chmod +x ulsift
-	cp ulsift ../bin/
-	chmod +x ulmatch
-	cp ulmatch ../bin/
-
-test:
+setup:
 	chmod +x ulsift
 	cp ulsift ../bin/
 	chmod +x ulmatch

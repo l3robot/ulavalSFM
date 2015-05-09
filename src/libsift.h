@@ -27,7 +27,6 @@
 #define F_DES 2
 #define F_ALL 3
 
-
 /*
 *	Struct : SFeatures
 *	Description : Information on sift features
@@ -61,6 +60,7 @@ struct sArgs
 	int verbose;
 	std::string workingDir;
 	std::string siftDir;
+	std::string testFile;
 
 	sArgs() {
 		verbose = 0;

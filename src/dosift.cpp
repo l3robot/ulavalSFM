@@ -35,6 +35,8 @@ int main(int argc, char* argv[])
 
 	sParseArgs(argc, argv, &args);
 
+	FILE* output = fopen(args.testFile.c_str(), "w");
+
 	//Create a object to store the working directory information
 	util::Directory dir(args.workingDir.c_str());
 	struct SFeatures container;
@@ -72,6 +74,7 @@ int main(int argc, char* argv[])
 			MPI_Recv(&buffer, 3, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
 			printf("	Core %d will compute images %5d to %5d\n", buffer[0], buffer[1], buffer[2]-1);
 		}
+
 	}
 	else if(verbose) {
 		int buffer[3];
@@ -87,6 +90,7 @@ int main(int argc, char* argv[])
 	if (netID == 0) {
 		the_time = MPI_Wtime();
 		printf(" --> Sift searching begins on %d core(s) :\n", netSize);
+		fprintf(output, " --> Sift searching begins on %d core(s) :\n", netSize);
 	}
 
 	//Verbose mode
@@ -133,7 +137,10 @@ int main(int argc, char* argv[])
 		int m = int(time_r/60) - h*60;
 		double s = time_r - h*3600 - m*60;
 		printf(" --> The sift search takes %dh %dm %0.3fs\n", h, m, s);
+		fprintf(output, " --> The sift search takes %dh %dm %0.3fs\n", h, m, s);
 	}
+
+	fclose(output);
 
 	//Terminate MPI
 	MPI_Finalize();

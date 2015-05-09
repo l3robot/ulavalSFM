@@ -51,7 +51,6 @@ using namespace xfeatures2d;
     #include <opencv2/calib3d/calib3d_c.h>
 #endif
 
-
 /*
 *	Function : sParseArgs
 *	Description : Parse the arguments for the matching sift program
@@ -83,6 +82,9 @@ void mParseArgs(int argc, char *argv[], struct mArgs *args)
 
   args->workingDir.assign(Dir);
 
+  args->testFile.assign(Dir);
+  args->testFile.append("ulmatch.out");
+
   Dir.append("ulsift/");
 	File.append("matches.init.txt");
 	gFile.append("ulavalSFM.txt");
@@ -101,8 +103,8 @@ void mParseArgs(int argc, char *argv[], struct mArgs *args)
 
       case 's':
         args->siftDir.assign(optarg);
-        if (args->siftDir[args->siftDir.size-1] != '/')
-          args->siftDir.append('/');
+        if (args->siftDir[args->siftDir.size()-1] != '/')
+          args->siftDir.append("/");
         break;
 
 			case 'o':
