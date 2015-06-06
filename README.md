@@ -1,5 +1,4 @@
-ulavalSFM
-=========
+![](https://github.com/lvsn/ulavalSFM/blob/master/images/ulavalSFMlogo.png)
 
 ###### Author : Émile Robitaille @ <a href=https://github.com/L3Robot>LERobot</a>
 ###### Major contribution : Yannick Hold @ <a href=https://github.com/soravux>soravux</a>
